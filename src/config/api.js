@@ -1,7 +1,7 @@
 import axios from 'axios';
 
 const api = axios.create({
-  baseURL: 'http://localhost:3000',//'https://school-api-4k69.onrender.com', // Adjust to match your Express server port
+  baseURL: 'http://217.217.252.140:3000',//'https://school-api-4k69.onrender.com', // Adjust to match your Express server port
   headers: {
     'Content-Type': 'application/json',
   }
