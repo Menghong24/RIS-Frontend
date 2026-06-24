@@ -7,15 +7,15 @@
     leave-from-class="opacity-100"
     leave-to-class="opacity-0"
   >
-    <div v-if="isOpen" class="fixed inset-0 bg-black/10 backdrop-blur-sm flex items-center justify-center z-50 p-4" @click.self="$emit('close')">
+    <div v-if="isOpen" class="fixed inset-0 bg-black/10 backdrop-blur-md flex items-center justify-center z-50 p-4" @click.self="$emit('close')">
       
       <div class=" bg-white/60 rounded-xl shadow-2xl backdrop-blur-sm  w-full max-w-4xl overflow-hidden max-h-[90vh] overflow-y-auto">
         
-        <div class="backdrop-blur-sm  p-6 flex items-center space-x-6 border-b border-white">
+        <div class="backdrop-blur-2xl  p-6 flex items-center space-x-6 border-b border-white">
           <div class="relative">
             <img 
               :src="teacher.avatar || placeholderImage" 
-              class="w-14 h-14 rounded-full object-cover ring-4 backdrop-blur-sm  ring-white shadow-md" 
+              class="w-14 h-14 rounded-full object-cover ring-4 backdrop-blur-3xl  ring-white shadow-md" 
               :alt="teacher.englishName"
             >
           </div>

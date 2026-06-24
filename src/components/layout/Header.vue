@@ -1,6 +1,6 @@
 <template>
-  <div class="sticky top-0 z-30">
-    <header class="sticky top-0 z-30 flex items-center justify-between h-18 px-6 bg-white border-b shadow-sm">
+ <div class="shrink-0">
+    <header class="flex items-center justify-between h-18 px-6 bg-white border-b shadow-sm shrink-0">
       <button @click="$emit('toggle-sidebar')" class="p-2 rounded-full hover:bg-gray-100 transition-colors text-gray-600">
         <Menu class="w-6 h-6" />
       </button>

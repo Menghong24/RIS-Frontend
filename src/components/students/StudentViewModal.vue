@@ -1,5 +1,5 @@
 <template>
-  <div v-if="isOpen" class="fixed inset-0 bg-black/10 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+  <div v-if="isOpen" class="fixed inset-0 bg-black/10 backdrop-blur-md flex items-center justify-center z-50 p-4">
     <div class="bg-white/60 rounded-xl shadow-xl p-8 w-full max-w-3xl max-h-[90vh] overflow-y-auto">
       <div class="flex  space-x-6 ">
         <img :src="avatar" class="w-30 h-30 rounded-full object-cover ring-4 ring-blue-200" :alt="student?.khmerName">
@@ -12,7 +12,7 @@
           </span> -->
         </div>
       <div class="mt-4 border-t"></div>
-      <div class="mt-6 border-t pt-6 border border-gray-300 p-4 rounded-xl bg-white/40 ">
+      <div class="mt-6 border-t pt-6 border border-gray-300 p-4 rounded-xl bg-white ">
           <h3 class="text-lg font-semibold text-gray-800 mb-4 ">ពត៌មានលំអិតរបស់សិស្ស</h3>
           <div class="grid grid-cols-1 sm:grid-cols-3 gap-4 px-4 text-sm">
               <div class="flex items-center space-x-2">

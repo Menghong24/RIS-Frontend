@@ -1,7 +1,7 @@
 <template>
   <div
     v-if="isOpen"
-    class="fixed inset-0 bg-black/10 backdrop-blur-sm flex items-center justify-center z-50 p-4"
+    class="fixed inset-0 bg-black/10 backdrop-blur-md flex items-center justify-center z-50 p-4"
   >
     <div
       class="bg-white/60 rounded-xl shadow-xl p-8 w-full max-w-6xl max-h-[90vh] overflow-y-auto"

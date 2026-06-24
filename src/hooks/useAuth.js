@@ -8,7 +8,22 @@ const removeToken = () => localStorage.removeItem('token');
 
 const getUser = () => {
   const storedUser = localStorage.getItem('user');
-  return storedUser ? JSON.parse(storedUser) : null;
+
+  if (
+    !storedUser ||
+    storedUser === 'undefined' ||
+    storedUser === 'null'
+  ) {
+    return null;
+  }
+
+  try {
+    return JSON.parse(storedUser);
+  } catch (error) {
+    console.error('Invalid user data in localStorage:', error);
+    localStorage.removeItem('user');
+    return null;
+  }
 };
 const saveUser = (userData) => localStorage.setItem('user', JSON.stringify(userData));
 const removeUser = () => localStorage.removeItem('user');

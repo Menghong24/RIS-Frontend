@@ -1,28 +1,28 @@
 <template>
-  <div class="p-6 bg-gray-50 min-h-screen">
+  <div class="p-2 ">
     <div class="max-w-7xl mx-auto space-y-6">
       
       <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
         <div>
-          <h1 class="text-2xl font-bold text-blue-900 font-khmer">ការគ្រប់គ្រងការបង់ប្រាក់ (Payments)</h1>
-          <p class="text-gray-500 text-sm mt-1">Manage tuition fees and payment history</p>
+          <h1 class="text-2xl font-bold text-blue-900 font-khmer">ការគ្រប់គ្រងការបង់ប្រាក់ (Finance)</h1>
+          <p class="text-gray-500 text-sm mt-1">
+            <span v-if="currentView === 'classes'">សូមជ្រើសរើសថ្នាក់រៀនដើម្បីគ្រប់គ្រងការបង់ប្រាក់</span>
+            <span v-else>គ្រប់គ្រងការបង់ប្រាក់សម្រាប់ថ្នាក់៖ <strong class="text-blue-600">{{ selectedClass?.className }}</strong></span>
+          </p>
         </div>
         
-        <div class="flex gap-4 w-full md:w-auto">
-          <div class="bg-white p-3 rounded-lg shadow-sm border border-green-100 flex-1 md:w-48">
-              <div class="text-xs text-gray-500 font-semibold uppercase">Total Collected</div>
-              <div class="text-xl font-bold text-green-600">${{ stats.totalCollected }}</div>
-          </div>
-          <div class="bg-white p-3 rounded-lg shadow-sm border border-orange-100 flex-1 md:w-48">
-              <div class="text-xs text-gray-500 font-semibold uppercase">Unpaid Students</div>
-              <div class="text-xl font-bold text-orange-600">{{ stats.unpaidCount }}</div>
-          </div>
-        </div>
+        <button 
+          v-if="currentView === 'students'" 
+          @click="backToClasses"
+          class="w-full md:w-auto bg-gray-200 hover:bg-gray-300 text-gray-700 px-4 py-2.5 rounded-lg text-sm font-bold font-khmer transition shadow-sm"
+        >
+          ← ត្រឡប់ទៅថ្នាក់រៀនវិញ
+        </button>
       </div>
 
-      <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-wrap gap-4 items-center justify-between">
-        <div class="flex flex-wrap items-center gap-3 w-full md:w-auto">
-          
+      <div v-if="currentView === 'students'" class="bg-white p-4 rounded-xl shadow-sm border border-gray-200 flex flex-col lg:flex-row gap-4 items-stretch lg:items-center justify-between">
+        
+        <div class="flex flex-wrap items-center gap-3 flex-1">
           <div class="relative">
             <span class="absolute left-3 top-2 text-xs text-gray-400 font-bold">MONTH</span>
             <input 
@@ -32,57 +32,82 @@
             />
           </div>
 
-          <select v-model="filters.classId" class="h-12 border border-gray-300 rounded-lg px-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none min-w-[150px]">
-            <option value="">All Classes</option>
-            <option v-for="c in classes" :key="c._id" :value="c._id">
-              {{ c.className }}
-            </option>
+          <select 
+            v-model="filters.status" 
+            class="h-12 border border-gray-300 rounded-lg px-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none bg-gray-50 font-khmer font-medium min-w-[140px]"
+          >
+            <option value="All">ស្ថានភាពទាំងអស់</option>
+            <option value="paid">បានបង់ប្រាក់</option>
+            <option value="unpaid">មិនទាន់បង់</option>
           </select>
 
-          <select v-model="filters.status" class="h-12 border border-gray-300 rounded-lg px-3 text-sm focus:ring-2 focus:ring-blue-500 outline-none">
-            <option value="All">All Statuses</option>
-            <option value="paid">Paid</option>
-            <option value="unpaid">Unpaid</option>
-            <option value="late">Late</option>
-          </select>
+          <div class="relative flex-1 min-w-[240px]">
+            <span class="absolute left-3 top-3.5 text-gray-400">
+              <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5" fill="none" viewBox="0 0 24 24" stroke="currentColor"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" /></svg>
+            </span>
+            <input 
+              type="text" 
+              v-model="filters.searchQuery" 
+              placeholder="ស្វែងរកឈ្មោះសិស្ស..." 
+              class="h-12 w-full pl-10 pr-4 border border-gray-300 rounded-lg text-sm font-khmer focus:ring-2 focus:ring-blue-500 outline-none"
+            />
+          </div>
         </div>
 
-        <button 
-          @click="openCreateModal" 
-          class="w-full md:w-auto bg-blue-600 text-white px-6 py-3 rounded-lg hover:bg-blue-700 transition flex items-center justify-center shadow-md font-khmer font-bold"
-        >
-          <span class="mr-2 text-xl">+</span> បង់ប្រាក់ថ្មី
-        </button>
+        <div class="bg-green-50 border border-green-200 px-5 py-2 rounded-xl flex flex-col justify-center min-w-[180px] text-right shadow-sm lg:h-12">
+          <div class="text-[10px] text-green-600 font-bold uppercase tracking-wider leading-none mb-1">លុយប្រមូលបានសរុប</div>
+          <div class="text-xl font-black text-green-700 leading-none">${{ totalCollectedThisMonth }}</div>
+        </div>
       </div>
 
-      <div class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
+      <div v-if="currentView === 'classes'" class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
+        <div 
+          v-for="c in classes" 
+          :key="c._id"
+          @click="selectClass(c)"
+          class="bg-white p-6 rounded-2xl shadow-sm border border-gray-200 hover:border-blue-400 hover:shadow-md transition-all duration-200 cursor-pointer group relative overflow-hidden"
+        >
+          <div class="absolute top-0 left-0 w-2 h-full bg-blue-600"></div>
+          <h3 class="text-lg font-bold text-gray-900 font-khmer mb-1 group-hover:text-blue-600 transition-colors">
+            {{ c.className }}
+          </h3>
+          <p class="text-xs text-gray-500 font-semibold uppercase mb-3">Grade: {{ c.classGrade }}</p>
+          
+          <div class="flex items-center gap-2 mb-4 text-sm text-gray-600 font-khmer">
+            <span class="text-gray-400">👨‍🏫 គ្រូបង្គោល:</span>
+            <span class="font-medium text-gray-800">{{ c.teacher?.khmerName || c.teacherName || 'មិនទាន់មាន' }}</span>
+          </div>
+
+          <div class="mt-2 flex justify-between items-center text-sm text-gray-600 bg-gray-50 p-2 rounded-lg">
+            <span class="font-khmer">សិស្សសរុប:</span>
+            <span class="font-bold text-blue-600">{{ c.students?.length || 0 }} នាក់</span>
+          </div>
+        </div>
+      </div>
+
+      <div v-if="currentView === 'students'" class="bg-white rounded-xl shadow-sm border border-gray-200 overflow-hidden">
         <div v-if="loading" class="p-12 text-center">
           <div class="animate-spin rounded-full h-10 w-10 border-b-2 border-blue-600 mx-auto mb-3"></div>
-          <span class="text-gray-500">Loading payment data...</span>
+          <span class="text-gray-500 font-khmer">កំពុងទាញយកទិន្នន័យ...</span>
         </div>
         
         <div v-else>
           <table class="min-w-full divide-y divide-gray-100">
             <thead class="bg-gray-50">
               <tr>
-                <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Student Info</th>
-                <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Class</th>
-                <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Payment Period</th>
-                <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Amount</th>
-                <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">Status</th>
-                <th class="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">Actions</th>
+                <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">ព័ត៌មានសិស្ស</th>
+                <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-44">ថ្លៃសិក្សា ($)</th>
+                <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider w-44">សេវាបន្ថែម ($)</th>
+                <th class="px-6 py-4 text-left text-xs font-bold text-gray-500 uppercase tracking-wider">ស្ថានភាពបង់ប្រាក់</th>
+                <th class="px-6 py-4 text-right text-xs font-bold text-gray-500 uppercase tracking-wider">សកម្មភាព</th>
               </tr>
             </thead>
             <tbody class="divide-y divide-gray-100 bg-white">
-              <tr 
-                v-for="row in paginatedList" 
-                :key="row.uniqueKey" 
-                class="hover:bg-blue-50/50 transition-colors duration-150 group"
-              >
+              <tr v-for="row in paginatedList" :key="row.uniqueKey" class="hover:bg-blue-50/50 transition-colors duration-150">
                 <td class="px-6 py-4">
                   <div class="flex items-center">
                     <div class="h-10 w-10 rounded-full bg-gradient-to-br from-blue-100 to-blue-200 flex items-center justify-center text-blue-700 font-bold mr-3 border border-blue-100 shadow-sm">
-                        {{ row.student?.englishName?.charAt(0) || '?' }}
+                      {{ row.student?.englishName?.charAt(0) || '?' }}
                     </div>
                     <div>
                       <div class="text-sm font-bold text-gray-900 font-khmer">{{ row.student?.khmerName }}</div>
@@ -91,35 +116,30 @@
                   </div>
                 </td>
 
-                <td class="px-6 py-4 text-sm text-gray-600">
-                  <span class="bg-gray-100 px-2 py-1 rounded text-xs font-medium">
-                    {{ row.className }}
-                  </span>
+                <td class="px-6 py-4">
+                  <input 
+                    type="number" 
+                    v-model.number="row.inputAmount"
+                    :disabled="!row.isVirtual"
+                    class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none disabled:bg-gray-100 disabled:text-gray-500"
+                    placeholder="0.00"
+                  />
                 </td>
 
                 <td class="px-6 py-4">
-                   <div v-if="!row.isVirtual" class="flex flex-col text-sm">
-                     <span class="font-medium text-gray-700">{{ formatDate(row.startDate) }}</span>
-                     <span class="text-xs text-gray-400">to {{ formatDate(row.endDate) }}</span>
-                   </div>
-                   <div v-else class="text-sm text-gray-400 italic">
-                     Not paid for {{ formatMonth(filters.month) }}
-                   </div>
+                  <input 
+                    type="number" 
+                    v-model.number="row.inputExtraFee"
+                    :disabled="!row.isVirtual"
+                    class="w-full px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-semibold focus:ring-2 focus:ring-blue-500 outline-none disabled:bg-gray-100 disabled:text-gray-500"
+                    placeholder="0.00"
+                  />
                 </td>
 
                 <td class="px-6 py-4">
-                  <div class="text-sm font-bold" :class="row.amount > 0 ? 'text-gray-900' : 'text-gray-400'">
-                    ${{ row.amount }}
-                  </div>
-                </td>
-
-                <td class="px-6 py-4">
-                  <span 
-                    :class="getStatusClass(row.status)" 
-                    class="px-2.5 py-1 text-xs font-bold rounded-full capitalize inline-flex items-center gap-1"
-                  >
+                  <span :class="getStatusClass(row.status)" class="px-2.5 py-1 text-xs font-bold rounded-full capitalize inline-flex items-center gap-1">
                     <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
-                    {{ row.status }}
+                    {{ row.status === 'paid' ? 'បានបង់ប្រាក់' : 'មិនទាន់បង់' }}
                   </span>
                   <div v-if="row.status === 'paid' && row.payDate" class="text-[10px] text-gray-400 mt-1 pl-1">
                      {{ formatDate(row.payDate) }}
@@ -129,68 +149,69 @@
                 <td class="px-6 py-4 text-right">
                   <button 
                     v-if="row.isVirtual" 
-                    @click="openCreateForStudent(row.student)" 
-                    class="bg-green-50 text-green-700 border border-green-200 hover:bg-green-100 hover:border-green-300 px-3 py-1.5 rounded-md text-sm font-bold transition shadow-sm"
+                    @click="handleOneClickPay(row)" 
+                    class="bg-green-600 text-white hover:bg-green-700 px-4 py-2 rounded-lg text-sm font-bold transition shadow-sm font-khmer flex items-center gap-1 ml-auto"
                   >
-                    Pay Now
+                    ✓ 1-Click Pay
                   </button>
 
-                  <div v-else class="flex items-center justify-end gap-3 opacity-0 group-hover:opacity-100 transition-opacity">
-                     <button @click="openEditModal(row)" class="text-blue-600 hover:text-blue-800 font-medium text-sm">Edit</button>
-                     <button @click="handleDelete(row)" class="text-red-500 hover:text-red-700 font-medium text-sm">Delete</button>
+                  <div v-else class="flex items-center justify-end gap-3">
+                     <span class="text-xs text-green-600 font-bold bg-green-50 px-2 py-1 rounded font-khmer">រួចរាល់</span>
+                     <button @click="handleDelete(row)" class="text-red-500 hover:text-red-700 text-xs font-khmer">លុប</button>
                   </div>
                 </td>
               </tr>
 
-              <tr v-if="processedList.length === 0">
-                 <td colspan="6" class="px-6 py-12 text-center">
-                   <div class="flex flex-col items-center justify-center text-gray-400">
-                      <p>No payment records found.</p>
-                   </div>
+              <tr v-if="paginatedList.length === 0">
+                 <td colspan="5" class="px-6 py-12 text-center text-gray-400 font-khmer">
+                    មិនមានទិន្នន័យសិស្សឡើយ។
                  </td>
               </tr>
             </tbody>
           </table>
 
-          <div v-if="processedList.length > 0" class="px-6 py-4 bg-gray-50 border-t border-gray-200 flex items-center justify-between">
-            <div class="text-sm text-gray-500">
-              Showing <span class="font-bold">{{ startIndex + 1 }}</span> to <span class="font-bold">{{ endIndex }}</span> of <span class="font-bold">{{ processedList.length }}</span> results
+          <div class="bg-gray-50 px-6 py-4 border-t border-gray-200 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div class="flex items-center gap-2 text-sm text-gray-600 font-khmer">
+              <span>បង្ហាញ</span>
+              <select 
+                v-model="perPage" 
+                @change="currentPage = 1"
+                class="border border-gray-300 rounded px-2 py-1 bg-white font-semibold outline-none focus:ring-1 focus:ring-blue-500 text-sm cursor-pointer"
+              >
+                <option :value="5">5</option>
+                <option :value="10">10</option>
+                <option :value="20">20</option>
+              </select>
+              <span>ជួរ ក្នុងចំណោមសិស្សសរុប {{ processedList.length }} នាក់</span>
             </div>
-            <div class="flex items-center space-x-2">
+
+            <div class="flex items-center gap-2 font-khmer">
               <button 
                 @click="prevPage" 
                 :disabled="currentPage === 1"
-                class="px-3 py-1 rounded border border-gray-300 bg-white text-sm font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
               >
-                Previous
+                មុន
               </button>
               
-              <div class="px-3 py-1 bg-blue-600 text-white rounded text-sm font-bold">
-                {{ currentPage }}
-              </div>
+              <span class="text-sm text-gray-700 font-semibold mx-1">
+                ទំព័រ {{ currentPage }} នៃ {{ totalPages }}
+              </span>
 
               <button 
                 @click="nextPage" 
-                :disabled="currentPage >= totalPages"
-                class="px-3 py-1 rounded border border-gray-300 bg-white text-sm font-medium hover:bg-gray-50 disabled:opacity-50 disabled:cursor-not-allowed"
+                :disabled="currentPage === totalPages"
+                class="px-3 py-1.5 border border-gray-300 rounded-lg text-sm font-medium bg-white hover:bg-gray-50 disabled:opacity-40 disabled:cursor-not-allowed transition"
               >
-                Next
+                បន្ទាប់
               </button>
             </div>
           </div>
+
         </div>
       </div>
-    </div>
 
-    <PaymentFormModal 
-      v-if="showFormModal"
-      :is-open="showFormModal"
-      :is-editing="!isNewPayment" 
-      :payment-data="selectedPaymentData"
-      :classes="classes"
-      @close="showFormModal = false"
-      @save="onSavePayment"
-    />
+    </div>
 
     <DeleteConfirmationModal 
       :is-open="showDeleteModal" 
@@ -206,179 +227,155 @@ import { ref, reactive, computed, watch } from "vue";
 import { useQuery } from "../hooks/useQuery";
 import { useCollection } from "../hooks/useCollection";
 import { useToast } from "vue-toastification";
-import PaymentFormModal from "../components/payments/PaymentFormModal.vue";
 import DeleteConfirmationModal from "../components/shared/DeleteConfirmationModal.vue";
 
 const toast = useToast();
 
-// --- Data Hooks ---
 const { data: payments, fetchData: refreshPayments, loading } = useQuery("payments");
 const { data: classes } = useQuery("classes");
-const { createDoc, updateDoc, deleteDoc } = useCollection("payments");
+const { createDoc, deleteDoc } = useCollection("payments");
 
-// --- Filters State ---
+const currentView = ref("classes");
+const selectedClass = ref(null);
+
 const filters = reactive({
-  month: new Date().toISOString().slice(0, 7), // YYYY-MM
-  classId: "", 
-  status: "All"
+  month: new Date().toISOString().slice(0, 7),
+  searchQuery: "",
+  status: "All" 
 });
 
-// --- Modal State ---
-const showFormModal = ref(false);
 const showDeleteModal = ref(false);
-const isNewPayment = ref(true);
-const selectedPaymentData = ref(null);
 const paymentToDelete = ref(null);
 
-// --- Pagination State ---
+// --- State សម្រាប់ Pagination ---
 const currentPage = ref(1);
-const itemsPerPage = 10;
+const perPage = ref(5);
 
-// =========================================================
-//  CORE LOGIC: Merging Class Students with Payments
-// =========================================================
-
-const processedList = computed(() => {
-  if (!classes.value || !payments.value) return [];
-
-  let results = [];
-  const targetMonth = filters.month; 
-
-  if (filters.classId) {
-    const selectedClass = classes.value.find(c => c._id === filters.classId);
-    const classStudents = (selectedClass && Array.isArray(selectedClass.students)) 
-      ? selectedClass.students 
-      : [];
-
-    results = classStudents.map(student => {
-      const existingPayment = payments.value.find(p => {
-        const pStudentId = p.student?._id || p.student;
-        const pDate = p.startDate ? p.startDate.slice(0, 7) : '';
-        return pStudentId === student._id && pDate === targetMonth;
-      });
-
-      if (existingPayment) {
-        return { 
-          ...existingPayment, 
-          uniqueKey: existingPayment._id,
-          isVirtual: false,
-          className: selectedClass.className 
-        };
-      }
-
-      return {
-        uniqueKey: `virtual_${student._id}`,
-        student: student, 
-        className: selectedClass.className,
-        amount: 0,
-        status: 'unpaid',
-        isVirtual: true 
-      };
-    });
-
-  } else {
-    results = payments.value.filter(p => {
-       const pDate = p.startDate ? p.startDate.slice(0, 7) : '';
-       return pDate === targetMonth;
-    }).map(p => ({
-       ...p,
-       uniqueKey: p._id,
-       isVirtual: false,
-       className: getClassName(p.class)
-    }));
-  }
-
-  if (filters.status !== 'All') {
-    results = results.filter(row => row.status === filters.status);
-  }
-
-  return results;
+// តាមដានការប្រែប្រួលរបស់ Filters ដើម្បី Reset ទៅទំព័រទី១ វិញស្វ័យប្រវត្ត
+watch(filters, () => {
+  currentPage.value = 1;
 });
 
-// --- Pagination Computed & Logic ---
+const selectClass = (cls) => {
+  selectedClass.value = cls;
+  currentView.value = "students";
+  filters.searchQuery = "";
+  filters.status = "All"; 
+  currentPage.value = 1; // Reset ទំព័រមកលេខ ១ ពេលប្តូរថ្នាក់
+};
 
-// 1. Calculate the slice of data to show
+const backToClasses = () => {
+  currentView.value = "classes";
+  selectedClass.value = null;
+};
+
+// គណនាលុយសរុបប្រចាំខែក្នុងថ្នាក់ (ផ្អែកលើខែដែលបានរើស)
+const totalCollectedThisMonth = computed(() => {
+  if (!selectedClass.value || !payments.value) return 0;
+  const targetMonth = filters.month;
+  const classId = selectedClass.value._id;
+
+  return payments.value
+    .filter(p => (p.class?._id || p.class) === classId && (p.startDate ? p.startDate.slice(0, 7) : '') === targetMonth && p.status === 'paid')
+    .reduce((sum, p) => sum + (p.amount || 0), 0);
+});
+
+// Logic ផ្គូផ្គង, Search ឈ្មោះ និង Filter តាមស្ថានភាពបង់ប្រាក់
+const processedList = computed(() => {
+  if (!selectedClass.value || !payments.value) return [];
+  const targetMonth = filters.month;
+  let classStudents = Array.isArray(selectedClass.value.students) ? selectedClass.value.students : [];
+
+  // 1. Filter តាមការស្វែងរកឈ្មោះសិស្ស
+  if (filters.searchQuery.trim() !== "") {
+    const query = filters.searchQuery.toLowerCase().trim();
+    classStudents = classStudents.filter(s => 
+      (s.khmerName && s.khmerName.toLowerCase().includes(query)) || 
+      (s.englishName && s.englishName.toLowerCase().includes(query))
+    );
+  }
+
+  // 2. ផ្គូផ្គងសិស្សជាមួយទិន្នន័យ Payment ក្នុង Database 
+  let mappedList = classStudents.map(student => {
+    const existingPayment = payments.value.find(p => 
+      (p.student?._id || p.student) === student._id && 
+      (p.startDate ? p.startDate.slice(0, 7) : '') === targetMonth && 
+      (p.class?._id || p.class) === selectedClass.value._id
+    );
+
+    if (existingPayment) {
+      return { 
+        ...existingPayment, 
+        uniqueKey: existingPayment._id,
+        isVirtual: false,
+        inputAmount: existingPayment.tuitionFee || existingPayment.amount,
+        inputExtraFee: existingPayment.extraFee || 0 
+      };
+    }
+
+    return {
+      uniqueKey: `virtual_${student._id}`,
+      student, 
+      status: 'unpaid',
+      isVirtual: true,
+      inputAmount: 0,      
+      inputExtraFee: 0     
+    };
+  });
+
+  // 3. Filter តាមស្ថានភាព (All / Paid / Unpaid)
+  if (filters.status !== "All") {
+    mappedList = mappedList.filter(row => row.status === filters.status);
+  }
+
+  return mappedList;
+});
+
+// --- Computed & Functions សម្រាប់ដំណើរការ Pagination ---
+const totalPages = computed(() => {
+  return Math.ceil(processedList.value.length / perPage.value) || 1;
+});
+
 const paginatedList = computed(() => {
-  const start = (currentPage.value - 1) * itemsPerPage;
-  const end = start + itemsPerPage;
+  const start = (currentPage.value - 1) * perPage.value;
+  const end = start + perPage.value;
   return processedList.value.slice(start, end);
 });
-
-// 2. Calculate totals
-const totalPages = computed(() => Math.ceil(processedList.value.length / itemsPerPage));
-const startIndex = computed(() => (currentPage.value - 1) * itemsPerPage);
-const endIndex = computed(() => Math.min(startIndex.value + itemsPerPage, processedList.value.length));
-
-// 3. Navigation
-const nextPage = () => {
-  if (currentPage.value < totalPages.value) currentPage.value++;
-};
 
 const prevPage = () => {
   if (currentPage.value > 1) currentPage.value--;
 };
 
-// 4. Watcher: Reset to page 1 if filters change
-watch(() => [filters.classId, filters.month, filters.status], () => {
-  currentPage.value = 1;
-});
-
-
-// --- Stats ---
-const stats = computed(() => {
-  const list = processedList.value;
-  const paid = list.filter(i => i.status === 'paid');
-  const totalCollected = paid.reduce((sum, item) => sum + (item.amount || 0), 0);
-  const unpaidCount = list.filter(i => i.status !== 'paid').length;
-  return { totalCollected, unpaidCount };
-});
-
-// --- Actions ---
-
-const openCreateModal = () => {
-  isNewPayment.value = true;
-  selectedPaymentData.value = {
-    startDate: `${filters.month}-01`,
-    class: filters.classId 
-  };
-  showFormModal.value = true;
+const nextPage = () => {
+  if (currentPage.value < totalPages.value) currentPage.value++;
 };
+// -----------------------------------------------------
 
-const openCreateForStudent = (student) => {
-  isNewPayment.value = true;
-  const classId = filters.classId; 
-  selectedPaymentData.value = {
-    student: student._id,        
-    class: classId,              
+const handleOneClickPay = async (row) => {
+  if (row.inputAmount <= 0 && row.inputExtraFee <= 0) {
+    toast.warning("សូមបំពេញចំនួនទឹកប្រាក់មុននឹងចុចបង់!");
+    return;
+  }
+
+  const payload = {
+    student: row.student._id,        
+    class: selectedClass.value._id,              
+    teacher: selectedClass.value.teacher?._id || selectedClass.value.teacher || null,
     startDate: `${filters.month}-01`,
-    endDate: getLastDayOfMonth(filters.month),
-    amount: 0,
+    endDate: new Date(filters.month.split('-')[0], filters.month.split('-')[1], 0).toISOString().slice(0, 10),
+    tuitionFee: row.inputAmount,
+    extraFee: row.inputExtraFee,
     status: 'paid',              
     payDate: new Date().toISOString().split('T')[0]
   };
-  showFormModal.value = true;
-};
 
-const openEditModal = (payment) => {
-  isNewPayment.value = false;
-  selectedPaymentData.value = { ...payment }; 
-  showFormModal.value = true;
-};
-
-const onSavePayment = async (payload) => {
   try {
-    if (isNewPayment.value) {
-      await createDoc(payload);
-      toast.success("Payment recorded successfully");
-    } else {
-      await updateDoc(selectedPaymentData.value._id, payload);
-      toast.success("Payment updated successfully");
-    }
-    showFormModal.value = false;
+    await createDoc(payload);
+    toast.success(`បានបង់ប្រាក់សម្រាប់សិស្ស ${row.student.khmerName} រួចរាល់!`);
     await refreshPayments();
   } catch (err) {
     console.error(err);
-    toast.error("Failed to save payment");
+    toast.error("ការបង់ប្រាក់បានបរាជ័យ");
   }
 };
 
@@ -390,40 +387,12 @@ const handleDelete = (payment) => {
 const confirmDelete = async () => {
   if (paymentToDelete.value) {
     await deleteDoc(paymentToDelete.value._id);
-    toast.success("Payment deleted");
+    toast.success("បានលុបទិន្នន័យបង់ប្រាក់");
     await refreshPayments();
     showDeleteModal.value = false;
   }
 };
 
-// --- Helpers ---
-const getClassName = (cls) => {
-  if (!cls) return 'N/A';
-  if (typeof cls === 'object' && cls.className) return cls.className;
-  const found = classes.value?.find(c => c._id === cls);
-  return found ? found.className : 'Unknown Class';
-};
-
-const getStatusClass = (status) => {
-  switch(status) {
-    case 'paid': return 'bg-green-100 text-green-700';
-    case 'late': return 'bg-orange-100 text-orange-700';
-    default: return 'bg-gray-100 text-gray-500';
-  }
-};
-
+const getStatusClass = (status) => status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500';
 const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-GB') : '-';
-
-const formatMonth = (ym) => {
-  if(!ym) return '';
-  const [y, m] = ym.split('-');
-  const date = new Date(y, m - 1);
-  return date.toLocaleString('default', { month: 'long', year: 'numeric' });
-};
-
-const getLastDayOfMonth = (ym) => {
-  const [y, m] = ym.split('-');
-  const date = new Date(y, m, 0);
-  return date.toISOString().slice(0, 10);
-};
 </script>

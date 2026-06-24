@@ -14,11 +14,11 @@ export function useCollection(collectionName) {
     error.value = null;
     try {
       const response = await api.post(`/${collectionName}`, data);
-      toast.success("ជោគជ័យ!");
+      // toast.success("ជោគជ័យ!");
       return response.data;
     } catch (err) {
       console.error(err);
-      toast.error("បរាជ័យ!");
+      // toast.error("បរាជ័យ!");
       error.value = err;
       return null;
     } finally {

@@ -1,5 +1,5 @@
 <template>
-  <div class="p-4 md:p-8 min-h-screen antialiased text-slate-800">
+  <div class="p-4 md:p-8  antialiased text-slate-800">
     <div class="max-w-7xl mx-auto space-y-6">
       
       <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-4 bg-white p-6 rounded-2xl border border-slate-200/80 shadow-sm">

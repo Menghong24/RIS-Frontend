@@ -1,21 +1,21 @@
 <template>
-  <div class="p-6 bg-gray-50 min-h-screen">
+  <div class="p-6 bg-gray-50 ">
     
     <div class="mb-6">
-      <h1 class="text-2xl font-bold text-blue-800 font-khmer">គ្រប់គ្រងវត្តមាន</h1>
-      <p class="text-gray-500 p-4">សូមជ្រើសរើសថ្នាក់ និងកាលបរិច្ឆេទ ដើម្បីកត់ត្រា ឬមើលវត្តមានសិស្ស</p>
+      <h1 class="text-2xl font-bold text-blue-800 font-khmer">គ្រប់គ្រងវត្តមាន (Attendance)</h1>
+      <p class="text-gray-500">Select a class and date to mark or view attendance.</p>
     </div>
 
     <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-wrap gap-4 items-end mb-6">
       
       <div class="flex-1 min-w-[200px]">
-        <label class="block text-sm font-bold text-gray-700 font-khmer mb-1">ជ្រើសរើសថ្នាក់</label>
+        <label class="block text-sm font-bold text-gray-700 font-khmer mb-1">ជ្រើសរើសថ្នាក់ (Class)</label>
         <select 
           v-model="selectedClassId" 
           @change="hasLoaded = false"
           class="block w-full rounded-lg border-gray-300 border p-2.5 bg-white focus:ring-2 focus:ring-blue-500 outline-none"
         >
-          <option value="" disabled>-- ជ្រើសរើសថ្នាក់ --</option>
+          <option value="" disabled>-- Select Class --</option>
           <option v-for="cls in classes" :key="cls._id" :value="cls._id">
             {{ cls.className }} ({{ cls.classGrade }})
           </option>
@@ -23,7 +23,7 @@
       </div>
 
       <div class="flex-1 min-w-[200px]">
-        <label class="block text-sm font-bold text-gray-700 font-khmer mb-1">កាលបរិច្ឆេទ</label>
+        <label class="block text-sm font-bold text-gray-700 font-khmer mb-1">កាលបរិច្ឆេទ (Date)</label>
         <input 
           type="date" 
           v-model="selectedDate" 
@@ -56,7 +56,7 @@
         
         <button 
           @click="markAllPresent"
-          class="text-sm bg-white border border-green-200 text-green-700 px-3 py-1 rounded-lg hover:bg-green-50 transition-colors font-medium shadow-sm"
+          class="text-sm bg-white border border-green-200 text-green-700 px-3 py-1 rounded hover:bg-green-50 transition-colors font-medium"
         >
           Mark All Present
         </button>
@@ -66,26 +66,26 @@
         <table class="min-w-full divide-y divide-gray-200">
           <thead class="bg-gray-100">
             <tr>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider font-khmer">សិស្ស</th>
-              <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider font-khmer">ស្ថានភាព</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider font-khmer">ផ្សេងៗ</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider font-khmer">សិស្ស (Student)</th>
+              <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider font-khmer">ស្ថានភាព (Status)</th>
+              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider font-khmer">ផ្សេងៗ (Remark)</th>
             </tr>
           </thead>
           <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="(record, index) in localRecords" :key="record.student?._id || index" class="hover:bg-gray-50 transition-colors">
+            <tr v-for="(record, index) in localRecords" :key="record.student._id || index" class="hover:bg-gray-50 transition-colors">
               
               <td class="px-4 py-3 whitespace-nowrap">
                 <div class="flex items-center">
-                  <div class="flex-shrink-0 h-10 w-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 overflow-hidden shadow-sm border border-gray-100">
-                    <img v-if="record.student?.photo" :src="record.student.photo" alt="Student" class="h-full w-full object-cover">
-                    <User v-else class="w-6 h-6 text-gray-400" />
+                  <div class="flex-shrink-0 h-10 w-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 overflow-hidden">
+                    <img v-if="record.student.photo" :src="record.student.photo" alt="Student" class="h-full w-full object-cover">
+                    <User v-else class="w-6 h-6" />
                   </div>
                   <div class="ml-4">
                     <div class="text-sm font-bold text-gray-900 font-khmer">
                       {{ getStudentName(record.student) }}
                     </div>
-                    <div class="text-xs text-gray-500 mt-0.5">
-                      ID: {{ record.student?.studentId || 'N/A' }}
+                    <div class="text-xs text-gray-500">
+                      ID: {{ record.student.studentId || 'N/A' }}
                     </div>
                   </div>
                 </div>
@@ -102,7 +102,7 @@
                   <button @click="record.status = 'permission'" :class="getButtonClass(record.status, 'permission', 'yellow')" title="Permission">
                     <FileText class="w-6 h-6" />
                   </button>
-                  <button @click="record.status = 'late'" :class="getButtonClass(record.status, 'late', 'purple')" title="Late">
+                   <button @click="record.status = 'late'" :class="getButtonClass(record.status, 'late', 'purple')" title="Late">
                     <Clock class="w-6 h-6" />
                   </button>
                 </div>
@@ -125,26 +125,26 @@
       <div class="mt-6 flex justify-end gap-4">
         <button 
           @click="resetForm"
-          class="px-6 py-2.5 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-khmer font-bold transition-colors"
+          class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-khmer font-bold"
         >
-          បោះបង់
+          បោះបង់ (Cancel)
         </button>
         <button 
           @click="saveAttendance"
           :disabled="isSaving"
-          class="px-8 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 font-khmer font-bold shadow-md flex items-center gap-2 transition-all"
+          class="px-8 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 font-khmer font-bold shadow-lg flex items-center gap-2"
         >
           <Save v-if="!isSaving" class="w-5 h-5" />
           <span v-else class="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
-          {{ currentMode === 'edit' ? 'កែប្រែ' : 'រក្សាទុក' }}
+          {{ currentMode === 'edit' ? 'កែប្រែ (Update)' : 'រក្សាទុក (Save)' }}
         </button>
       </div>
 
     </div>
 
     <div v-else-if="!loading && !hasLoaded" class="flex flex-col items-center justify-center mt-20 text-gray-400">
-       <CalendarDays class="w-16 h-16 mb-4 opacity-30" />
-       <p class="text-lg font-medium">Please select a class and date to begin.</p>
+       <CalendarDays class="w-16 h-16 mb-4 opacity-50" />
+       <p class="text-lg">Please select a class and date to begin.</p>
     </div>
 
   </div>
@@ -175,16 +175,16 @@ const localRecords = ref([])
 
 // --- Helpers ---
 const getStudentName = (studentObj) => {
-  // កែប្រែដើម្បីការពារ Error ពេល studentObj ជា null ហើយបន្ថែម englishName បើអត់មាន khmerName
-  if (studentObj && typeof studentObj === 'object') {
-    return studentObj.khmerName || studentObj.englishName || 'Unknown Name';
+  if (typeof studentObj === 'object') {
+    return `${studentObj.khmerName || ''} (${studentObj.englishName || ''})`
   }
-  return 'Unknown';
+  return 'Unknown'
 }
 
 const getButtonClass = (currentStatus, targetStatus, color) => {
   const base = 'p-2 rounded-full transition-all border-2 '
   if (currentStatus === targetStatus) {
+    // Tailwind dynamic classes (ensure these safelist or are standard)
     if(color === 'green') return base + 'bg-green-100 border-green-500 text-green-700 scale-110'
     if(color === 'red') return base + 'bg-red-100 border-red-500 text-red-700 scale-110'
     if(color === 'yellow') return base + 'bg-yellow-100 border-yellow-500 text-yellow-700 scale-110'
@@ -197,7 +197,7 @@ const countStatus = (status) => localRecords.value.filter(r => r.status === stat
 
 // --- Core Logic ---
 
-// 1. Smart Load 
+// 1. Smart Load (Matches your controller's GET logic)
 const loadData = async () => {
   if (!selectedClassId.value || !selectedDate.value) return;
   
@@ -206,6 +206,7 @@ const loadData = async () => {
   localRecords.value = [];
 
   try {
+    // Your controller expects query params: classId and date
     const response = await api.get('/attendance', {
       params: {
         classId: selectedClassId.value,
@@ -213,14 +214,13 @@ const loadData = async () => {
       }
     });
 
-    // បន្ថែម ? ដើម្បីការពារការគាំងបើសិនជា data ពី API អត់មានទម្រង់ដូចការរំពឹងទុក
-    const resData = response.data || {};
+    // Controller returns: { mode: 'create'|'edit', data: { records: [...] } }
+    const { mode, data } = response.data;
     
-    currentMode.value = resData.mode || 'create';
-    // ទាញយក records ដោយសុវត្ថិភាព
-    localRecords.value = resData.data?.records || resData.records || []; 
+    currentMode.value = mode;
+    localRecords.value = data.records || []; // Backend already mapped blank templates if create mode
 
-    if (currentMode.value === 'create') {
+    if (mode === 'create') {
         toast.info("Generated blank attendance sheet.");
     } else {
         toast.success("Loaded existing attendance.");
@@ -241,24 +241,27 @@ const markAllPresent = () => {
   localRecords.value.forEach(r => r.status = 'present');
 }
 
-// 3. Upsert Save
+// 3. Upsert Save (Matches your controller's SAVE logic)
 const saveAttendance = async () => {
   if (localRecords.value.length === 0) return;
   
   isSaving.value = true;
 
   try {
+    // Prepare payload for Controller
     const payload = {
       class: selectedClassId.value,
       date: selectedDate.value,
+      // Pass records as is. The controller handles extraction of IDs from objects.
       records: localRecords.value
     };
 
+    // Assuming your router maps POST /attendance to exports.saveAttendance
     await api.post('/attendance', payload);
 
     toast.success("Attendance saved successfully!");
     
-    // Refresh to stay in sync
+    // Refresh to stay in sync (switch mode to 'edit' implicitly via backend logic)
     await loadData();
 
   } catch (error) {
