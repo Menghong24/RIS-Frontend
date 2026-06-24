@@ -19,14 +19,18 @@
       />
 
       <main class="flex-1 overflow-y-auto p-6">
-        <component :is="activeComponent" />
+        <component
+          :is="activeComponent"
+          @navigateTo="handleNavigation"
+        />
       </main>
+
     </div>
 
     <!-- Logout Modal -->
     <div
       v-if="isLogoutModalOpen"
-      class="fixed inset-0 bg-black/10 backdrop-blur-sm flex items-center justify-center z-50"
+      class="fixed inset-0 bg-black/20 backdrop-blur-sm flex items-center justify-center z-50"
     >
       <div class="bg-white/80 rounded-xl shadow-xl p-8 w-full max-w-sm text-center">
 
@@ -64,14 +68,12 @@ import { ref, computed, onMounted, onUnmounted } from 'vue';
 import { useRouter } from 'vue-router';
 import { useAuth } from '../../hooks/useAuth';
 
-// Icons
 import {
   LayoutDashboard, Users, GraduationCap, BookOpen,
   CalendarCheck, Banknote, Megaphone, LogOut,
   CalendarClock, ClipboardList, BookCopy, User, FileText
 } from 'lucide-vue-next';
 
-// Components
 import Sidebar from './Sidebar.vue';
 import Header from './Header.vue';
 
@@ -91,7 +93,6 @@ import CreateUsers from '../CreateUsers.vue';
 const router = useRouter();
 const { user, logout } = useAuth();
 
-// STATE
 const isSidebarOpen = ref(true);
 const isLogoutModalOpen = ref(false);
 const activeMenu = ref('គ្រប់គ្រង');
@@ -129,19 +130,25 @@ const allMenuItems = [
   { name: 'អ្នកប្រើប្រាស់', icon: User, component: CreateUsers, roles: ['admin'] },
 ];
 
-// FILTER MENU
 const visibleMenuItems = computed(() =>
   allMenuItems.filter(i => i.roles.includes(userRole.value))
 );
 
-// ACTIVE PAGE
+// SAFE COMPONENT RESOLUTION (FIX CRASH)
 const activeComponent = computed(() => {
   const item = allMenuItems.find(i => i.name === activeMenu.value);
+
+  // IMPORTANT FIX: prevent undefined render crash
   return item?.component || Dashboard;
 });
 
-// NAVIGATION
+// NAVIGATION (SAFE FIX)
 function handleNavigation(name) {
+  if (!name) return;
+
+  const exists = allMenuItems.some(i => i.name === name);
+  if (!exists) return;
+
   activeMenu.value = name;
 
   if (window.innerWidth < 1024) {
@@ -149,14 +156,19 @@ function handleNavigation(name) {
   }
 }
 
-// 🚨 FIXED LOGOUT (IMPORTANT PART)
+// 🚨 FIXED LOGOUT (STABLE + NO STUCK STATE)
 async function confirmLogout() {
   isLogoutModalOpen.value = false;
 
-  await logout();          // clear auth
+  try {
+    await logout();
+  } catch (e) {
+    console.error('Logout error:', e);
+  }
 
-  router.replace('/login'); // force redirect (NO BUG)
+  activeMenu.value = 'គ្រប់គ្រង';
 
-  activeMenu.value = '';    // reset UI state
+  // IMPORTANT: force clean redirect
+  await router.replace('/login');
 }
 </script>

@@ -50,7 +50,7 @@ export function useCollection(collectionName) {
     error.value = null;
     try {
       const response = await api.delete(`/${collectionName}/${id}`);
-      toast.success("Deleted data successfully!");
+      // toast.success("Deleted data successfully!");
       return response.data;
     } catch (err) {
       console.error(err);

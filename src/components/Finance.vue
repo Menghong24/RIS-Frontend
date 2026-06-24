@@ -39,6 +39,7 @@
             <option value="All">ស្ថានភាពទាំងអស់</option>
             <option value="paid">បានបង់ប្រាក់</option>
             <option value="unpaid">មិនទាន់បង់</option>
+            <option value="late">យឺតយ៉ាវ</option>
           </select>
 
           <div class="relative flex-1 min-w-[240px]">
@@ -139,7 +140,7 @@
                 <td class="px-6 py-4">
                   <span :class="getStatusClass(row.status)" class="px-2.5 py-1 text-xs font-bold rounded-full capitalize inline-flex items-center gap-1">
                     <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
-                    {{ row.status === 'paid' ? 'បានបង់ប្រាក់' : 'មិនទាន់បង់' }}
+                    {{ row.status === 'paid' ? 'បានបង់ប្រាក់' : row.status === 'late' ? 'យឺតយ៉ាវ' : 'មិនទាន់បង់' }}
                   </span>
                   <div v-if="row.status === 'paid' && row.payDate" class="text-[10px] text-gray-400 mt-1 pl-1">
                      {{ formatDate(row.payDate) }}
@@ -239,7 +240,7 @@ const currentView = ref("classes");
 const selectedClass = ref(null);
 
 const filters = reactive({
-  month: new Date().toISOString().slice(0, 7),
+  month: new Date().toISOString().slice(0, 7), // Format YYYY-MM
   searchQuery: "",
   status: "All" 
 });
@@ -247,11 +248,9 @@ const filters = reactive({
 const showDeleteModal = ref(false);
 const paymentToDelete = ref(null);
 
-// --- State សម្រាប់ Pagination ---
 const currentPage = ref(1);
 const perPage = ref(5);
 
-// តាមដានការប្រែប្រួលរបស់ Filters ដើម្បី Reset ទៅទំព័រទី១ វិញស្វ័យប្រវត្ត
 watch(filters, () => {
   currentPage.value = 1;
 });
@@ -261,7 +260,7 @@ const selectClass = (cls) => {
   currentView.value = "students";
   filters.searchQuery = "";
   filters.status = "All"; 
-  currentPage.value = 1; // Reset ទំព័រមកលេខ ១ ពេលប្តូរថ្នាក់
+  currentPage.value = 1; 
 };
 
 const backToClasses = () => {
@@ -269,24 +268,28 @@ const backToClasses = () => {
   selectedClass.value = null;
 };
 
-// គណនាលុយសរុបប្រចាំខែក្នុងថ្នាក់ (ផ្អែកលើខែដែលបានរើស)
+// ⚡ គណនាលុយសរុបប្រចាំខែ (យោងតាម Schema ថ្មីប្រើ field `payDate` និង `amount`)
 const totalCollectedThisMonth = computed(() => {
   if (!selectedClass.value || !payments.value) return 0;
-  const targetMonth = filters.month;
+  const targetMonth = filters.month; // YYYY-MM
   const classId = selectedClass.value._id;
 
   return payments.value
-    .filter(p => (p.class?._id || p.class) === classId && (p.startDate ? p.startDate.slice(0, 7) : '') === targetMonth && p.status === 'paid')
+    .filter(p => 
+      (p.class?._id || p.class) === classId && 
+      p.payDate && p.payDate.slice(0, 7) === targetMonth && 
+      p.status === 'paid'
+    )
     .reduce((sum, p) => sum + (p.amount || 0), 0);
 });
 
-// Logic ផ្គូផ្គង, Search ឈ្មោះ និង Filter តាមស្ថានភាពបង់ប្រាក់
+// ⚡ Logic ផ្គូផ្គង និង Filter សិស្សឱ្យត្រូវនឹង Schema ថ្មី
 const processedList = computed(() => {
   if (!selectedClass.value || !payments.value) return [];
   const targetMonth = filters.month;
   let classStudents = Array.isArray(selectedClass.value.students) ? selectedClass.value.students : [];
 
-  // 1. Filter តាមការស្វែងរកឈ្មោះសិស្ស
+  // 1. Filter តាមការស្វែងរកឈ្មោះ
   if (filters.searchQuery.trim() !== "") {
     const query = filters.searchQuery.toLowerCase().trim();
     classStudents = classStudents.filter(s => 
@@ -295,11 +298,11 @@ const processedList = computed(() => {
     );
   }
 
-  // 2. ផ្គូផ្គងសិស្សជាមួយទិន្នន័យ Payment ក្នុង Database 
+  // 2. ផ្គូផ្គងសិស្សជាមួយ Payment (`payDate` ជំនួស `startDate`)
   let mappedList = classStudents.map(student => {
     const existingPayment = payments.value.find(p => 
       (p.student?._id || p.student) === student._id && 
-      (p.startDate ? p.startDate.slice(0, 7) : '') === targetMonth && 
+      p.payDate && p.payDate.slice(0, 7) === targetMonth && 
       (p.class?._id || p.class) === selectedClass.value._id
     );
 
@@ -308,7 +311,7 @@ const processedList = computed(() => {
         ...existingPayment, 
         uniqueKey: existingPayment._id,
         isVirtual: false,
-        inputAmount: existingPayment.tuitionFee || existingPayment.amount,
+        inputAmount: existingPayment.tuitionFee || 0,
         inputExtraFee: existingPayment.extraFee || 0 
       };
     }
@@ -323,7 +326,7 @@ const processedList = computed(() => {
     };
   });
 
-  // 3. Filter តាមស្ថានភាព (All / Paid / Unpaid)
+  // 3. Filter តាមស្ថានភាព (All / paid / unpaid / late)
   if (filters.status !== "All") {
     mappedList = mappedList.filter(row => row.status === filters.status);
   }
@@ -331,7 +334,7 @@ const processedList = computed(() => {
   return mappedList;
 });
 
-// --- Computed & Functions សម្រាប់ដំណើរការ Pagination ---
+// Pagination Calculations
 const totalPages = computed(() => {
   return Math.ceil(processedList.value.length / perPage.value) || 1;
 });
@@ -349,24 +352,26 @@ const prevPage = () => {
 const nextPage = () => {
   if (currentPage.value < totalPages.value) currentPage.value++;
 };
-// -----------------------------------------------------
 
+// ⚡ មុខងារ 1-Click Pay កែសម្រួលឱ្យត្រូវនឹង Field របស់ Schema ថ្មី
 const handleOneClickPay = async (row) => {
   if (row.inputAmount <= 0 && row.inputExtraFee <= 0) {
     toast.warning("សូមបំពេញចំនួនទឹកប្រាក់មុននឹងចុចបង់!");
     return;
   }
 
+  // បង្កើតកាលបរិច្ឆេទសម្រាប់ថ្ងៃបច្ចុប្បន្ន (Format: YYYY-MM-DD)
+  const today = new Date().toISOString().split('T')[0];
+
   const payload = {
     student: row.student._id,        
     class: selectedClass.value._id,              
     teacher: selectedClass.value.teacher?._id || selectedClass.value.teacher || null,
-    startDate: `${filters.month}-01`,
-    endDate: new Date(filters.month.split('-')[0], filters.month.split('-')[1], 0).toISOString().slice(0, 10),
+    payDate: today, // ⚡ ប្រើ payDate ជំនួសអោយ startDate/endDate តាម Schema ថ្មី
     tuitionFee: row.inputAmount,
     extraFee: row.inputExtraFee,
-    status: 'paid',              
-    payDate: new Date().toISOString().split('T')[0]
+    status: 'paid',
+    remark: ''
   };
 
   try {
@@ -393,6 +398,12 @@ const confirmDelete = async () => {
   }
 };
 
-const getStatusClass = (status) => status === 'paid' ? 'bg-green-100 text-green-700' : 'bg-gray-100 text-gray-500';
+// ⚡ បន្ថែមពណ៌សម្រាប់ស្ថានភាព 'late'
+const getStatusClass = (status) => {
+  if (status === 'paid') return 'bg-green-100 text-green-700';
+  if (status === 'late') return 'bg-amber-100 text-amber-700';
+  return 'bg-gray-100 text-gray-500';
+};
+
 const formatDate = (d) => d ? new Date(d).toLocaleDateString('en-GB') : '-';
 </script>
