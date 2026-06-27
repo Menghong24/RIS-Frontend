@@ -1,165 +1,282 @@
 <template>
   <div
     v-if="isOpen"
-    class="fixed inset-0 bg-black/10 backdrop-blur-md flex items-center justify-center z-50 p-4"
+    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-3"
   >
     <div
-      class="bg-white/60 rounded-xl shadow-xl p-8 w-full max-w-6xl max-h-[90vh] overflow-y-auto"
+      class="bg-white rounded-xl shadow-xl w-full max-w-5xl max-h-[88vh] overflow-y-auto border border-slate-100"
     >
-      <h2 class="text-2xl mb-4 font-bold text-center text-gray-800">
-        {{ isEditing ? "កែប្រែទន្ន័យរបស់សិស្ស" : "បញ្ចូលសិស្សថ្មី" }}
-      </h2>
+      <!-- Header -->
+      <div class="px-3 py-2.5 border-b border-slate-100 bg-slate-50 flex items-center justify-between">
+        <div>
+          <h2 class="text-base font-extrabold text-slate-800 flex items-center gap-2">
+            <span class="h-7 w-7 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-xs">
+              <i :class="isEditing ? 'fa-solid fa-user-pen' : 'fa-solid fa-user-plus'"></i>
+            </span>
+            {{ isEditing ? "កែប្រែទិន្នន័យសិស្ស" : "បញ្ចូលសិស្សថ្មី" }}
+          </h2>
+          <p class="text-[11px] text-slate-500 mt-0.5">
+            សូមបំពេញព័ត៌មានសិស្ស និងព័ត៌មានអាណាព្យាបាល
+          </p>
+        </div>
 
-      <hr class="mb-6" />
+        <button
+          type="button"
+          @click="$emit('close')"
+          class="h-7 w-7 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"
+        >
+          <i class="fa-solid fa-xmark text-sm"></i>
+        </button>
+      </div>
 
-      <form @submit.prevent="handleSubmit">
-        <div class="space-y-5 bg-white/60 border border-gray-300 p-4 rounded-xl">
-          
-          <div>
-            <label class="block text-sm font-medium text-gray-700 mb-1"
-              >ឈ្មោះរបស់សិស្ស</label
-            >
-            <div class="grid grid-cols-1 sm:grid-cols-5 gap-5">
+      <form @submit.prevent="handleSubmit" class="p-3 space-y-3">
+
+        <!-- Student Info -->
+        <div class="bg-white border border-slate-200 p-3 rounded-xl">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="h-6 w-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-[10px]">
+              <i class="fa-solid fa-id-card"></i>
+            </span>
+            <h3 class="text-xs font-extrabold text-slate-800">
+              ព័ត៌មានសិស្ស
+            </h3>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-5 gap-2.5">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 mb-1">
+                ឈ្មោះខ្មែរ <span class="text-red-500">*</span>
+              </label>
               <input
                 type="text"
                 v-model="form.khmerName"
-                placeholder="ឈ្មោះ(ជាភាសាខ្មែរ)*"
-                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                placeholder="ឈ្មោះខ្មែរ"
+                class="form-input"
                 required
               />
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 mb-1">
+                ឈ្មោះឡាតាំង <span class="text-red-500">*</span>
+              </label>
               <input
                 type="text"
                 v-model="form.englishName"
-                placeholder="ឈ្មោះ(ជាភាសាឡាតាំង)*"
-                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                placeholder="ឈ្មោះឡាតាំង"
+                class="form-input"
                 required
               />
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 mb-1">
+                អត្តលេខ <span class="text-red-500">*</span>
+              </label>
               <input
                 type="text"
                 v-model="form.studentId"
-                placeholder="អត្តលេខ *"
-                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                placeholder="អត្តលេខ"
+                class="form-input"
                 required
               />
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 mb-1">
+                សញ្ជាតិ <span class="text-red-500">*</span>
+              </label>
               <input
                 type="text"
                 v-model="form.nationality.student"
-                placeholder="សញ្ជាតិ *"
-                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                placeholder="សញ្ជាតិ"
+                class="form-input"
                 required
               />
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 mb-1">
+                ភេទ <span class="text-red-500">*</span>
+              </label>
               <select
                 v-model="form.gender"
-                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                class="form-input"
                 required
               >
-                <option disabled value="">ភេទ *</option>
+                <option disabled value="">ជ្រើសរើសភេទ</option>
                 <option value="ស្រី">ស្រី</option>
                 <option value="ប្រុស">ប្រុស</option>
-                <option value="Other">Other</option>
+                <option value="Other">ផ្សេងៗ</option>
               </select>
             </div>
           </div>
+        </div>
 
-          <div>
-            <label class="block text-sm font-medium text-gray-700"
-              >ថ្ងៃខែឆ្នាំកំណើត (ទីលំនៅបច្ចុប្បន្ន)</label
-            >
-            <div class="grid grid-cols-1 sm:grid-cols-5 gap-5">
-              
+        <!-- Date & Address -->
+        <div class="bg-white border border-slate-200 p-3 rounded-xl">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="h-6 w-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-[10px]">
+              <i class="fa-solid fa-location-dot"></i>
+            </span>
+            <h3 class="text-xs font-extrabold text-slate-800">
+              ថ្ងៃខែឆ្នាំកំណើត និងទីលំនៅបច្ចុប្បន្ន
+            </h3>
+          </div>
+
+          <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-6 gap-2.5">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 mb-1">
+                ថ្ងៃកំណើត <span class="text-red-500">*</span>
+              </label>
               <input
                 type="date"
                 v-model="form.dob"
-                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                class="form-input"
                 required
               />
+            </div>
 
-         
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 mb-1">
+                ភូមិ
+              </label>
               <input
                 type="text"
                 v-model="form.currentResidence.village"
-                placeholder="ភូមិបច្ចុប្បន្ន"
-                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                placeholder="ភូមិ"
+                class="form-input"
                 required
               />
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 mb-1">
+                ឃុំ/សង្កាត់
+              </label>
               <input
                 type="text"
                 v-model="form.currentResidence.commune"
-                placeholder="ឃុំ/សង្កាត់បច្ចុប្បន្ន"
-                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                placeholder="ឃុំ/សង្កាត់"
+                class="form-input"
                 required
               />
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 mb-1">
+                ស្រុក/ខណ្ឌ
+              </label>
               <input
                 type="text"
                 v-model="form.currentResidence.district"
-                placeholder="ស្រុកបច្ចុប្បន្ន"
-                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                placeholder="ស្រុក/ខណ្ឌ"
+                class="form-input"
                 required
               />
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 mb-1">
+                ខេត្ត/ក្រុង
+              </label>
               <input
                 type="text"
                 v-model="form.currentResidence.province"
-                placeholder="ខេត្តបច្ចុប្បន្ន"
-                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                placeholder="ខេត្ត/ក្រុង"
+                class="form-input"
                 required
               />
-              
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 mb-1">
+                ថ្ងៃចូលរៀន <span class="text-red-500">*</span>
+              </label>
               <input
-                type="text"
-                v-model="form.phone"
-                placeholder="ថ្ងៃ/ខែ/ឆ្នាំចូលរៀន"
-                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                type="date"
+                v-model="form.joinDate"
+                class="form-input"
                 required
               />
             </div>
           </div>
+        </div>
 
-          
+        <!-- Guardian Info -->
+        <div class="bg-white border border-slate-200 p-3 rounded-xl">
+          <div class="flex items-center gap-2 mb-2">
+            <span class="h-6 w-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-[10px]">
+              <i class="fa-solid fa-user-shield"></i>
+            </span>
+            <h3 class="text-xs font-extrabold text-slate-800">
+              ព័ត៌មានអាណាព្យាបាល
+            </h3>
+          </div>
 
-          <div>
-            <label class="block text-sm font-medium text-gray-700"
-              >ពត៌មានអាណាព្យាបាល (Mother/Guardian)</label
-            >
-            <div class="grid grid-cols-1 sm:grid-cols-3 gap-5">
+          <div class="grid grid-cols-1 sm:grid-cols-3 gap-2.5">
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 mb-1">
+                ឈ្មោះអាណាព្យាបាល
+              </label>
               <input
                 type="text"
                 v-model="form.family.motherName"
                 placeholder="ឈ្មោះអាណាព្យាបាល"
-                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                
+                class="form-input"
               />
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 mb-1">
+                លេខទូរស័ព្ទ
+              </label>
               <input
                 type="text"
                 v-model="form.family.motherNumber"
-                placeholder="លេខទូរស័ព្ទអាណាព្យាបាល"
-                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
+                placeholder="លេខទូរស័ព្ទ"
+                class="form-input"
               />
+            </div>
+
+            <div>
+              <label class="block text-[11px] font-bold text-slate-600 mb-1">
+                Facebook
+              </label>
               <input
                 type="text"
                 v-model="form.family.motherFacebook"
                 placeholder="Facebook Account"
-                class="mt-1 block w-full p-2 border border-gray-300 rounded-md shadow-sm focus:ring-blue-500 focus:border-blue-500"
-                
+                class="form-input"
               />
             </div>
           </div>
-
         </div>
 
-        <div class="mt-8 flex justify-end space-x-4">
+        <!-- Actions -->
+        <div class="pt-3 flex justify-end gap-2 border-t border-slate-100">
           <button
             type="button"
             @click="$emit('close')"
-            class="bg-gray-200 text-gray-800 font-semibold px-4 py-2 rounded-lg hover:bg-gray-300"
+            class="px-3.5 py-1.5 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition"
           >
-            ថយក្រោយ
+            បោះបង់
           </button>
+
           <button
             type="submit"
             :disabled="students.loading.value"
-            class="bg-blue-600 text-white font-semibold px-4 py-2 rounded-lg hover:bg-blue-700 disabled:opacity-50"
+            class="px-4 py-1.5 text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
-            {{ students.loading.value ? 'Loading...' : (isEditing ? "រក្សាទុក" : "បញ្ចូលសិស្សថ្មី") }}
+            <i
+              v-if="students.loading.value"
+              class="fa-solid fa-circle-notch fa-spin"
+            ></i>
+            <i
+              v-else
+              class="fa-solid fa-floppy-disk"
+            ></i>
+            {{ students.loading.value ? 'កំពុងរក្សាទុក...' : (isEditing ? "រក្សាទុកការកែប្រែ" : "បញ្ចូលសិស្សថ្មី") }}
           </button>
         </div>
       </form>
@@ -170,7 +287,7 @@
 <script setup>
 import { ref, watch } from "vue";
 import { useCollection } from "../../hooks/useCollection";
-import { useQuery } from "../../hooks/useQuery"; 
+import { useQuery } from "../../hooks/useQuery";
 import { useToast } from "vue-toastification";
 
 const props = defineProps({
@@ -181,62 +298,67 @@ const props = defineProps({
 
 const emit = defineEmits(["close", "save"]);
 const students = useCollection("students");
-const classesList = useQuery("classes"); 
+const classesList = useQuery("classes");
 const toast = useToast();
 
 const initialFormState = {
   khmerName: "",
   englishName: "",
   studentId: "",
-  dob: "", // Used for input, mapped to birthDate on submit
+  dob: "",
   gender: "",
-  // email: "", // Removed (Not in model)
-  phone: "",
-  grade: "", 
-  nationality: { student: "ខ្មែរ" }, // Added default
+  joinDate: "",
+  grade: "",
+  nationality: { student: "ខ្មែរ" },
   placeOfBirth: { village: "", commune: "", district: "", province: "" },
   currentResidence: { village: "", commune: "", district: "", province: "" },
   family: {
     motherName: "",
     motherNumber: "",
-    motherFacebook: "", // Renamed to match model
+    motherFacebook: "",
   },
   status: "active",
 };
 
-const form = ref({ ...initialFormState });
+const form = ref(JSON.parse(JSON.stringify(initialFormState)));
 
-// Watcher to handle filling data when editing
 watch(
   () => props.student,
   (newStudent) => {
     if (newStudent) {
-      // 1. Merge with initialFormState to ensure structure exists
-      const mergedData = { 
-        ...JSON.parse(JSON.stringify(initialFormState)), 
-        ...JSON.parse(JSON.stringify(newStudent)) 
+      const mergedData = {
+        ...JSON.parse(JSON.stringify(initialFormState)),
+        ...JSON.parse(JSON.stringify(newStudent)),
       };
 
-      // 2. Format Date (YYYY-MM-DD) for input field
-      const rawDate = mergedData.birthDate || mergedData.dob ;
-      if (rawDate) {
-         const dateObj = new Date(rawDate);
-         const year = dateObj.getFullYear();
-         const month = String(dateObj.getMonth() + 1).padStart(2, '0');
-         const day = String(dateObj.getDate()).padStart(2, '0');
-         mergedData.dob = `${year}-${month}-${day}`;
+      if (mergedData.birthDate) {
+        const dateObj = new Date(mergedData.birthDate);
+        const year = dateObj.getFullYear();
+        const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+        const day = String(dateObj.getDate()).padStart(2, "0");
+
+        mergedData.dob = `${year}-${month}-${day}`;
       } else {
-         mergedData.dob = "";
+        mergedData.dob = "";
       }
-      
-      // 3. Handle Grade ID population (if populated object is returned)
-      if (mergedData.grade && typeof mergedData.grade === 'object') {
+
+      if (mergedData.joinDate) {
+        const dateObj = new Date(mergedData.joinDate);
+        const year = dateObj.getFullYear();
+        const month = String(dateObj.getMonth() + 1).padStart(2, "0");
+        const day = String(dateObj.getDate()).padStart(2, "0");
+
+        mergedData.joinDate = `${year}-${month}-${day}`;
+      } else {
+        mergedData.joinDate = "";
+      }
+
+      if (mergedData.grade && typeof mergedData.grade === "object") {
         mergedData.grade = mergedData.grade._id;
       }
 
       form.value = mergedData;
     } else {
-      // Reset to clean state
       form.value = JSON.parse(JSON.stringify(initialFormState));
     }
   },
@@ -246,20 +368,44 @@ watch(
 const handleSubmit = async () => {
   try {
     const payload = { ...form.value };
-    
-    // 1. Map 'dob' back to 'birthDate' for the backend
+
     if (payload.dob) {
-      payload.birthDate = payload.dob;
-      // delete payload.dob; // Optional: keep it or remove it, Mongoose will ignore fields not in schema
+      payload.birthDate = new Date(payload.dob);
     }
 
-    // 2. Only send Class ID if one is selected
-    if (!payload.grade) delete payload.grade;
+    if (payload.joinDate) {
+      payload.joinDate = new Date(payload.joinDate);
+    }
+
+    delete payload.dob;
+
+    if (!payload.grade) {
+      delete payload.grade;
+    }
 
     emit("save", payload);
   } catch (err) {
     console.error(err);
-    toast.error(err.message || "Something went wrong");
+    toast.error(err.message || "មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យ");
   }
 };
 </script>
+
+<style scoped>
+.form-input {
+  width: 100%;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.45rem;
+  padding: 0.38rem 0.6rem;
+  font-size: 0.75rem;
+  color: #334155;
+  background: #ffffff;
+  outline: none;
+  transition: all 0.2s ease;
+}
+
+.form-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 0.12);
+}
+</style>

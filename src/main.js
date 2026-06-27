@@ -4,7 +4,7 @@ import App from './App.vue'
 import router from './router/index' // Import the router file
 import Toast from 'vue-toastification'
 import 'vue-toastification/dist/index.css'
-
+import '@fortawesome/fontawesome-free/css/all.min.css';
 const app = createApp(App)
 app.use(Toast,{
     position: 'top-center'

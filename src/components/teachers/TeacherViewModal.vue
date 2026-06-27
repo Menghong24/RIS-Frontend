@@ -7,115 +7,171 @@
     leave-from-class="opacity-100"
     leave-to-class="opacity-0"
   >
-    <div v-if="isOpen" class="fixed inset-0 bg-black/10 backdrop-blur-md flex items-center justify-center z-50 p-4" @click.self="$emit('close')">
-      
-      <div class=" bg-white/60 rounded-xl shadow-2xl backdrop-blur-sm  w-full max-w-4xl overflow-hidden max-h-[90vh] overflow-y-auto">
-        
-        <div class="backdrop-blur-2xl  p-6 flex items-center space-x-6 border-b border-white">
-          <div class="relative">
-            <img 
-              :src="teacher.avatar || placeholderImage" 
-              class="w-14 h-14 rounded-full object-cover ring-4 backdrop-blur-3xl  ring-white shadow-md" 
-              :alt="teacher.englishName"
-            >
-          </div>
-          <div>
-            <h2 class="text-xl font-bold text-gray-800 font-khmer mb-2">{{ teacher.khmerName }}</h2>
-          </div>
-        </div>
+    <div
+      v-if="isOpen"
+      class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-3"
+      @click.self="$emit('close')"
+    >
+      <div
+        class="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[86vh] overflow-y-auto border border-slate-100"
+      >
+        <!-- Header -->
+        <div class="px-3 py-3 border-b border-slate-100 bg-slate-50 sticky top-0 z-10 flex items-center justify-between">
+          <div class="flex items-center gap-3">
+            <img
+              :src="teacher.avatar || placeholderImage"
+              class="w-12 h-12 rounded-full object-cover ring-2 ring-blue-100 border border-blue-200 shadow-sm"
+              :alt="teacher.englishName || teacher.khmerName"
+            />
 
-        <div class="p-6">
-          <div class="bg-white/60 rounded-xl shadow-sm border border-gray-100 p-6">
-            
-            <h3 class="text-xl font-bold text-gray-800 font-khmer mb-6 border-b pb-2">ព័ត៌មានលំអិតរបស់គ្រូ</h3>
-            
-            <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-y-6 gap-x-8 text-sm">
-              <div>
-                <p class="text-gray-500 font-khmer mb-1">ឈ្មោះគ្រូ (Khmer)</p>
-                <p class="font-semibold text-gray-800 text-base font-khmer">{{ teacher.khmerName }}</p>
-              </div>
+            <div>
+              <h2 class="text-base font-extrabold text-slate-800 font-khmer">
+                {{ teacher.khmerName || 'ឈ្មោះគ្រូ' }}
+              </h2>
 
-              <div>
-                <p class="text-gray-500 font-khmer mb-1">ឈ្មោះជាឡាតាំង</p>
-                <p class="font-semibold text-gray-800 text-base">{{ teacher.englishName }}</p>
-              </div>
+              <p class="text-[11px] text-slate-500 mt-0.5">
+                {{ teacher.englishName || 'Teacher Name' }}
+              </p>
 
-              <div>
-                <p class="text-gray-500 font-khmer mb-1">ភេទ</p>
-                <p class="font-semibold text-gray-800 text-base font-khmer">{{ teacher.gender }}</p>
-              </div>
-
-               <div>
-                <p class="text-gray-500 font-khmer mb-1">សញ្ជាតិ</p>
-                <p class="font-semibold text-gray-800 text-base font-khmer">{{ teacher.nationality }}</p>
-              </div>
-
-              <div>
-                <p class="text-gray-500 font-khmer mb-1">ថ្ងៃខែឆ្នាំកំណើត</p>
-                <p class="font-semibold text-gray-800 text-base">{{ formatDate(teacher.dateOfBirth) }}</p>
-              </div>
-
-              <div>
-                <p class="text-gray-500 font-khmer mb-1">លេខទូរស័ព្ទ</p>
-                <p class="font-semibold text-gray-800 text-base">{{ teacher.phone }}</p>
-              </div>
-
-               <div>
-                <p class="text-gray-500 font-khmer mb-1">Email</p>
-                <p class="font-semibold text-gray-800 text-base">{{ teacher.email || 'N/A' }}</p>
-              </div>
+              <span class="inline-flex items-center mt-1 px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-[10px] font-bold">
+                <i class="fa-solid fa-briefcase mr-1"></i>
+                {{ teacher.skill || 'ទូទៅ' }}
+              </span>
             </div>
-
-            <div class=" space-y-4 pt-4  border-dashed">
-              <!-- <div>
-                <p class="text-gray-500 font-khmer mb-1">ទីកន្លែងកំណើត:</p>
-                <p class="text-gray-800 font-khmer leading-relaxed">
-                  <span class="text-gray-500">ភូមិ </span><span class="text-blue-600 font-medium">{{ teacher.placeOfBirth?.village || '...' }}</span>, 
-                  <span class="text-gray-500">ឃុំ/សង្កាត់ </span><span class="text-blue-600 font-medium">{{ teacher.placeOfBirth?.commune || '...' }}</span>, 
-                  <span class="text-gray-500">ស្រុក/ខណ្ឌ </span><span class="text-blue-600 font-medium">{{ teacher.placeOfBirth?.district || '...' }}</span>, 
-                  <span class="text-gray-500">ខេត្ត/ក្រុង </span><span class="text-blue-600 font-medium">{{ teacher.placeOfBirth?.province || '...' }}</span>
-                </p>
-              </div> -->
-
-              <div>
-                <p class="text-gray-500 font-khmer mb-1">លំនៅដ្ឋានបច្ចុប្បន្ន:</p>
-                <p class="text-gray-800 font-khmer leading-relaxed">
-                  <span class="text-gray-500">ភូមិ </span><span class="text-blue-600 font-medium">{{ teacher.currentResidence?.village || '...' }}</span>, 
-                  <span class="text-gray-500">ឃុំ/សង្កាត់ </span><span class="text-blue-600 font-medium">{{ teacher.currentResidence?.commune || '...' }}</span>, 
-                  <span class="text-gray-500">ស្រុក/ខណ្ឌ </span><span class="text-blue-600 font-medium">{{ teacher.currentResidence?.district || '...' }}</span>, 
-                  <span class="text-gray-500">ខេត្ត/ក្រុង </span><span class="text-blue-600 font-medium">{{ teacher.currentResidence?.province || '...' }}</span>
-                </p>
-              </div>
-            </div>
-            
-            <div class="mt-8 pt-6 border-t border-gray-200">
-               <!-- <h3 class="text-md font-bold text-gray-800 font-khmer mb-6">ព័ត៌មានបន្ថែម</h3> -->
-               <div class="grid grid-cols-1 md:grid-cols-2 gap-6 text-sm">
-                  <div>
-                    <p class="text-gray-500 font-khmer mb-1">ជំនាញ (Skill)</p>
-                    <p class="font-semibold text-gray-800 text-base font-khmer">{{ teacher.skill || 'N/A' }}</p>
-                  </div>
-                  <div>
-                    <p class="text-gray-500 font-khmer mb-1">Facebook</p>
-                    <p class="font-semibold text-gray-800 text-base">{{ teacher.facebook || 'N/A' }}</p>
-                  </div>
-                  <!-- <div class="md:col-span-2">
-                    <p class="text-gray-500 font-khmer mb-1">ចំណាំ (Note)</p>
-                    <p class="font-semibold text-gray-800 text-base font-khmer">{{ teacher.not || '-' }}</p>
-                  </div> -->
-               </div>
-            </div>
-
           </div>
-        </div>
 
-        <div class="p-4 flex justify-end border-t border-gray-200">
-          <button 
-            @click="$emit('close')" 
-            class="bg-gray-200 hover:bg-gray-300 text-gray-700 font-semibold px-6 py-2 border border-gray-400 rounded-lg transition-colors"
+          <button
+            type="button"
+            @click="$emit('close')"
+            class="h-7 w-7 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"
           >
-            Close
+            <i class="fa-solid fa-xmark text-sm"></i>
           </button>
+        </div>
+
+        <!-- Body -->
+        <div class="p-3 space-y-3">
+          <!-- Detail -->
+          <div class="bg-white rounded-xl border border-slate-200 p-3">
+            <h3 class="text-xs font-extrabold text-slate-800 mb-2 flex items-center gap-2">
+              <span class="h-6 w-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-[10px]">
+                <i class="fa-solid fa-id-card"></i>
+              </span>
+              ព័ត៌មានលម្អិតរបស់គ្រូ
+            </h3>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-xs">
+              <div class="info-box">
+                <span class="info-label">ឈ្មោះខ្មែរ</span>
+                <p class="info-value">{{ teacher.khmerName || '-' }}</p>
+              </div>
+
+              <div class="info-box">
+                <span class="info-label">ឈ្មោះឡាតាំង</span>
+                <p class="info-value">{{ teacher.englishName || '-' }}</p>
+              </div>
+
+              <div class="info-box">
+                <span class="info-label">ភេទ</span>
+                <p class="info-value">{{ teacher.gender || '-' }}</p>
+              </div>
+
+              <div class="info-box">
+                <span class="info-label">សញ្ជាតិ</span>
+                <p class="info-value">{{ teacher.nationality || '-' }}</p>
+              </div>
+
+              <div class="info-box">
+                <span class="info-label">ថ្ងៃខែឆ្នាំកំណើត</span>
+                <p class="info-value">{{ formatDate(teacher.dateOfBirth) }}</p>
+              </div>
+
+              <div class="info-box">
+                <span class="info-label">លេខទូរស័ព្ទ</span>
+                <p class="info-value">{{ teacher.phone || '-' }}</p>
+              </div>
+
+              <div class="info-box sm:col-span-2 lg:col-span-3">
+                <span class="info-label">អ៊ីមែល</span>
+                <p class="info-value break-all">{{ teacher.email || '-' }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Address -->
+          <div class="bg-white rounded-xl border border-slate-200 p-3">
+            <h3 class="text-xs font-extrabold text-slate-800 mb-2 flex items-center gap-2">
+              <span class="h-6 w-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-[10px]">
+                <i class="fa-solid fa-location-dot"></i>
+              </span>
+              លំនៅដ្ឋានបច្ចុប្បន្ន
+            </h3>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-xs">
+              <div class="info-box">
+                <span class="info-label">ភូមិ</span>
+                <p class="info-value">{{ teacher.currentResidence?.village || '-' }}</p>
+              </div>
+
+              <div class="info-box">
+                <span class="info-label">ឃុំ/សង្កាត់</span>
+                <p class="info-value">{{ teacher.currentResidence?.commune || '-' }}</p>
+              </div>
+
+              <div class="info-box">
+                <span class="info-label">ស្រុក/ខណ្ឌ</span>
+                <p class="info-value">{{ teacher.currentResidence?.district || '-' }}</p>
+              </div>
+
+              <div class="info-box">
+                <span class="info-label">ខេត្ត/ក្រុង</span>
+                <p class="info-value">{{ teacher.currentResidence?.province || '-' }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- More Info -->
+          <div class="bg-white rounded-xl border border-slate-200 p-3">
+            <h3 class="text-xs font-extrabold text-slate-800 mb-2 flex items-center gap-2">
+              <span class="h-6 w-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-[10px]">
+                <i class="fa-solid fa-circle-info"></i>
+              </span>
+              ព័ត៌មានបន្ថែម
+            </h3>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+              <div class="info-box">
+                <span class="info-label">ជំនាញ</span>
+                <p class="info-value">{{ teacher.skill || '-' }}</p>
+              </div>
+
+              <div class="info-box">
+                <span class="info-label">Facebook</span>
+                <p class="info-value break-all">{{ teacher.facebook || '-' }}</p>
+              </div>
+
+              <div class="info-box">
+                <span class="info-label">Telegram</span>
+                <p class="info-value break-all">{{ teacher.telegram || '-' }}</p>
+              </div>
+
+              <div class="info-box">
+                <span class="info-label">កំណត់សម្គាល់</span>
+                <p class="info-value">{{ teacher.note || '-' }}</p>
+              </div>
+            </div>
+          </div>
+
+          <!-- Footer -->
+          <div class="pt-2 flex justify-end border-t border-slate-100">
+            <button
+              @click="$emit('close')"
+              class="px-4 py-1.5 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition flex items-center gap-2"
+            >
+              <i class="fa-solid fa-xmark"></i>
+              បិទ
+            </button>
+          </div>
         </div>
 
       </div>
@@ -136,21 +192,40 @@ const props = defineProps({
 
 defineEmits(['close']);
 
-// Generate placeholder if avatar is missing
 const placeholderImage = computed(() => {
-  return `https://ui-avatars.com/api/?name=${encodeURIComponent(props.teacher.englishName || 'Teacher')}&background=random&color=fff&size=128`;
+  return `https://ui-avatars.com/api/?name=${encodeURIComponent(props.teacher.englishName || props.teacher.khmerName || 'Teacher')}&background=2563eb&color=fff&size=128`;
 });
 
-// Simple date formatter
 const formatDate = (dateString) => {
-  if (!dateString) return 'N/A';
-  return new Date(dateString).toLocaleDateString('en-GB', {
-    day: 'numeric', month: 'short', year: 'numeric'
+  if (!dateString) return '-';
+
+  return new Date(dateString).toLocaleDateString('km-KH', {
+    day: 'numeric',
+    month: 'short',
+    year: 'numeric'
   });
 };
 </script>
 
 <style scoped>
-/* Optional: Define Khmer font if imported in global CSS */
-/* .font-khmer { font-family: 'Siemreap', sans-serif; } */
+.info-box {
+  border: 1px solid #e2e8f0;
+  background: #f8fafc;
+  border-radius: 0.6rem;
+  padding: 0.45rem 0.6rem;
+}
+
+.info-label {
+  display: block;
+  font-size: 0.62rem;
+  font-weight: 700;
+  color: #64748b;
+  margin-bottom: 0.15rem;
+}
+
+.info-value {
+  font-size: 0.75rem;
+  font-weight: 700;
+  color: #1e293b;
+}
 </style>

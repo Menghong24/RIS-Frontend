@@ -1,86 +1,135 @@
 <template>
-  <div class="p-4 sm:p-6 lg:p-8">
-    <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-6">
-      <h1 class="text-2xl font-bold text-blue-800 font-khmer flex items-center gap-2">
-        <span class="w-2 h-8 bg-blue-600 rounded-full inline-block"></span>
-        គ្រូបង្រៀនទាំងអស់
-      </h1>
-      <button 
-        @click="openAddModal" 
-        class="flex items-center justify-center bg-blue-600 text-white font-semibold px-5 py-2.5 rounded-xl hover:bg-blue-700 hover:shadow-md transition-all duration-300 w-full sm:w-auto"
-      >
-        <UserPlus class="w-5 h-5 mr-2" />
-        បញ្ចូលគ្រូថ្មី
-      </button>
-    </div>
-    
-    <div class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-4 sm:gap-6 mt-6">
-      <TeacherCard 
-        v-for="teacher in teachers" 
-        :key="teacher._id || teacher.id"
-        :teacher="teacher"
-        @view="openViewModal"
-        @edit="openEditModal"
-        @delete="openDeleteModal"
-      />
-    </div>
+  <div class=" bg-slate-50 p-3 md:p-4">
+    <div class="max-w-7xl mx-auto space-y-4">
 
-    <div v-if="teachers && teachers.length === 0" class="text-center py-20 bg-white rounded-2xl border border-gray-100 shadow-sm mt-6">
-      <div class="text-gray-400 mb-2">
-        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16 mx-auto mb-4 opacity-50" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-          <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 4.354a4 4 0 110 5.292M15 21H3v-1a6 6 0 0112 0v1zm0 0h6v-1a6 6 0 00-9-5.197M13 7a4 4 0 11-8 0 4 4 0 018 0z" />
-        </svg>
-        <p class="text-lg font-medium text-gray-500">មិនទាន់មានទិន្នន័យគ្រូបង្រៀននៅឡើយទេ</p>
+      <!-- Header -->
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-3 md:p-4">
+        <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
+          <div>
+            <h1 class="text-xl font-extrabold text-slate-800 flex items-center gap-2">
+              <span class="h-8 w-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-sm">
+                <i class="fa-solid fa-chalkboard-user"></i>
+              </span>
+              គ្រូបង្រៀនទាំងអស់
+            </h1>
+
+            <p class="text-xs text-slate-500 mt-1">
+              គ្រប់គ្រងព័ត៌មានគ្រូបង្រៀន បន្ថែម កែប្រែ មើលព័ត៌មានលម្អិត និងលុប
+            </p>
+          </div>
+
+          <button
+            @click="openAddModal"
+            class="flex items-center justify-center gap-2 bg-blue-600 text-white font-bold px-4 py-2 rounded-lg hover:bg-blue-700 transition shadow-sm w-full sm:w-auto text-xs"
+          >
+            <i class="fa-solid fa-user-plus"></i>
+            បញ្ចូលគ្រូថ្មី
+          </button>
+        </div>
+
+        <!-- Search + Total -->
+        <div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
+          <div class="relative">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="ស្វែងរកតាមឈ្មោះគ្រូ លេខទូរស័ព្ទ ឬជំនាញ..."
+              class="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-xs text-slate-700 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition"
+            />
+          </div>
+
+          <div class="flex items-center justify-between bg-blue-50 border border-blue-100 rounded-lg px-3 py-2 text-xs">
+            <span class="font-bold text-blue-700">
+              <i class="fa-solid fa-users mr-1"></i>
+              ចំនួនគ្រូសរុប
+            </span>
+            <span class="font-extrabold text-blue-700">
+              {{ filteredTeachers.length }} នាក់
+            </span>
+          </div>
+        </div>
       </div>
-      <button @click="openAddModal" class="text-blue-600 hover:text-blue-700 font-medium hover:underline mt-2">
-        + ចុចទីនេះដើម្បីបញ្ចូលថ្មី
-      </button>
+
+      <!-- Teacher Cards -->
+      <div
+        v-if="filteredTeachers.length > 0"
+        class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3"
+      >
+        <TeacherCard
+          v-for="teacher in filteredTeachers"
+          :key="teacher._id || teacher.id"
+          :teacher="teacher"
+          @view="openViewModal"
+          @edit="openEditModal"
+          @delete="openDeleteModal"
+        />
+      </div>
+
+      <!-- Empty State -->
+      <div
+        v-if="filteredTeachers.length === 0"
+        class="text-center py-12 bg-white rounded-xl border border-dashed border-slate-300 shadow-sm"
+      >
+        <div class="mx-auto mb-3 h-12 w-12 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center">
+          <i class="fa-solid fa-user-slash text-2xl"></i>
+        </div>
+
+        <p class="text-sm font-bold text-slate-600">
+          មិនមានទិន្នន័យគ្រូបង្រៀនដែលត្រូវនឹងការស្វែងរកទេ
+        </p>
+
+        <button
+          @click="openAddModal"
+          class="mt-3 inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-bold text-xs hover:underline"
+        >
+          <i class="fa-solid fa-plus"></i>
+          ចុចទីនេះដើម្បីបញ្ចូលថ្មី
+        </button>
+      </div>
+
+      <!-- Modals -->
+      <TeacherFormModal
+        v-if="isFormModalOpen"
+        :is-open="isFormModalOpen"
+        :is-editing="isEditing"
+        :teacher="teacherToEdit"
+        @close="closeFormModal"
+        @save="saveTeacher"
+      />
+
+      <TeacherViewModal
+        :is-open="isViewModalOpen"
+        :teacher="teacherToView"
+        @close="closeViewModal"
+      />
+
+      <DeleteConfirmationModal
+        :is-open="isDeleteModalOpen"
+        :item-name="`${teacherToDelete?.khmerName || ''} ${teacherToDelete?.englishName || ''}`"
+        title="លុបគ្រូបង្រៀន?"
+        @close="closeDeleteModal"
+        @confirm="confirmDelete"
+      />
+
     </div>
-
-    <TeacherFormModal 
-      v-if="isFormModalOpen" 
-      :is-open="isFormModalOpen"
-      :is-editing="isEditing"
-      :teacher="teacherToEdit"
-      @close="closeFormModal"
-      @save="saveTeacher"
-    />
-
-    <TeacherViewModal 
-      :is-open="isViewModalOpen"
-      :teacher="teacherToView"
-      @close="closeViewModal"
-    />
-
-    <DeleteConfirmationModal 
-      :is-open="isDeleteModalOpen"
-      :item-name="`${teacherToDelete?.khmerName} ${teacherToDelete?.englishName}`"
-      title="Delete Teacher?"
-      @close="closeDeleteModal"
-      @confirm="confirmDelete"
-    />
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue';
-import { UserPlus } from 'lucide-vue-next';
+import { ref, computed } from 'vue';
 
-// 1. Import Composables
-import { useQuery } from '../hooks/useQuery'; 
-import { useCollection } from '../hooks/useCollection'; 
+import { useQuery } from '../hooks/useQuery';
+import { useCollection } from '../hooks/useCollection';
 
-// Import child components
 import TeacherCard from './teachers/TeacherCard.vue';
-import TeacherFormModal from './teachers/TeacherFormModal.vue'; 
+import TeacherFormModal from './teachers/TeacherFormModal.vue';
 import TeacherViewModal from './teachers/TeacherViewModal.vue';
 import DeleteConfirmationModal from './shared/DeleteConfirmationModal.vue';
 
-// 2. Initialize Composables
-const { data: teachers, fetchData } = useQuery('teachers'); 
+const { data: teachers, fetchData } = useQuery('teachers');
 const { createDoc, updateDoc, deleteDoc } = useCollection('teachers');
 
-// State
 const isFormModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
 const isViewModalOpen = ref(false);
@@ -89,11 +138,40 @@ const teacherToEdit = ref(null);
 const teacherToDelete = ref(null);
 const teacherToView = ref(null);
 
-// --- Modal Handling ---
+const searchQuery = ref('');
+
+const filteredTeachers = computed(() => {
+  if (!teachers.value) return [];
+
+  const query = searchQuery.value.toLowerCase().trim();
+
+  if (!query) return teachers.value;
+
+  return teachers.value.filter((teacher) => {
+    const khmerName = teacher.khmerName || '';
+    const englishName = teacher.englishName || '';
+    const phone = teacher.phone || '';
+    const telegram = teacher.telegram || '';
+    const skill = teacher.skill || '';
+    const email = teacher.email || '';
+
+    const searchableText = `
+      ${khmerName}
+      ${englishName}
+      ${phone}
+      ${telegram}
+      ${skill}
+      ${email}
+    `.toLowerCase();
+
+    return searchableText.includes(query);
+  });
+});
+
 const openAddModal = () => {
   isEditing.value = false;
-  // UPDATED: Removed placeOfBirth, added telegram to match Schema
-  teacherToEdit.value = { 
+
+  teacherToEdit.value = {
     khmerName: '',
     englishName: '',
     gender: 'ប្រុស',
@@ -104,15 +182,20 @@ const openAddModal = () => {
     telegram: '',
     skill: '',
     facebook: '',
-    currentResidence: { village: '', commune: '', district: '', province: '' },
+    currentResidence: {
+      village: '',
+      commune: '',
+      district: '',
+      province: ''
+    },
     note: ''
   };
+
   isFormModalOpen.value = true;
 };
 
 const openEditModal = (teacher) => {
   isEditing.value = true;
-  // Create a deep copy to avoid immediate mutation issues
   teacherToEdit.value = JSON.parse(JSON.stringify(teacher));
   isFormModalOpen.value = true;
 };
@@ -127,22 +210,28 @@ const openDeleteModal = (teacher) => {
   isDeleteModalOpen.value = true;
 };
 
-const closeFormModal = () => isFormModalOpen.value = false;
-const closeViewModal = () => isViewModalOpen.value = false;
-const closeDeleteModal = () => isDeleteModalOpen.value = false;
+const closeFormModal = () => {
+  isFormModalOpen.value = false;
+};
 
-// --- Data Actions ---
+const closeViewModal = () => {
+  isViewModalOpen.value = false;
+};
+
+const closeDeleteModal = () => {
+  isDeleteModalOpen.value = false;
+};
+
 const saveTeacher = async (teacherData) => {
   try {
     if (isEditing.value) {
-      // Use _id for MongoDB
       const id = teacherData._id || teacherData.id;
       await updateDoc(id, teacherData);
     } else {
       await createDoc(teacherData);
     }
-    // Refresh the list after save
-    await fetchData(); 
+
+    await fetchData();
     closeFormModal();
   } catch (error) {
     console.error("Failed to save teacher:", error);
@@ -154,12 +243,12 @@ const confirmDelete = async () => {
     try {
       const id = teacherToDelete.value._id || teacherToDelete.value.id;
       await deleteDoc(id);
-      // Refresh the list after delete
       await fetchData();
     } catch (error) {
       console.error("Failed to delete teacher:", error);
     }
   }
+
   closeDeleteModal();
 };
 </script>

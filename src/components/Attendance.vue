@@ -1,290 +1,488 @@
 <template>
-  <div class="p-6 bg-gray-50 ">
-    
-    <div class="mb-6">
-      <h1 class="text-2xl font-bold text-blue-800 font-khmer">គ្រប់គ្រងវត្តមាន (Attendance)</h1>
-      <p class="text-gray-500">Select a class and date to mark or view attendance.</p>
-    </div>
+  <div class=" bg-slate-50 p-3 md:p-4">
+    <!-- Header -->
+    <div class="max-w-7xl mx-auto mb-4">
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm px-3 py-3 md:px-4 flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+        <div class="min-w-0">
+          <h1 class="text-lg md:text-xl font-extrabold text-slate-800 flex items-center gap-2">
+            <span class="h-8 w-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-sm shrink-0">
+              <i class="fa-solid fa-clipboard-check"></i>
+            </span>
+            គ្រប់គ្រងវត្តមានសិស្ស
+          </h1>
 
-    <div class="bg-white p-4 rounded-xl shadow-sm border border-gray-100 flex flex-wrap gap-4 items-end mb-6">
-      
-      <div class="flex-1 min-w-[200px]">
-        <label class="block text-sm font-bold text-gray-700 font-khmer mb-1">ជ្រើសរើសថ្នាក់ (Class)</label>
-        <select 
-          v-model="selectedClassId" 
-          @change="hasLoaded = false"
-          class="block w-full rounded-lg border-gray-300 border p-2.5 bg-white focus:ring-2 focus:ring-blue-500 outline-none"
-        >
-          <option value="" disabled>-- Select Class --</option>
-          <option v-for="cls in classes" :key="cls._id" :value="cls._id">
-            {{ cls.className }} ({{ cls.classGrade }})
-          </option>
-        </select>
-      </div>
+          <p class="text-slate-500 text-xs mt-1 truncate" v-if="!selectedClass">
+            សូមជ្រើសរើសថ្នាក់ដើម្បីកត់ត្រាវត្តមាន
+          </p>
 
-      <div class="flex-1 min-w-[200px]">
-        <label class="block text-sm font-bold text-gray-700 font-khmer mb-1">កាលបរិច្ឆេទ (Date)</label>
-        <input 
-          type="date" 
-          v-model="selectedDate" 
-          @change="hasLoaded = false"
-          class="block w-full rounded-lg border-gray-300 border p-2.5 focus:ring-2 focus:ring-blue-500 outline-none"
-        >
-      </div>
-
-      <button 
-        @click="loadData"
-        :disabled="!selectedClassId || !selectedDate || loading"
-        class="px-6 py-2.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-300 disabled:cursor-not-allowed font-khmer font-bold flex items-center gap-2 shadow-sm transition-all"
-      >
-        <Search v-if="!loading" class="w-5 h-5" />
-        <span v-else class="animate-spin h-5 w-5 border-2 border-white border-t-transparent rounded-full"></span>
-        {{ loading ? 'Loading...' : 'បង្ហាញទិន្នន័យ' }}
-      </button>
-    </div>
-
-    <div v-if="hasLoaded" class="animate-fade-in-up">
-      
-      <div class="flex flex-wrap justify-between items-center mb-4 bg-blue-50 p-4 rounded-lg border border-blue-100">
-        <div>
-          <span class="font-bold text-gray-700 font-khmer mr-4">សរុប: {{ localRecords.length }} នាក់</span>
-          <span class="text-green-600 font-bold mr-3">Present: {{ countStatus('present') }}</span>
-          <span class="text-red-600 font-bold mr-3">Absent: {{ countStatus('absent') }}</span>
-          <span class="text-yellow-600 font-bold mr-3">Permission: {{ countStatus('permission') }}</span>
-          <span class="text-purple-600 font-bold">Late: {{ countStatus('late') }}</span>
+          <p class="text-slate-500 text-xs mt-1 truncate" v-else>
+            ថ្នាក់រៀន៖
+            <span class="font-bold text-slate-700">{{ selectedClass.className }}</span>
+            <span class="mx-1 text-slate-300">•</span>
+            សិស្សសរុប៖
+            <span class="font-bold text-emerald-700">{{ attendance.length }}</span>
+            នាក់
+          </p>
         </div>
-        
-        <button 
-          @click="markAllPresent"
-          class="text-sm bg-white border border-green-200 text-green-700 px-3 py-1 rounded hover:bg-green-50 transition-colors font-medium"
+
+        <div class="flex items-center gap-2 w-full md:w-auto">
+          <div v-if="!selectedClass" class="relative w-full md:w-72">
+            <span class="absolute inset-y-0 left-0 flex items-center pl-3 text-slate-400 text-xs">
+              <i class="fa-solid fa-magnifying-glass"></i>
+            </span>
+
+            <input
+              v-model="searchQuery"
+              type="text"
+              placeholder="ស្វែងរកថ្នាក់រៀន..."
+              class="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg bg-white text-xs text-slate-700 outline-none focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 transition"
+            />
+          </div>
+
+          <button
+            v-else
+            @click="closeAttendance"
+            class="whitespace-nowrap flex items-center gap-2 px-3 py-2 bg-white hover:bg-slate-50 border border-slate-200 text-slate-700 rounded-lg text-xs font-bold transition shadow-sm"
+          >
+            <i class="fa-solid fa-arrow-left"></i>
+            ត្រឡប់ក្រោយ
+          </button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Class Cards -->
+    <div
+      v-if="!selectedClass"
+      class="max-w-7xl mx-auto"
+    >
+      <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3">
+        <div
+          v-for="cls in filteredClasses"
+          :key="cls._id"
+          @click="openAttendance(cls)"
+          class="bg-white p-3 rounded-xl shadow-sm border border-slate-200 hover:border-emerald-400 hover:shadow-md cursor-pointer transition-all group"
         >
-          Mark All Present
-        </button>
+          <div class="flex items-start justify-between gap-2 mb-2">
+            <div class="w-9 h-9 bg-emerald-100 text-emerald-700 rounded-lg flex items-center justify-center text-base group-hover:bg-emerald-600 group-hover:text-white transition-colors shrink-0">
+              <i class="fa-solid fa-school"></i>
+            </div>
+
+            <span class="px-2 py-0.5 bg-green-100 text-green-700 text-[10px] rounded-full font-bold">
+              សកម្ម
+            </span>
+          </div>
+
+          <h3 class="font-extrabold text-sm text-slate-800 leading-tight truncate">
+            {{ cls.className }}
+          </h3>
+
+          <p class="text-slate-500 text-[11px] mt-1 truncate">
+            គ្រូបន្ទុក៖ {{ cls.teacherName || 'មិនទាន់កំណត់' }}
+          </p>
+
+          <div class="mt-3 pt-2 border-t border-slate-100 flex items-center justify-between text-slate-400 text-[11px]">
+            <span>
+              <i class="fa-solid fa-users mr-1"></i>
+              {{ cls.students?.length || 0 }} នាក់
+            </span>
+
+            <span class="text-emerald-600 font-bold">
+              ចូល
+              <i class="fa-solid fa-chevron-right ml-1"></i>
+            </span>
+          </div>
+        </div>
       </div>
 
-      <div class="bg-white rounded-xl shadow-md overflow-hidden border border-gray-200">
-        <table class="min-w-full divide-y divide-gray-200">
-          <thead class="bg-gray-100">
-            <tr>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider font-khmer">សិស្ស (Student)</th>
-              <th class="px-4 py-3 text-center text-xs font-medium text-gray-500 uppercase tracking-wider font-khmer">ស្ថានភាព (Status)</th>
-              <th class="px-4 py-3 text-left text-xs font-medium text-gray-500 uppercase tracking-wider font-khmer">ផ្សេងៗ (Remark)</th>
+      <div
+        v-if="filteredClasses.length === 0"
+        class="bg-white border border-slate-200 rounded-xl p-8 text-center text-slate-400 mt-3"
+      >
+        <div class="text-2xl mb-2">
+          <i class="fa-solid fa-magnifying-glass"></i>
+        </div>
+
+        <p class="text-sm font-bold text-slate-500">
+          មិនមានថ្នាក់រៀនដែលត្រូវនឹងការស្វែងរក
+        </p>
+      </div>
+    </div>
+
+    <!-- Attendance Panel -->
+    <div
+      v-else
+      class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden max-w-7xl mx-auto"
+    >
+      <!-- Toolbar -->
+      <div class="p-3 bg-slate-50 border-b border-slate-200">
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[180px_180px_1fr_auto] gap-2 items-end">
+          <div>
+            <label class="block text-[11px] font-bold text-slate-500 mb-1">
+              កាលបរិច្ឆេទ
+            </label>
+
+            <input
+              v-model="filters.date"
+              type="date"
+              @change="fetchData"
+              class="w-full border border-slate-200 rounded-lg px-2.5 py-2 text-xs text-slate-700 focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 outline-none transition bg-white"
+            />
+          </div>
+
+          <div>
+            <label class="block text-[11px] font-bold text-slate-500 mb-1">
+              វេនសិក្សា
+            </label>
+
+            <select
+              v-model="filters.session"
+              @change="fetchData"
+              class="w-full border border-slate-200 rounded-lg px-2.5 py-2 text-xs text-slate-700 focus:ring-2 focus:ring-emerald-100 focus:border-emerald-500 outline-none bg-white transition"
+            >
+              <option value="morning">វេនព្រឹក</option>
+              <option value="afternoon">វេនរសៀល</option>
+              <option value="evening">វេនល្ងាច</option>
+            </select>
+          </div>
+
+          <div class="grid grid-cols-2 sm:grid-cols-4 gap-2">
+            <div class="rounded-lg border border-slate-200 bg-white px-3 py-2">
+              <p class="text-[10px] text-slate-400 font-bold">សរុប</p>
+              <p class="text-sm font-extrabold text-slate-800">{{ attendance.length }}</p>
+            </div>
+
+            <div class="rounded-lg border border-green-100 bg-green-50 px-3 py-2">
+              <p class="text-[10px] text-green-600 font-bold">វត្តមាន</p>
+              <p class="text-sm font-extrabold text-green-700">{{ countByStatus.present }}</p>
+            </div>
+
+            <div class="rounded-lg border border-red-100 bg-red-50 px-3 py-2">
+              <p class="text-[10px] text-red-600 font-bold">អវត្តមាន</p>
+              <p class="text-sm font-extrabold text-red-700">{{ countByStatus.absent }}</p>
+            </div>
+
+            <div class="rounded-lg border border-orange-100 bg-orange-50 px-3 py-2">
+              <p class="text-[10px] text-orange-600 font-bold">យឺត/ច្បាប់</p>
+              <p class="text-sm font-extrabold text-orange-700">
+                {{ countByStatus.late + countByStatus.permission }}
+              </p>
+            </div>
+          </div>
+
+          <div class="text-left lg:text-right">
+            <p class="text-[10px] text-slate-400 font-bold">ស្ថានភាព</p>
+
+            <span
+              v-if="mode === 'edit'"
+              class="inline-flex items-center gap-1 mt-1 px-2 py-1 rounded-full bg-orange-100 text-orange-700 text-[11px] font-bold whitespace-nowrap"
+            >
+              <i class="fa-solid fa-pen-to-square"></i>
+              កែប្រែ
+            </span>
+
+            <span
+              v-else
+              class="inline-flex items-center gap-1 mt-1 px-2 py-1 rounded-full bg-emerald-100 text-emerald-700 text-[11px] font-bold whitespace-nowrap"
+            >
+              <i class="fa-solid fa-plus"></i>
+              បង្កើតថ្មី
+            </span>
+          </div>
+        </div>
+      </div>
+
+      <!-- Loading -->
+      <div v-if="loading" class="p-8 text-center text-slate-400">
+        <div class="mx-auto mb-2 h-10 w-10 rounded-xl bg-emerald-50 text-emerald-600 flex items-center justify-center">
+          <i class="fa-solid fa-circle-notch fa-spin text-xl"></i>
+        </div>
+
+        <p class="font-bold text-sm text-slate-500">
+          កំពុងទាញយកទិន្នន័យ...
+        </p>
+      </div>
+
+      <!-- Table -->
+      <div v-else class="overflow-x-auto">
+        <table class="w-full text-left border-collapse text-xs min-w-[850px]">
+          <thead>
+            <tr class="bg-slate-100 text-slate-700">
+              <th class="p-2 font-bold border border-slate-200 text-center w-10">
+                ល.រ
+              </th>
+
+              <th class="p-2 font-bold border border-slate-200">
+                ព័ត៌មានសិស្ស
+              </th>
+
+              <th class="p-2 font-bold border border-slate-200 text-center w-[330px]">
+                ស្ថានភាពវត្តមាន
+              </th>
+
+              <th class="p-2 font-bold border border-slate-200 w-52">
+                សម្គាល់
+              </th>
             </tr>
           </thead>
-          <tbody class="bg-white divide-y divide-gray-200">
-            <tr v-for="(record, index) in localRecords" :key="record.student._id || index" class="hover:bg-gray-50 transition-colors">
-              
-              <td class="px-4 py-3 whitespace-nowrap">
-                <div class="flex items-center">
-                  <div class="flex-shrink-0 h-10 w-10 bg-gray-200 rounded-full flex items-center justify-center text-gray-500 overflow-hidden">
-                    <img v-if="record.student.photo" :src="record.student.photo" alt="Student" class="h-full w-full object-cover">
-                    <User v-else class="w-6 h-6" />
+
+          <tbody>
+            <tr
+              v-for="(record, index) in attendance"
+              :key="record.student?._id || record.student"
+              class="hover:bg-slate-50 transition border-b border-slate-100"
+            >
+              <td class="p-2 border border-slate-100 text-center text-slate-500">
+                {{ index + 1 }}
+              </td>
+
+              <td class="p-2 border border-slate-100">
+                <div class="flex items-center gap-2">
+                  <div class="w-8 h-8 rounded-lg bg-emerald-50 border border-emerald-100 flex items-center justify-center text-emerald-600 font-bold overflow-hidden shrink-0">
+                    <img
+                      v-if="record.student?.photo"
+                      :src="record.student.photo"
+                      class="w-full h-full object-cover"
+                    />
+
+                    <span v-else class="text-xs">
+                      {{ getStudentInitial(record.student) }}
+                    </span>
                   </div>
-                  <div class="ml-4">
-                    <div class="text-sm font-bold text-gray-900 font-khmer">
-                      {{ getStudentName(record.student) }}
-                    </div>
-                    <div class="text-xs text-gray-500">
-                      ID: {{ record.student.studentId || 'N/A' }}
-                    </div>
+
+                  <div class="min-w-0">
+                    <p class="font-bold text-slate-800 leading-tight truncate">
+                      {{ record.student?.khmerName || 'មិនមានឈ្មោះ' }}
+                    </p>
+
+                    <p class="text-[10px] text-slate-400 font-mono leading-tight truncate">
+                      {{ record.student?.studentId || '-' }} - {{ record.student?.gender || '-' }}
+                    </p>
                   </div>
                 </div>
               </td>
 
-              <td class="px-4 py-3">
-                <div class="flex justify-center gap-2">
-                  <button @click="record.status = 'present'" :class="getButtonClass(record.status, 'present', 'green')" title="Present">
-                    <CheckCircle class="w-6 h-6" />
-                  </button>
-                  <button @click="record.status = 'absent'" :class="getButtonClass(record.status, 'absent', 'red')" title="Absent">
-                    <XCircle class="w-6 h-6" />
-                  </button>
-                  <button @click="record.status = 'permission'" :class="getButtonClass(record.status, 'permission', 'yellow')" title="Permission">
-                    <FileText class="w-6 h-6" />
-                  </button>
-                   <button @click="record.status = 'late'" :class="getButtonClass(record.status, 'late', 'purple')" title="Late">
-                    <Clock class="w-6 h-6" />
+              <td class="p-2 border border-slate-100">
+                <div class="flex items-center justify-center gap-1 flex-wrap">
+                  <button
+                    v-for="status in statusOptions"
+                    :key="status.id"
+                    @click="record.status = status.id"
+                    :class="[
+                      'px-2.5 py-1 rounded-md text-[11px] font-bold border transition-all whitespace-nowrap',
+                      record.status === status.id
+                        ? status.activeClass
+                        : 'bg-white text-slate-400 border-slate-200 hover:bg-slate-50'
+                    ]"
+                    type="button"
+                  >
+                    <i :class="status.icon" class="mr-1"></i>
+                    {{ status.label }}
                   </button>
                 </div>
               </td>
 
-              <td class="px-4 py-3">
-                <input 
-                  type="text" 
+              <td class="p-2 border border-slate-100 text-center">
+                <input
                   v-model="record.remark"
-                  placeholder="Note..."
-                  class="w-full text-sm border-b border-transparent hover:border-gray-300 focus:border-blue-500 outline-none py-1 bg-transparent placeholder-gray-400 transition-colors"
-                >
+                  placeholder="សម្គាល់..."
+                  class="w-full px-2 py-1.5 text-xs border border-slate-200 rounded-md focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none bg-white transition"
+                />
               </td>
+            </tr>
 
+            <tr v-if="attendance.length === 0">
+              <td colspan="4" class="p-8 text-center text-slate-400">
+                <div class="text-2xl mb-2">
+                  <i class="fa-solid fa-clipboard-list"></i>
+                </div>
+
+                <p class="text-sm font-bold text-slate-500">
+                  មិនមានទិន្នន័យសិស្សក្នុងថ្នាក់នេះ
+                </p>
+              </td>
             </tr>
           </tbody>
         </table>
       </div>
 
-      <div class="mt-6 flex justify-end gap-4">
-        <button 
-          @click="resetForm"
-          class="px-6 py-2 border border-gray-300 rounded-lg text-gray-700 hover:bg-gray-50 font-khmer font-bold"
+      <!-- Footer -->
+      <div class="p-3 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+        <div class="text-[11px] text-slate-500 font-bold flex flex-wrap items-center gap-2">
+          <span>
+            <i class="fa-solid fa-users mr-1 text-slate-400"></i>
+            សរុបសិស្ស៖ {{ attendance.length }} នាក់
+          </span>
+
+          <span class="hidden sm:inline text-slate-300">|</span>
+
+          <span>
+            ថ្ងៃទី៖ {{ filters.date }}
+          </span>
+
+          <span class="hidden sm:inline text-slate-300">|</span>
+
+          <span>
+            វេន៖ {{ sessionLabel }}
+          </span>
+        </div>
+
+        <button
+          @click="onSave"
+          :disabled="loading || attendance.length === 0"
+          class="px-5 py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-sm font-bold shadow-sm flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition"
         >
-          បោះបង់ (Cancel)
-        </button>
-        <button 
-          @click="saveAttendance"
-          :disabled="isSaving"
-          class="px-8 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 font-khmer font-bold shadow-lg flex items-center gap-2"
-        >
-          <Save v-if="!isSaving" class="w-5 h-5" />
-          <span v-else class="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
-          {{ currentMode === 'edit' ? 'កែប្រែ (Update)' : 'រក្សាទុក (Save)' }}
+          <i class="fa-solid fa-floppy-disk"></i>
+          រក្សាទុកវត្តមាន
         </button>
       </div>
-
     </div>
-
-    <div v-else-if="!loading && !hasLoaded" class="flex flex-col items-center justify-center mt-20 text-gray-400">
-       <CalendarDays class="w-16 h-16 mb-4 opacity-50" />
-       <p class="text-lg">Please select a class and date to begin.</p>
-    </div>
-
   </div>
 </template>
 
 <script setup>
-import { ref } from 'vue'
-import { Search, CalendarDays, User, CheckCircle, XCircle, FileText, Clock, Save } from 'lucide-vue-next'
-import { useQuery } from '../hooks/useQuery'
-import api from '../config/api'
-import { useToast } from "vue-toastification"; 
+import { ref, onMounted, computed } from 'vue';
+import { useAttendance } from '../hooks/useAttendance';
+import api from '../config/api';
 
-const toast = useToast();
+const { attendance, mode, loading, getAttendance, saveAttendance } = useAttendance();
 
-// --- Data Fetching ---
-const { data: classes } = useQuery('classes')
+const classes = ref([]);
+const selectedClass = ref(null);
+const searchQuery = ref('');
 
-// --- State ---
-const selectedClassId = ref('')
-const selectedDate = ref(new Date().toISOString().split('T')[0]) 
-const loading = ref(false)
-const isSaving = ref(false)
-const hasLoaded = ref(false)
-const currentMode = ref('create') // 'create' or 'edit'
+const filters = ref({
+  date: new Date().toISOString().split('T')[0],
+  session: 'morning'
+});
 
-// Main data array
-const localRecords = ref([])
-
-// --- Helpers ---
-const getStudentName = (studentObj) => {
-  if (typeof studentObj === 'object') {
-    return `${studentObj.khmerName || ''} (${studentObj.englishName || ''})`
+const statusOptions = [
+  {
+    id: 'present',
+    label: 'វត្តមាន',
+    icon: 'fa-solid fa-check',
+    activeClass: 'bg-green-600 text-white border-green-600 shadow-sm'
+  },
+  {
+    id: 'absent',
+    label: 'អវត្តមាន',
+    icon: 'fa-solid fa-xmark',
+    activeClass: 'bg-red-600 text-white border-red-600 shadow-sm'
+  },
+  {
+    id: 'permission',
+    label: 'ច្បាប់',
+    icon: 'fa-solid fa-file-circle-check',
+    activeClass: 'bg-yellow-500 text-white border-yellow-500 shadow-sm'
+  },
+  {
+    id: 'late',
+    label: 'យឺត',
+    icon: 'fa-solid fa-clock',
+    activeClass: 'bg-orange-500 text-white border-orange-500 shadow-sm'
   }
-  return 'Unknown'
-}
+];
 
-const getButtonClass = (currentStatus, targetStatus, color) => {
-  const base = 'p-2 rounded-full transition-all border-2 '
-  if (currentStatus === targetStatus) {
-    // Tailwind dynamic classes (ensure these safelist or are standard)
-    if(color === 'green') return base + 'bg-green-100 border-green-500 text-green-700 scale-110'
-    if(color === 'red') return base + 'bg-red-100 border-red-500 text-red-700 scale-110'
-    if(color === 'yellow') return base + 'bg-yellow-100 border-yellow-500 text-yellow-700 scale-110'
-    if(color === 'purple') return base + 'bg-purple-100 border-purple-500 text-purple-700 scale-110'
-  }
-  return base + 'bg-white border-transparent text-gray-400 hover:bg-gray-100'
-}
+const filteredClasses = computed(() => {
+  if (!searchQuery.value) return classes.value;
 
-const countStatus = (status) => localRecords.value.filter(r => r.status === status).length
+  const keyword = searchQuery.value.toLowerCase();
 
-// --- Core Logic ---
+  return classes.value.filter((c) =>
+    c.className?.toLowerCase().includes(keyword) ||
+    c.teacherName?.toLowerCase().includes(keyword)
+  );
+});
 
-// 1. Smart Load (Matches your controller's GET logic)
-const loadData = async () => {
-  if (!selectedClassId.value || !selectedDate.value) return;
-  
-  loading.value = true;
-  hasLoaded.value = false;
-  localRecords.value = [];
+const countByStatus = computed(() => {
+  return attendance.value.reduce(
+    (acc, record) => {
+      const status = record.status || 'present';
 
-  try {
-    // Your controller expects query params: classId and date
-    const response = await api.get('/attendance', {
-      params: {
-        classId: selectedClassId.value,
-        date: selectedDate.value
+      if (acc[status] !== undefined) {
+        acc[status] += 1;
       }
-    });
 
-    // Controller returns: { mode: 'create'|'edit', data: { records: [...] } }
-    const { mode, data } = response.data;
-    
-    currentMode.value = mode;
-    localRecords.value = data.records || []; // Backend already mapped blank templates if create mode
-
-    if (mode === 'create') {
-        toast.info("Generated blank attendance sheet.");
-    } else {
-        toast.success("Loaded existing attendance.");
+      return acc;
+    },
+    {
+      present: 0,
+      absent: 0,
+      permission: 0,
+      late: 0
     }
+  );
+});
 
-    hasLoaded.value = true;
+const sessionLabel = computed(() => {
+  if (filters.value.session === 'afternoon') return 'វេនរសៀល';
+  if (filters.value.session === 'evening') return 'វេនល្ងាច';
+  return 'វេនព្រឹក';
+});
 
-  } catch (error) {
-    console.error(error);
-    toast.error(error.response?.data?.error || "Error loading data.");
-  } finally {
-    loading.value = false;
-  }
-}
-
-// 2. Helper
-const markAllPresent = () => {
-  localRecords.value.forEach(r => r.status = 'present');
-}
-
-// 3. Upsert Save (Matches your controller's SAVE logic)
-const saveAttendance = async () => {
-  if (localRecords.value.length === 0) return;
-  
-  isSaving.value = true;
-
+const fetchClasses = async () => {
   try {
-    // Prepare payload for Controller
+    const res = await api.get('/classes');
+    classes.value = res.data.data || res.data.result || res.data || [];
+  } catch (err) {
+    console.error('Error fetching classes:', err);
+  }
+};
+
+const openAttendance = (cls) => {
+  selectedClass.value = cls;
+  fetchData();
+};
+
+const closeAttendance = () => {
+  selectedClass.value = null;
+  attendance.value = [];
+};
+
+const fetchData = () => {
+  if (!selectedClass.value) return;
+
+  getAttendance(
+    selectedClass.value._id,
+    filters.value.date,
+    filters.value.session
+  );
+};
+
+const getStudentInitial = (student) => {
+  return (
+    student?.englishName?.charAt(0) ||
+    student?.khmerName?.charAt(0) ||
+    '?'
+  );
+};
+
+const onSave = async () => {
+  try {
     const payload = {
-      class: selectedClassId.value,
-      date: selectedDate.value,
-      // Pass records as is. The controller handles extraction of IDs from objects.
-      records: localRecords.value
+      classId: selectedClass.value._id,
+      date: filters.value.date,
+      session: filters.value.session,
+      records: attendance.value.map((r) => ({
+        student: r.student?._id || r.student,
+        status: r.status || 'present',
+        remark: r.remark || ''
+      }))
     };
 
-    // Assuming your router maps POST /attendance to exports.saveAttendance
-    await api.post('/attendance', payload);
-
-    toast.success("Attendance saved successfully!");
-    
-    // Refresh to stay in sync (switch mode to 'edit' implicitly via backend logic)
-    await loadData();
-
-  } catch (error) {
-    console.error("Save error:", error);
-    toast.error(error.response?.data?.error || "Failed to save attendance.");
-  } finally {
-    isSaving.value = false;
+    await saveAttendance(payload);
+  } catch (err) {
+    console.error(err);
   }
-}
+};
 
-const resetForm = () => {
-  hasLoaded.value = false;
-  localRecords.value = [];
-}
+onMounted(() => {
+  fetchClasses();
+});
 </script>
 
 <style scoped>
-.animate-fade-in-up {
-  animation: fadeInUp 0.4s ease-out;
-}
-
-@keyframes fadeInUp {
-  from { opacity: 0; transform: translateY(10px); }
-  to { opacity: 1; transform: translateY(0); }
+table {
+  font-family: 'Kantumruy Pro', sans-serif;
 }
 </style>

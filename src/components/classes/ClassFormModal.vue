@@ -1,145 +1,241 @@
 <template>
   <Transition name="fade">
-    <div v-if="isOpen" class="fixed inset-0 z-50 flex items-center justify-center bg-black/50 backdrop-blur-sm p-4" @click.self="handleClose">
-      
+    <div
+      v-if="isOpen"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-3"
+      @click.self="handleClose"
+    >
       <Transition name="scale">
-        <div v-if="isOpen" class="bg-white rounded-xl shadow-xl w-full max-w-2xl overflow-hidden flex flex-col max-h-[90vh]">
-          
-          <div class="px-6 py-4 border-b border-gray-100 flex justify-between items-center bg-gray-50">
-            <h2 class="text-xl font-bold text-gray-800 font-khmer">
-              {{ isEditing ? 'កែប្រែព័ត៌មានថ្នាក់ (Edit Class)' : 'បង្កើតថ្នាក់ថ្មី (Create Class)' }}
-            </h2>
-            <button @click="handleClose" class="text-gray-400 hover:text-gray-600 transition-colors p-1 rounded-full hover:bg-gray-100">
-              <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
-                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
-              </svg>
+        <div
+          v-if="isOpen"
+          class="bg-white rounded-xl shadow-xl w-full max-w-xl overflow-hidden flex flex-col max-h-[86vh] border border-slate-100"
+        >
+          <!-- Header -->
+          <div class="px-3 py-2.5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+            <div>
+              <h2 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
+                <span class="h-6 w-6 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-[10px]">
+                  <i :class="isEditing ? 'fa-solid fa-pen-to-square' : 'fa-solid fa-plus'"></i>
+                </span>
+                {{ isEditing ? 'កែប្រែព័ត៌មានថ្នាក់' : 'បង្កើតថ្នាក់ថ្មី' }}
+              </h2>
+              <p class="text-[10px] text-slate-500 mt-0.5">
+                បំពេញព័ត៌មានថ្នាក់រៀនខាងក្រោម
+              </p>
+            </div>
+
+            <button
+              type="button"
+              @click="handleClose"
+              class="h-7 w-7 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"
+            >
+              <i class="fa-solid fa-xmark text-xs"></i>
             </button>
           </div>
 
-          <div class="overflow-y-auto flex-1 p-6">
-            <form id="classForm" @submit.prevent="submitForm" class="space-y-5">
-              
-              <div class="grid grid-cols-1 sm:grid-cols-4 gap-5">
-                <div class="sm:col-span-1">
-                  <label class="block text-sm font-medium text-gray-700 mb-1 font-khmer">លេខថ្នាក់ (No.) <span class="text-red-500">*</span></label>
-                  <input
-                    ref="firstInput"
-                    type="number"
-                    v-model.number="form.classNumber"
-                    placeholder="101"
-                    required
-                    class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                  />
+          <!-- Form -->
+          <div class="overflow-y-auto flex-1 p-3">
+            <form id="classForm" @submit.prevent="submitForm" class="space-y-3">
+
+              <!-- Class Basic Info -->
+              <div class="bg-white border border-slate-200 rounded-xl p-3">
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="h-6 w-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-[10px]">
+                    <i class="fa-solid fa-school"></i>
+                  </span>
+                  <h3 class="text-xs font-extrabold text-slate-800">
+                    ព័ត៌មានថ្នាក់
+                  </h3>
                 </div>
-                <div class="sm:col-span-3">
-                  <label class="block text-sm font-medium text-gray-700 mb-1 font-khmer">ឈ្មោះថ្នាក់ (Class Name) <span class="text-red-500">*</span></label>
-                  <input
-                    type="text"
-                    v-model="form.className"
-                    placeholder="ឧ. ភាសាអង់គ្លេស កម្រិតដំបូង"
-                    required
-                    class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all font-khmer"
-                  />
+
+                <div class="grid grid-cols-1 sm:grid-cols-4 gap-2.5">
+                  <div class="sm:col-span-1">
+                    <label class="form-label">
+                      លេខថ្នាក់ <span class="text-red-500">*</span>
+                    </label>
+                    <input
+                      ref="firstInput"
+                      type="number"
+                      v-model.number="form.classNumber"
+                      placeholder="101"
+                      required
+                      class="form-input"
+                    />
+                  </div>
+
+                  <div class="sm:col-span-3">
+                    <label class="form-label">
+                      ឈ្មោះថ្នាក់ <span class="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      v-model="form.className"
+                      placeholder="ឧ. ភាសាអង់គ្លេស កម្រិតដំបូង"
+                      required
+                      class="form-input"
+                    />
+                  </div>
                 </div>
               </div>
 
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1 font-khmer">កម្រិត (Grade) <span class="text-red-500">*</span></label>
-                  <input
-                    type="text"
-                    v-model="form.classGrade"
-                    placeholder="Grade 10 / Year 1"
-                    required
-                    class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                  />
+              <!-- Grade & Type -->
+              <div class="bg-white border border-slate-200 rounded-xl p-3">
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="h-6 w-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-[10px]">
+                    <i class="fa-solid fa-layer-group"></i>
+                  </span>
+                  <h3 class="text-xs font-extrabold text-slate-800">
+                    កម្រិត និងប្រភេទថ្នាក់
+                  </h3>
                 </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1 font-khmer">ប្រភេទថ្នាក់ (Type) <span class="text-red-500">*</span></label>
-                  <input
-                    type="text"
-                    v-model="form.typeOfClass"
-                    placeholder="Part-time / Full-time"
-                    required
-                    class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                  />
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <div>
+                    <label class="form-label">
+                      កម្រិត <span class="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      v-model="form.classGrade"
+                      placeholder="Grade 10 / Year 1"
+                      required
+                      class="form-input"
+                    />
+                  </div>
+
+                  <div>
+                    <label class="form-label">
+                      ប្រភេទថ្នាក់ <span class="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      v-model="form.typeOfClass"
+                      placeholder="Part-time / Full-time"
+                      required
+                      class="form-input"
+                    />
+                  </div>
                 </div>
               </div>
 
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1 font-khmer">ឆ្នាំសិក្សា (Year) <span class="text-red-500">*</span></label>
-                  <input
-                    type="text"
-                    v-model="form.yearOnStudy"
-                    placeholder="2024-2025"
-                    required
-                    class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                  />
+              <!-- Year & Time -->
+              <div class="bg-white border border-slate-200 rounded-xl p-3">
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="h-6 w-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-[10px]">
+                    <i class="fa-solid fa-clock"></i>
+                  </span>
+                  <h3 class="text-xs font-extrabold text-slate-800">
+                    ឆ្នាំសិក្សា និងវេនសិក្សា
+                  </h3>
                 </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1 font-khmer">វេនសិក្សា (Time) <span class="text-red-500">*</span></label>
-                  <select
-                    v-model="form.timeStudy"
-                    required
-                    class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all font-khmer"
-                  >
-                    <option disabled value="">ជ្រើសរើសវេន</option>
-                    <option value="ព្រឹក">ព្រឹក (Morning)</option>
-                    <option value="ល្ងាច">ល្ងាច (Afternoon)</option>
-                    <option value="យប់">យប់ (Evening)</option>
-                  </select>
-                </div>
-              </div>
 
-              <div class="grid grid-cols-1 sm:grid-cols-2 gap-5">
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1 font-khmer">គ្រូបង្រៀន (Teacher)</label>
-                  <select
-                    v-model="form.teacher"
-                    class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all font-khmer"
-                  >
-                    <option value="">-- មិនទាន់មានគ្រូ (No Teacher) --</option>
-                    <option 
-                      v-for="t in teachers" 
-                      :key="t._id" 
-                      :value="t._id"
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <div>
+                    <label class="form-label">
+                      ឆ្នាំសិក្សា <span class="text-red-500">*</span>
+                    </label>
+                    <input
+                      type="text"
+                      v-model="form.yearOnStudy"
+                      placeholder="2024-2025"
+                      required
+                      class="form-input"
+                    />
+                  </div>
+
+                  <div>
+                    <label class="form-label">
+                      វេនសិក្សា <span class="text-red-500">*</span>
+                    </label>
+                    <select
+                      v-model="form.timeStudy"
+                      required
+                      class="form-input"
                     >
-                      {{ t.englishName }} ({{ t.khmerName }})
-                    </option>
-                  </select>
-                </div>
-                <div>
-                  <label class="block text-sm font-medium text-gray-700 mb-1 font-khmer">ស្ថានភាព (Status)</label>
-                  <select
-                    v-model="form.status"
-                    class="w-full p-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 outline-none transition-all"
-                  >
-                    <option value="active">Active</option>
-                    <option value="finished">Finished</option>
-                    <option value="archived">Archived</option>
-                  </select>
+                      <option disabled value="">ជ្រើសរើសវេន</option>
+                      <option value="ព្រឹក">ព្រឹក</option>
+                      <option value="ល្ងាច">ល្ងាច</option>
+                      <option value="យប់">យប់</option>
+                    </select>
+                  </div>
                 </div>
               </div>
+
+              <!-- Teacher & Status -->
+              <div class="bg-white border border-slate-200 rounded-xl p-3">
+                <div class="flex items-center gap-2 mb-2">
+                  <span class="h-6 w-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-[10px]">
+                    <i class="fa-solid fa-chalkboard-user"></i>
+                  </span>
+                  <h3 class="text-xs font-extrabold text-slate-800">
+                    គ្រូបង្រៀន និងស្ថានភាព
+                  </h3>
+                </div>
+
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2.5">
+                  <div>
+                    <label class="form-label">
+                      គ្រូបង្រៀន
+                    </label>
+                    <select
+                      v-model="form.teacher"
+                      class="form-input"
+                    >
+                      <option value="">មិនទាន់មានគ្រូ</option>
+                      <option
+                        v-for="t in teachers"
+                        :key="t._id"
+                        :value="t._id"
+                      >
+                        {{ t.khmerName || t.englishName }}
+                      </option>
+                    </select>
+                  </div>
+
+                  <div>
+                    <label class="form-label">
+                      ស្ថានភាព
+                    </label>
+                    <select
+                      v-model="form.status"
+                      class="form-input"
+                    >
+                      <option value="active">ដំណើរការ</option>
+                      <option value="finished">បានបញ្ចប់</option>
+                      <option value="archived">រក្សាទុក</option>
+                    </select>
+                  </div>
+                </div>
+              </div>
+
             </form>
           </div>
 
-          <div class="px-6 py-4 bg-gray-50 border-t border-gray-100 flex justify-end gap-3">
-            <button 
+          <!-- Actions -->
+          <div class="px-3 py-2.5 bg-slate-50 border-t border-slate-100 flex justify-end gap-2">
+            <button
               type="button"
-              @click="handleClose" 
-              class="px-4 py-2 text-gray-700 hover:bg-gray-200 rounded-lg transition-colors font-khmer"
+              @click="handleClose"
+              class="px-3 py-1.5 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition"
             >
-              បោះបង់ (Cancel)
+              បោះបង់
             </button>
-            <button 
+
+            <button
               type="submit"
               form="classForm"
               :disabled="isSubmitting"
-              class="px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors shadow-sm font-khmer flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="px-4 py-1.5 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition shadow-sm text-xs font-bold flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <span v-if="isSubmitting" class="animate-spin h-4 w-4 border-2 border-white border-t-transparent rounded-full"></span>
-              {{ isEditing ? 'រក្សាទុក (Save)' : 'បង្កើត (Create)' }}
+              <i
+                v-if="isSubmitting"
+                class="fa-solid fa-circle-notch fa-spin text-[10px]"
+              ></i>
+              <i
+                v-else
+                class="fa-solid fa-floppy-disk text-[10px]"
+              ></i>
+              {{ isEditing ? 'រក្សាទុក' : 'បង្កើត' }}
             </button>
           </div>
 
@@ -173,22 +269,18 @@ const initialForm = {
   classGrade: '',
   typeOfClass: '',
   yearOnStudy: '',
-  timeStudy: '', 
+  timeStudy: '',
   teacher: '',
   status: 'active'
 }
 
 const form = reactive({ ...initialForm })
 
-// --- Logic ---
-
-// 1. Reset & Populate
 watch(() => props.isOpen, async (isOpen) => {
   if (isOpen) {
     isSubmitting.value = false
 
     if (props.isEditing && props.classData) {
-      // Edit Mode
       Object.assign(form, {
         classNumber: props.classData.classNumber,
         className: props.classData.className,
@@ -198,44 +290,37 @@ watch(() => props.isOpen, async (isOpen) => {
         timeStudy: props.classData.timeStudy,
         status: props.classData.status || 'active',
       })
-      // Handle Teacher Population safely
-      form.teacher = props.classData.teacher 
+
+      form.teacher = props.classData.teacher
         ? (typeof props.classData.teacher === 'object' ? props.classData.teacher._id : props.classData.teacher)
         : ''
     } else {
-      // Create Mode
       Object.assign(form, initialForm)
     }
 
-    // Auto focus the first input field
     await nextTick()
     if (firstInput.value) firstInput.value.focus()
   }
 })
 
-// 2. Submit Logic
 const submitForm = async () => {
-  // Native HTML validation handles required fields now.
   isSubmitting.value = true
-  
-  // Prepare payload
+
   const payload = { ...form }
-  
-  // IMPORTANT: If editing, attach the _id
+
   if (props.isEditing && props.classData?._id) {
     payload._id = props.classData._id
   }
 
   emit('save', payload)
-  
-  setTimeout(() => isSubmitting.value = false, 2000) 
+
+  setTimeout(() => isSubmitting.value = false, 2000)
 }
 
 const handleClose = () => {
   emit('close')
 }
 
-// Close on Escape Key
 const onKeydown = (e) => {
   if (e.key === 'Escape' && props.isOpen) handleClose()
 }
@@ -245,24 +330,50 @@ onUnmounted(() => window.removeEventListener('keydown', onKeydown))
 </script>
 
 <style scoped>
-/* Fade Transition */
+.form-label {
+  display: block;
+  font-size: 0.68rem;
+  font-weight: 700;
+  color: #475569;
+  margin-bottom: 0.2rem;
+}
+
+.form-input {
+  width: 100%;
+  border: 1px solid #e2e8f0;
+  border-radius: 0.5rem;
+  padding: 0.42rem 0.6rem;
+  font-size: 0.75rem;
+  color: #334155;
+  background: #ffffff;
+  outline: none;
+  min-height: 2rem;
+  transition: all 0.2s ease;
+}
+
+.form-input:focus {
+  border-color: #3b82f6;
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 0.12);
+}
+
 .fade-enter-active,
 .fade-leave-active {
   transition: opacity 0.2s ease;
 }
+
 .fade-enter-from,
 .fade-leave-to {
   opacity: 0;
 }
 
-/* Scale Transition */
 .scale-enter-active,
 .scale-leave-active {
   transition: all 0.2s ease;
 }
+
 .scale-enter-from,
 .scale-leave-to {
   opacity: 0;
-  transform: scale(0.95);
+  transform: scale(0.96);
 }
 </style>
