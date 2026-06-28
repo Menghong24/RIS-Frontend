@@ -1,7 +1,6 @@
 <template>
-  <div class=" bg-slate-50 p-3 md:p-4">
+  <div class="bg-slate-50 p-3 md:p-4">
     <div class="max-w-7xl mx-auto space-y-4">
-
       <!-- Header -->
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-3 md:p-4">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
@@ -31,6 +30,7 @@
         <div class="mt-3 grid grid-cols-1 md:grid-cols-2 gap-3">
           <div class="relative">
             <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+
             <input
               v-model="searchQuery"
               type="text"
@@ -44,6 +44,7 @@
               <i class="fa-solid fa-users mr-1"></i>
               ចំនួនគ្រូសរុប
             </span>
+
             <span class="font-extrabold text-blue-700">
               {{ filteredTeachers.length }} នាក់
             </span>
@@ -111,24 +112,33 @@
         @close="closeDeleteModal"
         @confirm="confirmDelete"
       />
-
     </div>
   </div>
 </template>
 
 <script setup>
-import { ref, computed } from 'vue';
+import { ref, computed } from "vue";
+import { useToast } from "vue-toastification";
 
-import { useQuery } from '../hooks/useQuery';
-import { useCollection } from '../hooks/useCollection';
+import { useQuery } from "../hooks/useQuery";
+import { useCollection } from "../hooks/useCollection";
 
-import TeacherCard from './teachers/TeacherCard.vue';
-import TeacherFormModal from './teachers/TeacherFormModal.vue';
-import TeacherViewModal from './teachers/TeacherViewModal.vue';
-import DeleteConfirmationModal from './shared/DeleteConfirmationModal.vue';
+import TeacherCard from "./teachers/TeacherCard.vue";
+import TeacherFormModal from "./teachers/TeacherFormModal.vue";
+import TeacherViewModal from "./teachers/TeacherViewModal.vue";
+import DeleteConfirmationModal from "./shared/DeleteConfirmationModal.vue";
 
-const { data: teachers, fetchData } = useQuery('teachers');
-const { createDoc, updateDoc, deleteDoc } = useCollection('teachers');
+const toast = useToast();
+
+const { data: teachers, fetchData } = useQuery("teachers");
+
+const {
+  createDoc,
+  updateDoc,
+  deleteDoc
+} = useCollection("teachers", {
+  toast: false
+});
 
 const isFormModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
@@ -138,7 +148,7 @@ const teacherToEdit = ref(null);
 const teacherToDelete = ref(null);
 const teacherToView = ref(null);
 
-const searchQuery = ref('');
+const searchQuery = ref("");
 
 const filteredTeachers = computed(() => {
   if (!teachers.value) return [];
@@ -148,12 +158,12 @@ const filteredTeachers = computed(() => {
   if (!query) return teachers.value;
 
   return teachers.value.filter((teacher) => {
-    const khmerName = teacher.khmerName || '';
-    const englishName = teacher.englishName || '';
-    const phone = teacher.phone || '';
-    const telegram = teacher.telegram || '';
-    const skill = teacher.skill || '';
-    const email = teacher.email || '';
+    const khmerName = teacher.khmerName || "";
+    const englishName = teacher.englishName || "";
+    const phone = teacher.phone || "";
+    const telegram = teacher.telegram || "";
+    const skill = teacher.skill || "";
+    const email = teacher.email || "";
 
     const searchableText = `
       ${khmerName}
@@ -172,23 +182,24 @@ const openAddModal = () => {
   isEditing.value = false;
 
   teacherToEdit.value = {
-    khmerName: '',
-    englishName: '',
-    gender: 'ប្រុស',
-    nationality: 'Cambodian',
-    dateOfBirth: '',
-    email: '',
-    phone: '',
-    telegram: '',
-    skill: '',
-    facebook: '',
+    khmerName: "",
+    englishName: "",
+    gender: "ប្រុស",
+    nationality: "Cambodian",
+    dateOfBirth: "",
+    profileImage: "",
+    email: "",
+    phone: "",
+    telegram: "",
+    skill: "",
+    facebook: "",
     currentResidence: {
-      village: '',
-      commune: '',
-      district: '',
-      province: ''
+      village: "",
+      commune: "",
+      district: "",
+      province: ""
     },
-    note: ''
+    note: ""
   };
 
   isFormModalOpen.value = true;
@@ -222,10 +233,24 @@ const closeDeleteModal = () => {
   isDeleteModalOpen.value = false;
 };
 
+const getErrorMessage = (error, fallback = "មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យគ្រូ") => {
+  return (
+    error.response?.data?.err ||
+    error.response?.data?.message ||
+    error.message ||
+    fallback
+  );
+};
+
 const saveTeacher = async (teacherData) => {
   try {
     if (isEditing.value) {
-      const id = teacherData._id || teacherData.id;
+      const id = teacherToEdit.value?._id || teacherToEdit.value?.id;
+
+      if (!id) {
+        throw new Error("Teacher ID is missing");
+      }
+
       await updateDoc(id, teacherData);
     } else {
       await createDoc(teacherData);
@@ -233,22 +258,34 @@ const saveTeacher = async (teacherData) => {
 
     await fetchData();
     closeFormModal();
+
+    toast.success(
+      isEditing.value
+        ? "បានកែប្រែព័ត៌មានគ្រូដោយជោគជ័យ"
+        : "បានបញ្ចូលគ្រូថ្មីដោយជោគជ័យ"
+    );
   } catch (error) {
-    console.error("Failed to save teacher:", error);
+    toast.error(getErrorMessage(error));
   }
 };
 
 const confirmDelete = async () => {
-  if (teacherToDelete.value) {
-    try {
-      const id = teacherToDelete.value._id || teacherToDelete.value.id;
-      await deleteDoc(id);
-      await fetchData();
-    } catch (error) {
-      console.error("Failed to delete teacher:", error);
-    }
-  }
+  if (!teacherToDelete.value) return;
 
-  closeDeleteModal();
+  try {
+    const id = teacherToDelete.value._id || teacherToDelete.value.id;
+
+    if (!id) {
+      throw new Error("Teacher ID is missing");
+    }
+
+    await deleteDoc(id);
+    await fetchData();
+    closeDeleteModal();
+
+    toast.success("បានលុបគ្រូដោយជោគជ័យ");
+  } catch (error) {
+    toast.error(getErrorMessage(error, "មិនអាចលុបគ្រូបានទេ"));
+  }
 };
 </script>

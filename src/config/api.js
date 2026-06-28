@@ -1,10 +1,10 @@
-import axios from 'axios';
+import axios from "axios";
 
 const api = axios.create({
-  baseURL: 'http://217.217.252.140:3000',// 'http://localhost:3000',//
+  baseURL: import.meta.env.VITE_API_URL || "http://localhost:3000",
   headers: {
-    'Content-Type': 'application/json',
-  },
+    "Content-Type": "application/json"
+  }
 });
 
 // ==============================
@@ -12,34 +12,36 @@ const api = axios.create({
 // ==============================
 api.interceptors.request.use(
   (config) => {
-    const token = localStorage.getItem('token');
+    const token = localStorage.getItem("token");
 
     if (token) {
       config.headers.Authorization = `Bearer ${token}`;
     }
 
+    // Let browser set multipart boundary automatically for FormData
+    if (config.data instanceof FormData) {
+      delete config.headers["Content-Type"];
+    }
+
     return config;
   },
-  (error) => {
-    return Promise.reject(error);
-  }
+  (error) => Promise.reject(error)
 );
 
 // ==============================
-// 🚨 RESPONSE INTERCEPTOR (IMPORTANT)
+// 🚨 RESPONSE INTERCEPTOR
 // ==============================
 api.interceptors.response.use(
   (response) => response,
   (error) => {
     const status = error.response?.status;
+    const currentPath = window.location.pathname;
 
-    // ❌ Unauthorized → auto logout
-    if (status === 401) {
-      localStorage.removeItem('token');
-      localStorage.removeItem('user');
+    if (status === 401 && currentPath !== "/login") {
+      localStorage.removeItem("token");
+      localStorage.removeItem("user");
 
-      // force redirect to login
-      window.location.href = '/login';
+      window.location.href = "/login";
     }
 
     return Promise.reject(error);

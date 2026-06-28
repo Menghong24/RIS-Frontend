@@ -19,23 +19,24 @@
         <div class="px-3 py-3 border-b border-slate-100 bg-slate-50 sticky top-0 z-10 flex items-center justify-between">
           <div class="flex items-center gap-3">
             <img
-              :src="teacher.avatar || placeholderImage"
+              :src="teacherImageUrl"
               class="w-12 h-12 rounded-full object-cover ring-2 ring-blue-100 border border-blue-200 shadow-sm"
-              :alt="teacher.englishName || teacher.khmerName"
+              :alt="teacher?.englishName || teacher?.khmerName || 'Teacher'"
+              @error="handleImageError"
             />
 
             <div>
               <h2 class="text-base font-extrabold text-slate-800 font-khmer">
-                {{ teacher.khmerName || 'ឈ្មោះគ្រូ' }}
+                {{ teacher?.khmerName || "ឈ្មោះគ្រូ" }}
               </h2>
 
               <p class="text-[11px] text-slate-500 mt-0.5">
-                {{ teacher.englishName || 'Teacher Name' }}
+                {{ teacher?.englishName || "Teacher Name" }}
               </p>
 
               <span class="inline-flex items-center mt-1 px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-[10px] font-bold">
                 <i class="fa-solid fa-briefcase mr-1"></i>
-                {{ teacher.skill || 'ទូទៅ' }}
+                {{ teacher?.skill || "ទូទៅ" }}
               </span>
             </div>
           </div>
@@ -63,37 +64,37 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-xs">
               <div class="info-box">
                 <span class="info-label">ឈ្មោះខ្មែរ</span>
-                <p class="info-value">{{ teacher.khmerName || '-' }}</p>
+                <p class="info-value">{{ teacher?.khmerName || "-" }}</p>
               </div>
 
               <div class="info-box">
                 <span class="info-label">ឈ្មោះឡាតាំង</span>
-                <p class="info-value">{{ teacher.englishName || '-' }}</p>
+                <p class="info-value">{{ teacher?.englishName || "-" }}</p>
               </div>
 
               <div class="info-box">
                 <span class="info-label">ភេទ</span>
-                <p class="info-value">{{ teacher.gender || '-' }}</p>
+                <p class="info-value">{{ teacher?.gender || "-" }}</p>
               </div>
 
               <div class="info-box">
                 <span class="info-label">សញ្ជាតិ</span>
-                <p class="info-value">{{ teacher.nationality || '-' }}</p>
+                <p class="info-value">{{ teacher?.nationality || "-" }}</p>
               </div>
 
               <div class="info-box">
                 <span class="info-label">ថ្ងៃខែឆ្នាំកំណើត</span>
-                <p class="info-value">{{ formatDate(teacher.dateOfBirth) }}</p>
+                <p class="info-value">{{ formatDate(teacher?.dateOfBirth) }}</p>
               </div>
 
               <div class="info-box">
                 <span class="info-label">លេខទូរស័ព្ទ</span>
-                <p class="info-value">{{ teacher.phone || '-' }}</p>
+                <p class="info-value">{{ teacher?.phone || "-" }}</p>
               </div>
 
               <div class="info-box sm:col-span-2 lg:col-span-3">
                 <span class="info-label">អ៊ីមែល</span>
-                <p class="info-value break-all">{{ teacher.email || '-' }}</p>
+                <p class="info-value break-all">{{ teacher?.email || "-" }}</p>
               </div>
             </div>
           </div>
@@ -110,22 +111,22 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-xs">
               <div class="info-box">
                 <span class="info-label">ភូមិ</span>
-                <p class="info-value">{{ teacher.currentResidence?.village || '-' }}</p>
+                <p class="info-value">{{ teacher?.currentResidence?.village || "-" }}</p>
               </div>
 
               <div class="info-box">
                 <span class="info-label">ឃុំ/សង្កាត់</span>
-                <p class="info-value">{{ teacher.currentResidence?.commune || '-' }}</p>
+                <p class="info-value">{{ teacher?.currentResidence?.commune || "-" }}</p>
               </div>
 
               <div class="info-box">
                 <span class="info-label">ស្រុក/ខណ្ឌ</span>
-                <p class="info-value">{{ teacher.currentResidence?.district || '-' }}</p>
+                <p class="info-value">{{ teacher?.currentResidence?.district || "-" }}</p>
               </div>
 
               <div class="info-box">
                 <span class="info-label">ខេត្ត/ក្រុង</span>
-                <p class="info-value">{{ teacher.currentResidence?.province || '-' }}</p>
+                <p class="info-value">{{ teacher?.currentResidence?.province || "-" }}</p>
               </div>
             </div>
           </div>
@@ -142,22 +143,22 @@
             <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
               <div class="info-box">
                 <span class="info-label">ជំនាញ</span>
-                <p class="info-value">{{ teacher.skill || '-' }}</p>
+                <p class="info-value">{{ teacher?.skill || "-" }}</p>
               </div>
 
               <div class="info-box">
                 <span class="info-label">Facebook</span>
-                <p class="info-value break-all">{{ teacher.facebook || '-' }}</p>
+                <p class="info-value break-all">{{ teacher?.facebook || "-" }}</p>
               </div>
 
               <div class="info-box">
                 <span class="info-label">Telegram</span>
-                <p class="info-value break-all">{{ teacher.telegram || '-' }}</p>
+                <p class="info-value break-all">{{ teacher?.telegram || "-" }}</p>
               </div>
 
               <div class="info-box">
                 <span class="info-label">កំណត់សម្គាល់</span>
-                <p class="info-value">{{ teacher.note || '-' }}</p>
+                <p class="info-value">{{ teacher?.note || "-" }}</p>
               </div>
             </div>
           </div>
@@ -173,36 +174,74 @@
             </button>
           </div>
         </div>
-
       </div>
     </div>
   </Transition>
 </template>
 
 <script setup>
-import { computed } from 'vue';
+import { computed } from "vue";
+import api from "../../config/api";
 
 const props = defineProps({
   isOpen: Boolean,
   teacher: {
     type: Object,
     default: () => ({})
-  },
+  }
 });
 
-defineEmits(['close']);
+defineEmits(["close"]);
 
 const placeholderImage = computed(() => {
-  return `https://ui-avatars.com/api/?name=${encodeURIComponent(props.teacher.englishName || props.teacher.khmerName || 'Teacher')}&background=2563eb&color=fff&size=128`;
+  const name = encodeURIComponent(
+    props.teacher?.englishName ||
+      props.teacher?.khmerName ||
+      "Teacher"
+  );
+
+  return `https://ui-avatars.com/api/?name=${name}&background=2563eb&color=fff&size=128`;
 });
 
-const formatDate = (dateString) => {
-  if (!dateString) return '-';
+const getApiOrigin = () => {
+  const baseURL = api.defaults?.baseURL || import.meta.env.VITE_API_URL || "";
 
-  return new Date(dateString).toLocaleDateString('km-KH', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric'
+  if (!baseURL || baseURL === "/api") {
+    return window.location.origin;
+  }
+
+  if (baseURL.startsWith("http")) {
+    return baseURL.replace(/\/api\/?$/, "").replace(/\/$/, "");
+  }
+
+  return window.location.origin;
+};
+
+const getImageUrl = (imagePath = "") => {
+  if (!imagePath) return "";
+
+  if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+    return imagePath;
+  }
+
+  return `${getApiOrigin()}${imagePath}`;
+};
+
+const teacherImageUrl = computed(() => {
+  return getImageUrl(props.teacher?.profileImage) || placeholderImage.value;
+});
+
+const handleImageError = (event) => {
+  event.target.src = placeholderImage.value;
+};
+
+const formatDate = (dateString) => {
+  if (!dateString) return "-";
+
+  return new Date(dateString).toLocaleDateString("km-KH", {
+    day: "numeric",
+    month: "short",
+    year: "numeric"
   });
 };
 </script>
@@ -227,5 +266,9 @@ const formatDate = (dateString) => {
   font-size: 0.75rem;
   font-weight: 700;
   color: #1e293b;
+}
+
+.font-khmer {
+  line-height: 1.45;
 }
 </style>

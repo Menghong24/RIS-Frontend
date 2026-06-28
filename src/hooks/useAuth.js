@@ -1,18 +1,24 @@
-import { ref } from 'vue';
-import api from '../config/api';
+import { ref } from "vue";
+import api from "../config/api";
 
 // --- Local Storage Helper Functions ---
-const getToken = () => localStorage.getItem('token');
-const saveToken = (newToken) => localStorage.setItem('token', newToken);
-const removeToken = () => localStorage.removeItem('token');
+const getToken = () => localStorage.getItem("token");
+
+const saveToken = (newToken) => {
+  localStorage.setItem("token", newToken);
+};
+
+const removeToken = () => {
+  localStorage.removeItem("token");
+};
 
 const getUser = () => {
-  const storedUser = localStorage.getItem('user');
+  const storedUser = localStorage.getItem("user");
 
   if (
     !storedUser ||
-    storedUser === 'undefined' ||
-    storedUser === 'null'
+    storedUser === "undefined" ||
+    storedUser === "null"
   ) {
     return null;
   }
@@ -20,14 +26,40 @@ const getUser = () => {
   try {
     return JSON.parse(storedUser);
   } catch (error) {
-    console.error('Invalid user data in localStorage:', error);
-    localStorage.removeItem('user');
+    localStorage.removeItem("user");
     return null;
   }
 };
-const saveUser = (userData) => localStorage.setItem('user', JSON.stringify(userData));
-const removeUser = () => localStorage.removeItem('user');
 
+const saveUser = (userData) => {
+  localStorage.setItem("user", JSON.stringify(userData));
+};
+
+const removeUser = () => {
+  localStorage.removeItem("user");
+};
+
+const clearAuthState = () => {
+  user.value = null;
+  token.value = null;
+
+  removeToken();
+  removeUser();
+};
+
+const getApiOrigin = () => {
+  const baseURL = api.defaults?.baseURL || import.meta.env.VITE_API_URL || "";
+
+  if (!baseURL || baseURL === "/api") {
+    return window.location.origin;
+  }
+
+  if (baseURL.startsWith("http")) {
+    return baseURL.replace(/\/api\/?$/, "").replace(/\/$/, "");
+  }
+
+  return window.location.origin;
+};
 
 // --- Global Singleton State ---
 const user = ref(getUser());
@@ -35,58 +67,139 @@ const token = ref(getToken());
 const isLoading = ref(false);
 const error = ref(null);
 
-
 export function useAuth() {
-  
+  const getProfileImageUrl = (profileImage = user.value?.profileImage) => {
+    if (!profileImage) return "";
+
+    if (profileImage.startsWith("http://") || profileImage.startsWith("https://")) {
+      return profileImage;
+    }
+
+    return `${getApiOrigin()}${profileImage}`;
+  };
+
+  const fetchProfile = async () => {
+    try {
+      const response = await api.get("/user/profile");
+
+      user.value = response.data.result;
+      saveUser(user.value);
+
+      return response.data;
+    } catch (err) {
+      const status = err.response?.status;
+
+      if (status === 401 || status === 403) {
+        clearAuthState();
+      }
+
+      error.value =
+        err.response?.data?.err ||
+        err.message ||
+        "Profile validation failed";
+
+      throw err;
+    }
+  };
+
   const login = async (username, password) => {
     isLoading.value = true;
     error.value = null;
+
     try {
-      const response = await api.post('/user/login', { username, password });
-      
-      // Update global states and localStorage references
+      const response = await api.post("/user/login", {
+        username,
+        password
+      });
+
       token.value = response.data.token;
       saveToken(token.value);
-      
-      // Immediately fetch the user's full profile profile context
+
       await fetchProfile();
-      
+
+      return response.data;
     } catch (err) {
-      error.value = err.response?.data?.err || 'Login failed';
-      throw err; 
+      error.value = err.response?.data?.err || "Login failed";
+      throw err;
     } finally {
       isLoading.value = false;
     }
   };
 
-  const fetchProfile = async () => {
+  const logout = async () => {
     try {
-      const response = await api.get('/user/profile');
-      
-      // FIX: Map directly to the 'result' key sent by your backend controller
-      user.value = response.data.result;
-      saveUser(user.value);
-
+      await api.post("/user/logout");
     } catch (err) {
-      console.error("Profile validation failed. Clearing context tokens.", err);
-      // If the token is invalid or expired, forcefully scrub local states
-      logout(); 
+      // Ignore backend logout error; frontend must clear local session
+    } finally {
+      clearAuthState();
     }
   };
 
-  const logout = async () => {
+  const updateProfileImage = async (file) => {
+    isLoading.value = true;
+    error.value = null;
+
     try {
-        // Optional backend sync signature
-        await api.post('/user/logout'); 
+      if (!file) {
+        throw new Error("សូមជ្រើសរូបភាព");
+      }
+
+      const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
+      if (!allowedTypes.includes(file.type)) {
+        throw new Error("សូមជ្រើសរូបភាពប្រភេទ JPG, PNG ឬ WEBP ប៉ុណ្ណោះ");
+      }
+
+      if (file.size > 2 * 1024 * 1024) {
+        throw new Error("រូបភាពមិនអាចលើស 2MB បានទេ");
+      }
+
+      const formData = new FormData();
+      formData.append("profileImage", file);
+
+      const response = await api.patch("/user/profile-image", formData, {
+        headers: {
+          "Content-Type": "multipart/form-data"
+        }
+      });
+
+      user.value = response.data.result;
+      saveUser(user.value);
+
+      return response.data;
     } catch (err) {
-        console.error("Error during server session invalidation:", err);
+      error.value =
+        err.response?.data?.err ||
+        err.message ||
+        "មិនអាចប្ដូររូប Profile បានទេ";
+
+      throw err;
     } finally {
-        // Absolute local cleanup regardless of network status
-        user.value = null;
-        token.value = null;
-        
-        removeToken();
-        removeUser();
+      isLoading.value = false;
+    }
+  };
+
+  const removeProfileImage = async () => {
+    isLoading.value = true;
+    error.value = null;
+
+    try {
+      const response = await api.delete("/user/profile-image");
+
+      user.value = response.data.result;
+      saveUser(user.value);
+
+      return response.data;
+    } catch (err) {
+      error.value =
+        err.response?.data?.err ||
+        err.message ||
+        "មិនអាចលុបរូប Profile បានទេ";
+
+      throw err;
+    } finally {
+      isLoading.value = false;
     }
   };
 
@@ -96,11 +209,16 @@ export function useAuth() {
     token,
     isLoading,
     error,
-    
+
     // Auth Mechanics
     login,
     logout,
     fetchProfile,
+
+    // Profile Image
+    updateProfileImage,
+    removeProfileImage,
+    getProfileImageUrl,
 
     // Storage Utilities
     getToken,
@@ -108,6 +226,7 @@ export function useAuth() {
     removeToken,
     getUser,
     saveUser,
-    removeUser
+    removeUser,
+    clearAuthState
   };
 }

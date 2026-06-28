@@ -1,5 +1,5 @@
 <template>
-  <div class=" bg-slate-50 p-3 md:p-4 text-slate-800">
+  <div class="bg-slate-50 p-3 md:p-4 text-slate-800">
     <div class="max-w-7xl mx-auto space-y-4">
       <!-- Header -->
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm px-3 py-3 md:px-4">
@@ -151,7 +151,7 @@
 
           <div class="mt-2 flex justify-between items-center text-[11px] text-slate-600 bg-slate-50 px-2 py-1.5 rounded-lg">
             <span>សិស្សសរុប:</span>
-            <span class="font-bold text-blue-600">{{ c.students?.length || 0 }} នាក់</span>
+            <span class="font-bold text-blue-600">{{ getClassStudents(c).length }} នាក់</span>
           </div>
         </div>
       </div>
@@ -176,7 +176,7 @@
         class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"
       >
         <!-- Loading -->
-        <div v-if="loadingPayments" class="p-8 text-center text-slate-400">
+        <div v-if="loadingPayments || loadingStudents" class="p-8 text-center text-slate-400">
           <div class="mx-auto mb-2 h-10 w-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
             <i class="fa-solid fa-circle-notch fa-spin text-xl"></i>
           </div>
@@ -264,7 +264,7 @@
                     <input
                       type="date"
                       v-model="row.dueDate"
-                      :disabled="!row.isVirtual"
+                      :disabled="true"
                       class="date-input"
                     />
 
@@ -483,9 +483,11 @@ const toast = useToast();
 
 const paymentsQuery = useQuery("payments");
 const classesQuery = useQuery("classes");
+const studentsQuery = useQuery("students");
 
 const payments = paymentsQuery.data;
 const classes = classesQuery.data;
+const allStudents = studentsQuery.data;
 
 const refreshPayments = paymentsQuery.fetchData || paymentsQuery.refetch;
 
@@ -495,6 +497,10 @@ const loadingPayments = computed(() => {
 
 const loadingClasses = computed(() => {
   return classesQuery.isLoading?.value || classesQuery.loading?.value || false;
+});
+
+const loadingStudents = computed(() => {
+  return studentsQuery.isLoading?.value || studentsQuery.loading?.value || false;
 });
 
 const { createDoc, updateDoc, deleteDoc } = useCollection("payments");
@@ -525,6 +531,48 @@ const normalizeArray = (responseData) => {
 
 const paymentsList = computed(() => normalizeArray(payments?.value));
 const classesList = computed(() => normalizeArray(classes?.value));
+const allStudentsList = computed(() => normalizeArray(allStudents?.value));
+
+const pad2 = (value) => String(value).padStart(2, "0");
+
+const toLocalDateInput = (year, month, day) => {
+  return `${year}-${pad2(month)}-${pad2(day)}`;
+};
+
+const getId = (value) => {
+  return String(value?._id || value || "");
+};
+
+const getStudentClassId = (student) => {
+  return getId(
+    student?.grade?._id ||
+    student?.grade ||
+    student?.class?._id ||
+    student?.class ||
+    student?.classId?._id ||
+    student?.classId
+  );
+};
+
+const getClassStudents = (cls) => {
+  if (!cls) return [];
+
+  const classStudents = Array.isArray(cls.students) ? cls.students : [];
+  const populatedStudents = classStudents.filter((student) => typeof student === "object" && student?._id);
+
+  if (populatedStudents.length > 0) {
+    return populatedStudents;
+  }
+
+  const classStudentIds = classStudents.map((student) => getId(student));
+
+  return allStudentsList.value.filter((student) => {
+    const inClassArray = classStudentIds.includes(getId(student));
+    const inStudentClassField = getStudentClassId(student) === getId(cls);
+
+    return inClassArray || inStudentClassField;
+  });
+};
 
 watch(
   filters,
@@ -563,14 +611,43 @@ const getClassDefaultDueAmount = (cls) => {
 const getDeadlineDate = (student) => {
   if (!filters.month) return "";
 
-  const [year, month] = filters.month.split("-");
-  const joinDate = student?.joinDate ? new Date(student.joinDate) : null;
-  const joinDay = joinDate && !Number.isNaN(joinDate.getTime()) ? joinDate.getDate() : 1;
-  const lastDay = new Date(Number(year), Number(month), 0).getDate();
-  const safeDay = Math.min(joinDay, lastDay);
-  const dueDate = new Date(Number(year), Number(month) - 1, safeDay);
+  const [yearText, monthText] = filters.month.split("-");
+  const year = Number(yearText);
+  const month = Number(monthText);
 
-  return dueDate.toISOString().split("T")[0];
+  const joinDate = student?.joinDate ? new Date(student.joinDate) : null;
+  const joinDay =
+    joinDate && !Number.isNaN(joinDate.getTime())
+      ? joinDate.getDate()
+      : 1;
+
+  const lastDayOfMonth = new Date(year, month, 0).getDate();
+  const safeDay = Math.min(joinDay, lastDayOfMonth);
+
+  return toLocalDateInput(year, month, safeDay);
+};
+
+const getPaymentMonth = (payment) => {
+  return String(payment.paymentMonth || "").slice(0, 7);
+};
+
+const isSamePaymentRecord = ({ payment, studentId, classId, month }) => {
+  return (
+    getId(payment.student) === getId(studentId) &&
+    getId(payment.class) === getId(classId) &&
+    getPaymentMonth(payment) === String(month)
+  );
+};
+
+const findExistingPayment = (studentId, classId, month) => {
+  return paymentsList.value.find((payment) =>
+    isSamePaymentRecord({
+      payment,
+      studentId,
+      classId,
+      month
+    })
+  );
 };
 
 const totalCollectedThisMonth = computed(() => {
@@ -581,8 +658,8 @@ const totalCollectedThisMonth = computed(() => {
 
   return paymentsList.value
     .filter((payment) =>
-      String(payment.class?._id || payment.class) === String(classId) &&
-      String(payment.paymentMonth || "").slice(0, 7) === targetMonth &&
+      getId(payment.class) === getId(classId) &&
+      getPaymentMonth(payment) === targetMonth &&
       ["paid", "partial"].includes(payment.status)
     )
     .reduce((sum, payment) => {
@@ -595,9 +672,7 @@ const processedList = computed(() => {
 
   const targetMonth = filters.month;
 
-  let classStudents = Array.isArray(selectedClass.value.students)
-    ? selectedClass.value.students
-    : [];
+  let classStudents = getClassStudents(selectedClass.value);
 
   if (filters.searchQuery.trim() !== "") {
     const query = filters.searchQuery.toLowerCase().trim();
@@ -616,10 +691,10 @@ const processedList = computed(() => {
   let mappedList = classStudents.map((student) => {
     const dueDate = getDeadlineDate(student);
 
-    const existingPayment = paymentsList.value.find((payment) =>
-      String(payment.student?._id || payment.student) === String(student._id) &&
-      String(payment.class?._id || payment.class) === String(selectedClass.value._id) &&
-      String(payment.paymentMonth || "").slice(0, 7) === targetMonth
+    const existingPayment = findExistingPayment(
+      student._id,
+      selectedClass.value._id,
+      targetMonth
     );
 
     if (existingPayment) {
@@ -627,6 +702,7 @@ const processedList = computed(() => {
         existingPayment.expectedAmount ||
         Number(existingPayment.tuitionFee || 0) + Number(existingPayment.extraFee || 0) ||
         existingPayment.amount ||
+        defaultDueAmount ||
         0
       );
 
@@ -642,6 +718,19 @@ const processedList = computed(() => {
           : Math.max(expectedAmount - paidAmount, 0)
       );
 
+      const savedDueDate = existingPayment.dueDate
+        ? new Date(existingPayment.dueDate)
+        : null;
+
+      const paymentDueDate =
+        savedDueDate && !Number.isNaN(savedDueDate.getTime())
+          ? toLocalDateInput(
+              savedDueDate.getFullYear(),
+              savedDueDate.getMonth() + 1,
+              savedDueDate.getDate()
+            )
+          : dueDate;
+
       return {
         ...existingPayment,
         uniqueKey: existingPayment._id,
@@ -649,10 +738,8 @@ const processedList = computed(() => {
         student: existingPayment.student && typeof existingPayment.student === "object"
           ? existingPayment.student
           : student,
-        dueDate: existingPayment.dueDate
-          ? new Date(existingPayment.dueDate).toISOString().split("T")[0]
-          : dueDate,
-        paymentDeadline: existingPayment.dueDate || dueDate,
+        dueDate: paymentDueDate,
+        paymentDeadline: paymentDueDate,
         inputExpectedAmount: expectedAmount,
         inputPaidAmount: paidAmount,
         expectedAmount,
@@ -781,6 +868,18 @@ const handleOneClickPay = async (row) => {
   const paidAmount = Number(row.inputPaidAmount || 0);
   const balance = Math.max(expectedAmount - paidAmount, 0);
 
+  const alreadyPaid = findExistingPayment(
+    row.student?._id,
+    selectedClass.value?._id,
+    filters.month
+  );
+
+  if (alreadyPaid) {
+    toast.warning("សិស្សនេះបានបង់ប្រាក់សម្រាប់ខែនេះរួចហើយ!");
+    await refreshPaymentList();
+    return;
+  }
+
   if (expectedAmount <= 0) {
     toast.warning("សូមកំណត់តម្លៃដែលត្រូវបង់ជាមុនសិន!");
     return;
@@ -809,7 +908,10 @@ const handleOneClickPay = async (row) => {
     teacher: selectedClass.value.teacher?._id || selectedClass.value.teacher || null,
 
     paymentMonth: filters.month,
+
+    // ថ្ងៃត្រូវបង់ប្រាក់ = ថ្ងៃចូលរៀនរបស់សិស្សក្នុងខែដែលបានជ្រើស
     dueDate: row.dueDate,
+
     payDate: today,
 
     tuitionFee: expectedAmount,

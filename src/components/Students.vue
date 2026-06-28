@@ -1,7 +1,6 @@
 <template>
-  <div class=" bg-slate-50 p-3 md:p-4">
+  <div class="bg-slate-50 p-3 md:p-4">
     <div class="max-w-7xl mx-auto space-y-4">
-
       <!-- Header + Filters -->
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-3 md:p-4">
         <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-3">
@@ -31,6 +30,7 @@
           <!-- Search -->
           <div class="relative">
             <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+
             <input
               v-model="searchQuery"
               type="text"
@@ -45,6 +45,7 @@
             class="w-full border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-700 bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition"
           >
             <option value="All">ថ្នាក់ទាំងអស់</option>
+
             <option
               v-for="c in classesList"
               :key="c._id"
@@ -70,6 +71,7 @@
               <i class="fa-solid fa-users mr-1"></i>
               សរុប
             </span>
+
             <span class="font-extrabold text-blue-700">
               {{ filteredStudents.length }} នាក់
             </span>
@@ -118,6 +120,7 @@
         <div class="mx-auto mb-2 h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center">
           <i class="fa-solid fa-users-slash text-xl"></i>
         </div>
+
         <p class="text-sm font-bold text-slate-600">
           មិនមានសិស្សដែលត្រូវនឹងតម្រងទេ
         </p>
@@ -196,193 +199,223 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
-import StudentCard from './students/StudentCard.vue'
-import StudentFormModal from './students/StudentFormModal.vue'
-import StudentViewModal from './students/StudentViewModal.vue'
-import DeleteConfirmationModal from './shared/DeleteConfirmationModal.vue'
+import { ref, computed, watch } from "vue";
+import { useToast } from "vue-toastification";
+import StudentCard from "./students/StudentCard.vue";
+import StudentFormModal from "./students/StudentFormModal.vue";
+import StudentViewModal from "./students/StudentViewModal.vue";
+import DeleteConfirmationModal from "./shared/DeleteConfirmationModal.vue";
 
-import { useQuery } from '../hooks/useQuery.js'
-import { useCollection } from '../hooks/useCollection.js'
+import { useQuery } from "../hooks/useQuery.js";
+import { useCollection } from "../hooks/useCollection.js";
+
+const toast = useToast();
 
 // --- Modal States ---
-const isFormModalOpen = ref(false)
-const isDeleteModalOpen = ref(false)
-const isViewModalOpen = ref(false)
-const isEditing = ref(false)
-const studentToEdit = ref(null)
-const studentToDelete = ref(null)
-const studentToView = ref(null)
+const isFormModalOpen = ref(false);
+const isDeleteModalOpen = ref(false);
+const isViewModalOpen = ref(false);
+const isEditing = ref(false);
+const studentToEdit = ref(null);
+const studentToDelete = ref(null);
+const studentToView = ref(null);
 
 // --- Data Fetching ---
-const { data: students, fetchData: refetchStudents } = useQuery('students')
-const { data: classesData } = useQuery('classes')
+const { data: students, fetchData: refetchStudents } = useQuery("students");
+const { data: classesData } = useQuery("classes");
 
 // Collection Actions
-const { createDoc, updateDoc, deleteDoc } = useCollection('students')
+const { createDoc, updateDoc, deleteDoc } = useCollection("students", {
+  toast: false
+});
 
 // --- Filters ---
-const searchQuery = ref('')
-const statusFilter = ref('All')
-const genderFilter = ref('All')
-const classFilter = ref('All')
+const searchQuery = ref("");
+const statusFilter = ref("All");
+const genderFilter = ref("All");
+const classFilter = ref("All");
 
 // Safely access classes list
-const classesList = computed(() => classesData.value || [])
+const classesList = computed(() => classesData.value || []);
 
 // --- Pagination ---
-const currentPage = ref(1)
-const rowsPerPage = ref(10)
+const currentPage = ref(1);
+const rowsPerPage = ref(10);
 
 // --- Filter + Paginate Logic ---
 const filteredStudents = computed(() => {
-  if (!students.value) return []
+  if (!students.value) return [];
 
   return students.value.filter((s) => {
-    const fullName = `${s.khmerName || ''} ${s.englishName || ''}`.toLowerCase()
+    const fullName = `${s.khmerName || ""} ${s.englishName || ""}`.toLowerCase();
 
     const nameMatch =
       fullName.includes(searchQuery.value.toLowerCase()) ||
-      (s.studentId && s.studentId.toString().includes(searchQuery.value))
+      (s.studentId && s.studentId.toString().includes(searchQuery.value));
 
     const statusMatch =
-      statusFilter.value === 'All' ||
-      s.status?.toLowerCase() === statusFilter.value.toLowerCase()
+      statusFilter.value === "All" ||
+      s.status?.toLowerCase() === statusFilter.value.toLowerCase();
 
-    const studentGradeId = s.grade?._id || s.grade
-    const classMatch = classFilter.value === 'All' || studentGradeId === classFilter.value
+    const studentGradeId = s.grade?._id || s.grade;
+    const classMatch = classFilter.value === "All" || studentGradeId === classFilter.value;
 
-    const genderMatch = genderFilter.value === 'All' || s.gender === genderFilter.value
+    const genderMatch = genderFilter.value === "All" || s.gender === genderFilter.value;
 
-    return nameMatch && statusMatch && classMatch && genderMatch
-  })
-})
+    return nameMatch && statusMatch && classMatch && genderMatch;
+  });
+});
 
 const totalPages = computed(() =>
   Math.max(1, Math.ceil(filteredStudents.value.length / rowsPerPage.value))
-)
+);
 
-const start = computed(() => (currentPage.value - 1) * rowsPerPage.value)
+const start = computed(() => (currentPage.value - 1) * rowsPerPage.value);
 
 const paginatedStudents = computed(() =>
   filteredStudents.value.slice(start.value, start.value + rowsPerPage.value)
-)
+);
 
 // Reset to page 1 when filters change
 watch([searchQuery, statusFilter, genderFilter, classFilter, rowsPerPage], () => {
-  currentPage.value = 1
-})
+  currentPage.value = 1;
+});
 
 // --- Pagination Actions ---
 const nextPage = () => {
-  if (currentPage.value < totalPages.value) currentPage.value++
-}
+  if (currentPage.value < totalPages.value) currentPage.value++;
+};
 
 const prevPage = () => {
-  if (currentPage.value > 1) currentPage.value--
-}
+  if (currentPage.value > 1) currentPage.value--;
+};
 
 // --- Modal Handlers ---
 const openAddModal = () => {
-  isEditing.value = false
+  isEditing.value = false;
 
   studentToEdit.value = {
-    khmerName: '',
-    englishName: '',
-    studentId: '',
-    gender: 'ប្រុស',
-    dob: '',
-    joinDate: '',
-    email: '',
-    status: 'active',
-    photo: '',
-    nationality: { student: 'ខ្មែរ' },
+    khmerName: "",
+    englishName: "",
+    studentId: "",
+    gender: "ប្រុស",
+    dob: "",
+    joinDate: "",
+    email: "",
+    status: "active",
+    profileImage: "",
+    nationality: {
+      student: "ខ្មែរ"
+    },
     family: {
-      motherFacebook: '',
-      motherName: '',
-      motherNumber: ''
+      motherFacebook: "",
+      motherName: "",
+      motherNumber: ""
     },
     placeOfBirth: {
-      village: '',
-      commune: '',
-      district: '',
-      province: ''
+      village: "",
+      commune: "",
+      district: "",
+      province: ""
     },
     currentResidence: {
-      village: '',
-      commune: '',
-      district: '',
-      province: ''
+      village: "",
+      commune: "",
+      district: "",
+      province: ""
     }
-  }
+  };
 
-  isFormModalOpen.value = true
-}
+  isFormModalOpen.value = true;
+};
 
 const openEditModal = (student) => {
-  isEditing.value = true
-  studentToEdit.value = JSON.parse(JSON.stringify(student))
+  isEditing.value = true;
+  studentToEdit.value = JSON.parse(JSON.stringify(student));
 
-  if (studentToEdit.value.grade && typeof studentToEdit.value.grade === 'object') {
-    studentToEdit.value.grade = studentToEdit.value.grade._id
+  if (studentToEdit.value.grade && typeof studentToEdit.value.grade === "object") {
+    studentToEdit.value.grade = studentToEdit.value.grade._id;
   }
 
-  isFormModalOpen.value = true
-}
+  isFormModalOpen.value = true;
+};
 
 const openViewModal = (student) => {
-  studentToView.value = student
-  isViewModalOpen.value = true
-}
+  studentToView.value = student;
+  isViewModalOpen.value = true;
+};
 
 const openDeleteModal = (student) => {
-  studentToDelete.value = student
-  isDeleteModalOpen.value = true
-}
+  studentToDelete.value = student;
+  isDeleteModalOpen.value = true;
+};
 
 const closeFormModal = () => {
-  isFormModalOpen.value = false
-}
+  isFormModalOpen.value = false;
+};
 
 const closeViewModal = () => {
-  isViewModalOpen.value = false
-}
+  isViewModalOpen.value = false;
+};
 
 const closeDeleteModal = () => {
-  isDeleteModalOpen.value = false
-}
+  isDeleteModalOpen.value = false;
+};
+
+const getErrorMessage = (error, fallback = "មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យ") => {
+  return (
+    error.response?.data?.err ||
+    error.response?.data?.message ||
+    error.message ||
+    fallback
+  );
+};
 
 // --- CRUD Actions ---
 const saveStudent = async (studentData) => {
   try {
-    if (isEditing.value && studentData._id) {
-      await updateDoc(studentData._id, studentData)
+    if (isEditing.value) {
+      const studentId = studentToEdit.value?._id || studentToEdit.value?.id;
+
+      if (!studentId) {
+        throw new Error("Student ID is missing");
+      }
+
+      await updateDoc(studentId, studentData);
     } else {
-      await createDoc(studentData)
+      await createDoc(studentData);
     }
 
-    await refetchStudents()
-    closeFormModal()
+    await refetchStudents();
+    closeFormModal();
+
+    toast.success(
+      isEditing.value
+        ? "បានកែប្រែសិស្សដោយជោគជ័យ"
+        : "បានបញ្ចូលសិស្សថ្មីដោយជោគជ័យ"
+    );
   } catch (error) {
-    console.error("Error saving student:", error)
+    toast.error(getErrorMessage(error));
   }
-}
+};
 
 const confirmDelete = async () => {
-  if (!studentToDelete.value?._id) return
+  if (!studentToDelete.value?._id) return;
 
   try {
-    await deleteDoc(studentToDelete.value._id)
-    await refetchStudents()
-    closeDeleteModal()
+    await deleteDoc(studentToDelete.value._id);
+    await refetchStudents();
+    closeDeleteModal();
+
+    toast.success("បានលុបសិស្សដោយជោគជ័យ");
   } catch (error) {
-    console.error("Error deleting student:", error)
+    toast.error(getErrorMessage(error, "មិនអាចលុបសិស្សបានទេ"));
   }
-}
+};
 </script>
 
 <style scoped>
 .font-khmer {
-  font-family: 'Battambang', 'Siemreap', sans-serif;
+  font-family: "Battambang", "Siemreap", sans-serif;
 }
 </style>

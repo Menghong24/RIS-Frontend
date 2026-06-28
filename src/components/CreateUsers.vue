@@ -1,5 +1,5 @@
 <template>
-  <div class=" bg-slate-50 p-3 md:p-4">
+  <div class="bg-slate-50 p-3 md:p-4">
     <!-- Header -->
     <div class="max-w-7xl mx-auto mb-4">
       <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
@@ -88,7 +88,7 @@
       <!-- Table -->
       <div class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden">
         <div class="overflow-x-auto">
-          <table class="w-full text-left border-collapse text-xs min-w-[850px]">
+          <table class="w-full text-left border-collapse text-xs min-w-[950px]">
             <thead>
               <tr class="bg-slate-100 border-b border-slate-200 text-slate-700">
                 <th class="p-2 pl-4 font-bold border border-slate-200">
@@ -97,6 +97,10 @@
 
                 <th class="p-2 font-bold border border-slate-200">
                   តួនាទី
+                </th>
+
+                <th class="p-2 font-bold border border-slate-200">
+                  ភ្ជាប់ទៅគ្រូ
                 </th>
 
                 <th class="p-2 font-bold border border-slate-200">
@@ -112,7 +116,7 @@
             <tbody>
               <!-- Loading -->
               <tr v-if="isLoading && users.length === 0">
-                <td colspan="4" class="p-8 text-center text-slate-400">
+                <td colspan="5" class="p-8 text-center text-slate-400">
                   <div class="mx-auto mb-2 h-10 w-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
                     <i class="fa-solid fa-circle-notch fa-spin text-xl"></i>
                   </div>
@@ -125,7 +129,7 @@
 
               <!-- Empty -->
               <tr v-else-if="users.length === 0">
-                <td colspan="4" class="p-10 text-center text-slate-500">
+                <td colspan="5" class="p-10 text-center text-slate-500">
                   <div class="mx-auto mb-2 h-10 w-10 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center">
                     <i class="fa-solid fa-users-slash text-xl"></i>
                   </div>
@@ -177,6 +181,32 @@
                     ]"
                   >
                     {{ translateRole(user.role) }}
+                  </span>
+                </td>
+
+                <td class="p-2 border border-slate-100">
+                  <div v-if="user.role === 'teacher'" class="min-w-0">
+                    <p class="font-bold text-slate-700 truncate">
+                      {{ user.teacher?.khmerName || user.teacher?.englishName || 'មិនទាន់ភ្ជាប់' }}
+                    </p>
+
+                    <p
+                      v-if="user.teacher?._id"
+                      class="text-[10px] font-mono text-slate-400 mt-0.5 truncate"
+                    >
+                      TID: {{ user.teacher._id }}
+                    </p>
+
+                    <span
+                      v-else
+                      class="inline-flex mt-1 px-2 py-0.5 rounded-full bg-red-50 text-red-600 border border-red-100 text-[10px] font-bold"
+                    >
+                      ត្រូវភ្ជាប់ Teacher profile
+                    </span>
+                  </div>
+
+                  <span v-else class="text-slate-400 text-[11px]">
+                    -
                   </span>
                 </td>
 
@@ -322,6 +352,34 @@
                   </select>
                 </div>
 
+                <div v-if="modal.form.role === 'teacher'">
+                  <label class="block text-xs font-bold text-slate-600 mb-1.5">
+                    ជ្រើសគ្រូបង្រៀន
+                  </label>
+
+                  <select
+                    v-model="modal.form.teacher"
+                    required
+                    class="w-full px-3 py-2 border border-slate-200 rounded-lg text-sm bg-white focus:outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition"
+                  >
+                    <option value="" disabled>
+                      ជ្រើសរើស Teacher profile...
+                    </option>
+
+                    <option
+                      v-for="teacher in teachersList"
+                      :key="teacher._id"
+                      :value="teacher._id"
+                    >
+                      {{ teacher.khmerName || teacher.englishName || teacher.name || teacher.username || teacher._id }}
+                    </option>
+                  </select>
+
+                  <p class="text-[11px] text-slate-400 mt-1">
+                    គណនី role គ្រូបង្រៀន ត្រូវភ្ជាប់ទៅ Teacher profile ដើម្បីកំណត់សិទ្ធិថ្នាក់។
+                  </p>
+                </div>
+
                 <div class="flex items-center justify-end space-x-2 pt-4 border-t border-slate-100 mt-6">
                   <button
                     type="button"
@@ -354,9 +412,10 @@
 </template>
 
 <script setup>
-import { ref, reactive, onMounted } from 'vue';
-import { useUsers } from '../hooks/useUsers';
-import { useToast } from 'vue-toastification';
+import { computed, ref, reactive, onMounted, watch } from "vue";
+import { useUsers } from "../hooks/useUsers";
+import { useQuery } from "../hooks/useQuery";
+import { useToast } from "vue-toastification";
 
 const toast = useToast();
 
@@ -371,12 +430,14 @@ const {
   updateUser
 } = useUsers();
 
+const { data: teachers } = useQuery("teachers");
+
 const isDeleting = ref(null);
 const totalPages = ref(1);
 
 const filters = reactive({
-  search: '',
-  role: ''
+  search: "",
+  role: ""
 });
 
 const pagination = reactive({
@@ -386,19 +447,33 @@ const pagination = reactive({
 
 const modal = reactive({
   isOpen: false,
-  mode: 'add',
+  mode: "add",
   targetId: null,
   isSubmitting: false,
   form: {
-    username: '',
-    password: '',
-    role: 'user'
+    username: "",
+    password: "",
+    role: "user",
+    teacher: ""
   }
 });
 
 let searchDebounceTimeout = null;
 
-const allowedRoles = ['admin', 'teacher', 'user'];
+const allowedRoles = ["admin", "teacher", "user"];
+
+const teachersList = computed(() => {
+  return Array.isArray(teachers.value) ? teachers.value : [];
+});
+
+watch(
+  () => modal.form.role,
+  (role) => {
+    if (role !== "teacher") {
+      modal.form.teacher = "";
+    }
+  }
+);
 
 const buildUserQuery = () => {
   const query = {
@@ -407,8 +482,6 @@ const buildUserQuery = () => {
     limit: Number(pagination.limit) || 10
   };
 
-  // ✅ បញ្ជូន role តែពេលជ្រើស admin / teacher / user
-  // ✅ ពេលជ្រើស "តួនាទីទាំងអស់" មិនបញ្ជូន role ទៅ backend
   if (allowedRoles.includes(filters.role)) {
     query.role = filters.role;
   }
@@ -420,8 +493,6 @@ const syncUserDirectory = async () => {
   try {
     const query = buildUserQuery();
 
-    console.log('USER FILTER QUERY:', query);
-
     const response = await findAllUser(query);
 
     if (response?.total) {
@@ -432,7 +503,7 @@ const syncUserDirectory = async () => {
       totalPages.value = 1;
     }
   } catch (err) {
-    console.error('Critical framework error fetching table payload.', err);
+    console.error("Critical framework error fetching table payload.", err);
   }
 };
 
@@ -466,21 +537,23 @@ const changePage = (targetPageIndex) => {
 };
 
 const openAddModal = () => {
-  modal.mode = 'add';
+  modal.mode = "add";
   modal.targetId = null;
-  modal.form.username = '';
-  modal.form.password = '';
-  modal.form.role = 'user';
+  modal.form.username = "";
+  modal.form.password = "";
+  modal.form.role = "user";
+  modal.form.teacher = "";
   modal.isSubmitting = false;
   modal.isOpen = true;
 };
 
 const openEditModal = (userData) => {
-  modal.mode = 'edit';
+  modal.mode = "edit";
   modal.targetId = userData._id;
-  modal.form.username = userData.username || '';
-  modal.form.role = allowedRoles.includes(userData.role) ? userData.role : 'user';
-  modal.form.password = '';
+  modal.form.username = userData.username || "";
+  modal.form.role = allowedRoles.includes(userData.role) ? userData.role : "user";
+  modal.form.password = "";
+  modal.form.teacher = userData.teacher?._id || userData.teacher || "";
   modal.isSubmitting = false;
   modal.isOpen = true;
 };
@@ -489,53 +562,69 @@ const closeModal = () => {
   if (modal.isSubmitting) return;
 
   modal.isOpen = false;
-  modal.mode = 'add';
+  modal.mode = "add";
   modal.targetId = null;
-  modal.form.username = '';
-  modal.form.password = '';
-  modal.form.role = 'user';
+  modal.form.username = "";
+  modal.form.password = "";
+  modal.form.role = "user";
+  modal.form.teacher = "";
+};
+
+const buildPayload = () => {
+  const payload = {
+    username: modal.form.username.trim(),
+    role: modal.form.role
+  };
+
+  if (modal.mode === "add") {
+    payload.password = modal.form.password;
+  }
+
+  if (modal.form.role === "teacher") {
+    payload.teacher = modal.form.teacher;
+  }
+
+  return payload;
 };
 
 const handleModalSubmit = async () => {
   if (!modal.form.username.trim()) {
-    toast.error('សូមបញ្ចូលឈ្មោះអ្នកប្រើប្រាស់');
+    toast.error("សូមបញ្ចូលឈ្មោះអ្នកប្រើប្រាស់");
     return;
   }
 
-  if (modal.mode === 'add' && !modal.form.password.trim()) {
-    toast.error('សូមបញ្ចូលពាក្យសម្ងាត់');
+  if (modal.mode === "add" && !modal.form.password.trim()) {
+    toast.error("សូមបញ្ចូលពាក្យសម្ងាត់");
     return;
   }
 
   if (!allowedRoles.includes(modal.form.role)) {
-    toast.error('សូមជ្រើសតួនាទីឱ្យត្រឹមត្រូវ');
+    toast.error("សូមជ្រើសតួនាទីឱ្យត្រឹមត្រូវ");
+    return;
+  }
+
+  if (modal.form.role === "teacher" && !modal.form.teacher) {
+    toast.error("សូមជ្រើស Teacher profile សម្រាប់គណនីគ្រូបង្រៀន");
     return;
   }
 
   modal.isSubmitting = true;
 
   try {
-    if (modal.mode === 'add') {
-      await createUser({
-        username: modal.form.username.trim(),
-        password: modal.form.password,
-        role: modal.form.role
-      });
+    const payload = buildPayload();
 
+    if (modal.mode === "add") {
+      await createUser(payload);
       toast.success(`បានបង្កើតគណនី "${modal.form.username}" ដោយជោគជ័យ`);
     } else {
-      await updateUser(modal.targetId, {
-        username: modal.form.username.trim(),
-        role: modal.form.role
-      });
-
-      toast.success('បានកែប្រែព័ត៌មានគណនីដោយជោគជ័យ');
+      await updateUser(modal.targetId, payload);
+      toast.success("បានកែប្រែព័ត៌មានគណនីដោយជោគជ័យ");
     }
 
     modal.isOpen = false;
     await syncUserDirectory();
   } catch (err) {
-    toast.error(err.response?.data?.err || 'មិនអាចរក្សាទុកទិន្នន័យបានទេ');
+    toast.error(err.response?.data?.err || "មិនអាចរក្សាទុកទិន្នន័យបានទេ");
   } finally {
     modal.isSubmitting = false;
   }
@@ -558,27 +647,27 @@ const handleDelete = async (userId, username) => {
 
     await syncUserDirectory();
   } catch (err) {
-    toast.error(err.response?.data?.err || 'មិនអាចលុបគណនីបានទេ');
+    toast.error(err.response?.data?.err || "មិនអាចលុបគណនីបានទេ");
   } finally {
     isDeleting.value = null;
   }
 };
 
 const translateRole = (role) => {
-  if (role === 'admin') return 'អ្នកគ្រប់គ្រង';
-  if (role === 'teacher') return 'គ្រូបង្រៀន';
-  return 'អ្នកប្រើប្រាស់';
+  if (role === "admin") return "អ្នកគ្រប់គ្រង";
+  if (role === "teacher") return "គ្រូបង្រៀន";
+  return "អ្នកប្រើប្រាស់";
 };
 
 const formatDate = (dateString) => {
-  if (!dateString) return 'មិនមាន';
+  if (!dateString) return "មិនមាន";
 
-  return new Date(dateString).toLocaleDateString('km-KH', {
-    day: 'numeric',
-    month: 'short',
-    year: 'numeric',
-    hour: '2-digit',
-    minute: '2-digit'
+  return new Date(dateString).toLocaleDateString("km-KH", {
+    day: "numeric",
+    month: "short",
+    year: "numeric",
+    hour: "2-digit",
+    minute: "2-digit"
   });
 };
 </script>

@@ -1,107 +1,127 @@
 <template>
   <div class="flex h-screen overflow-hidden bg-gray-100 text-gray-800">
-    <!-- Mobile Sidebar Overlay -->
+    <!-- Loading user role -->
     <div
-      v-if="isSidebarOpen"
-      @click="isSidebarOpen = false"
-      class="fixed inset-0 bg-black/30 backdrop-blur-[1px] z-30 lg:hidden"
-    ></div>
+      v-if="!isUserReady"
+      class="fixed inset-0 z-50 flex items-center justify-center bg-white"
+    >
+      <div class="text-center">
+        <div class="mx-auto mb-3 h-11 w-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100">
+          <i class="fa-solid fa-circle-notch fa-spin text-xl"></i>
+        </div>
 
-    <!-- Sidebar -->
-    <Sidebar
-      :is-sidebar-open="isSidebarOpen"
-      :menu-items="visibleMenuItems"
-      :active-menu="activeMenu"
-      @menu-click="handleNavigation"
-      @logout-click="isLogoutModalOpen = true"
-    />
+        <p class="text-sm font-extrabold text-slate-700">
+          កំពុងផ្ទៀងផ្ទាត់សិទ្ធិអ្នកប្រើប្រាស់...
+        </p>
+      </div>
+    </div>
 
-    <!-- Main -->
-    <div class="flex flex-col flex-1 overflow-hidden min-w-0">
-      <Header
-        @toggle-sidebar="isSidebarOpen = !isSidebarOpen"
-        @navigate="handleNavigation"
+    <template v-else>
+      <!-- Mobile Sidebar Overlay -->
+      <div
+        v-if="isSidebarOpen"
+        @click="isSidebarOpen = false"
+        class="fixed inset-0 bg-black/30 backdrop-blur-[1px] z-30 lg:hidden"
+      ></div>
+
+      <!-- Sidebar -->
+      <Sidebar
+        :is-sidebar-open="isSidebarOpen"
+        :menu-items="visibleMenuItems"
+        :active-menu="activeMenu"
+        @menu-click="handleNavigation"
+        @logout-click="isLogoutModalOpen = true"
       />
 
-      <main class="flex-1 overflow-y-auto p-3 md:p-4 bg-slate-50">
-        <component
-          :is="activeComponent"
-          @navigateTo="handleNavigation"
+      <!-- Main -->
+      <div class="flex flex-col flex-1 overflow-hidden min-w-0">
+        <Header
+          @toggle-sidebar="isSidebarOpen = !isSidebarOpen"
+          @navigate="handleNavigation"
         />
-      </main>
-    </div>
-<!-- Logout Modal -->
-<div
-  v-if="isLogoutModalOpen"
-  class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/45 backdrop-blur-sm p-4"
-  @click.self="isLogoutModalOpen = false"
->
-  <div class="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl border border-slate-200">
-    <!-- Modal Header -->
-    <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
-      <div class="flex items-center gap-3">
-        <div class="h-11 w-11 rounded-full bg-red-50 text-red-600 flex items-center justify-center">
-          <LogOut class="h-5 w-5" />
-        </div>
 
-        <div class="text-left">
-          <h2 class="text-base font-extrabold text-slate-800">
-            បញ្ជាក់ការចាកចេញ
-          </h2>
-
-          <p class="text-xs text-slate-500 mt-0.5">
-            តើអ្នកពិតជាចង់ចាកចេញពីគណនីមែនទេ?
-          </p>
-        </div>
+        <main class="flex-1 overflow-y-auto p-3 md:p-4 bg-slate-50">
+          <component
+            :is="activeComponent"
+            @navigateTo="handleNavigation"
+          />
+        </main>
       </div>
 
-      <button
-        @click="isLogoutModalOpen = false"
-        class="h-8 w-8 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 inline-flex items-center justify-center transition"
-        aria-label="Close"
+      <!-- Logout Modal -->
+      <div
+        v-if="isLogoutModalOpen"
+        class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/45 backdrop-blur-sm p-4"
+        @click.self="isLogoutModalOpen = false"
       >
-        <span class="text-xl leading-none">&times;</span>
-      </button>
-    </div>
+        <div class="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl border border-slate-200">
+          <!-- Modal Header -->
+          <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+            <div class="flex items-center gap-3">
+              <div class="h-11 w-11 rounded-full bg-red-50 text-red-600 flex items-center justify-center">
+                <LogOut class="h-5 w-5" />
+              </div>
 
-    <!-- Modal Body -->
-    <div class="px-5 py-5">
-      <div class="rounded-xl bg-red-50 border border-red-100 px-4 py-3 text-left">
-        <p class="text-sm font-bold text-red-700">
-          ចាកចេញពីប្រព័ន្ធ
-        </p>
+              <div class="text-left">
+                <h2 class="text-base font-extrabold text-slate-800">
+                  បញ្ជាក់ការចាកចេញ
+                </h2>
 
-        <p class="text-xs text-red-600 mt-1 leading-relaxed">
-          បន្ទាប់ពីចាកចេញ អ្នកត្រូវ login ម្តងទៀត ដើម្បីប្រើប្រាស់ប្រព័ន្ធ។
-        </p>
+                <p class="text-xs text-slate-500 mt-0.5">
+                  តើអ្នកពិតជាចង់ចាកចេញពីគណនីមែនទេ?
+                </p>
+              </div>
+            </div>
+
+            <button
+              @click="isLogoutModalOpen = false"
+              class="h-8 w-8 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 inline-flex items-center justify-center transition"
+              aria-label="Close"
+            >
+              <span class="text-xl leading-none">&times;</span>
+            </button>
+          </div>
+
+          <!-- Modal Body -->
+          <div class="px-5 py-5">
+            <div class="rounded-xl bg-red-50 border border-red-100 px-4 py-3 text-left">
+              <p class="text-sm font-bold text-red-700">
+                ចាកចេញពីប្រព័ន្ធ
+              </p>
+
+              <p class="text-xs text-red-600 mt-1 leading-relaxed">
+                បន្ទាប់ពីចាកចេញ អ្នកត្រូវ login ម្តងទៀត ដើម្បីប្រើប្រាស់ប្រព័ន្ធ។
+              </p>
+            </div>
+          </div>
+
+          <!-- Modal Actions -->
+          <div class="px-5 py-4 bg-slate-50 border-t border-slate-100 flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+            <button
+              @click="isLogoutModalOpen = false"
+              class="w-full sm:w-auto px-4 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-100 text-xs font-extrabold transition"
+            >
+              បោះបង់
+            </button>
+
+            <button
+              @click="confirmLogout"
+              class="w-full sm:w-auto px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 text-xs font-extrabold shadow-sm transition inline-flex items-center justify-center gap-2"
+            >
+              <LogOut class="h-4 w-4" />
+              ចាកចេញ
+            </button>
+          </div>
+        </div>
       </div>
-    </div>
-
-    <!-- Modal Actions -->
-    <div class="px-5 py-4 bg-slate-50 border-t border-slate-100 flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
-      <button
-        @click="isLogoutModalOpen = false"
-        class="w-full sm:w-auto px-4 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-100 text-xs font-extrabold transition"
-      >
-        បោះបង់
-      </button>
-
-      <button
-        @click="confirmLogout"
-        class="w-full sm:w-auto px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 text-xs font-extrabold shadow-sm transition inline-flex items-center justify-center gap-2"
-      >
-        <LogOut class="h-4 w-4" />
-        ចាកចេញ
-      </button>
-    </div>
-  </div>
-</div>
+    </template>
   </div>
 </template>
 
 <script setup>
 import { ref, computed, onMounted, onUnmounted, watch } from "vue";
 import { useRouter } from "vue-router";
+import { useToast } from "vue-toastification";
 import { useAuth } from "../../hooks/useAuth";
 
 import {
@@ -140,6 +160,7 @@ import AttendanceReport from "../AttendanceReport.vue";
 import PaymentReport from "../PaymentReport.vue";
 
 const router = useRouter();
+const toast = useToast();
 const { user, logout } = useAuth();
 
 const STORAGE_KEY = "school_active_menu";
@@ -147,6 +168,19 @@ const STORAGE_KEY = "school_active_menu";
 const isSidebarOpen = ref(true);
 const isLogoutModalOpen = ref(false);
 const activeMenu = ref(localStorage.getItem(STORAGE_KEY) || "គ្រប់គ្រង");
+
+const normalizeRole = (role) => {
+  return String(role || "").trim().toLowerCase();
+};
+
+// ROLE
+const userRole = computed(() => {
+  return normalizeRole(user.value?.role);
+});
+
+const isUserReady = computed(() => {
+  return Boolean(userRole.value);
+});
 
 // RESPONSIVE SIDEBAR
 const handleResize = () => {
@@ -172,11 +206,6 @@ onMounted(() => {
 onUnmounted(() => {
   window.removeEventListener("resize", handleResize);
   window.removeEventListener("keydown", handleKeydown);
-});
-
-// ROLE
-const userRole = computed(() => {
-  return user.value?.role || "teacher";
 });
 
 // MENU
@@ -227,7 +256,7 @@ const allMenuItems = [
     name: "របាយការណ៍វត្តមាន",
     icon: CalendarCheck,
     component: AttendanceReport,
-    roles: ["admin", "teacher"]
+    roles: ["admin"]
   },
   {
     name: "បញ្ចូលពិន្ទុ",
@@ -268,13 +297,21 @@ const allMenuItems = [
 ];
 
 const visibleMenuItems = computed(() => {
+  if (!isUserReady.value) return [];
+
   return allMenuItems.filter((item) => item.roles.includes(userRole.value));
 });
+
+const canOpenMenu = (name) => {
+  return visibleMenuItems.value.some((menuItem) => menuItem.name === name);
+};
 
 // SAFE ACTIVE MENU
 watch(
   visibleMenuItems,
   (items) => {
+    if (!isUserReady.value) return;
+
     const hasActiveMenu = items.some((item) => item.name === activeMenu.value);
 
     if (!hasActiveMenu) {
@@ -288,7 +325,13 @@ watch(
 
 // SAVE ACTIVE MENU
 watch(activeMenu, (menuName) => {
-  localStorage.setItem(STORAGE_KEY, menuName);
+  if (!isUserReady.value) return;
+
+  if (canOpenMenu(menuName)) {
+    localStorage.setItem(STORAGE_KEY, menuName);
+  } else {
+    localStorage.removeItem(STORAGE_KEY);
+  }
 });
 
 // SAFE COMPONENT RESOLUTION
@@ -302,9 +345,10 @@ const activeComponent = computed(() => {
 function handleNavigation(name) {
   if (!name) return;
 
-  const item = visibleMenuItems.value.find((menuItem) => menuItem.name === name);
-
-  if (!item) return;
+  if (!canOpenMenu(name)) {
+    activeMenu.value = visibleMenuItems.value[0]?.name || "គ្រប់គ្រង";
+    return;
+  }
 
   activeMenu.value = name;
 
@@ -319,13 +363,17 @@ async function confirmLogout() {
 
   try {
     await logout();
+
+    activeMenu.value = "គ្រប់គ្រង";
+    localStorage.removeItem(STORAGE_KEY);
+
+    await router.replace("/login");
   } catch (error) {
-    console.error("Logout error:", error);
+    toast.error(
+      error?.response?.data?.err ||
+      error?.message ||
+      "មិនអាចចាកចេញបានទេ"
+    );
   }
-
-  activeMenu.value = "គ្រប់គ្រង";
-  localStorage.removeItem(STORAGE_KEY);
-
-  await router.replace("/login");
 }
 </script>

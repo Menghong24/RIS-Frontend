@@ -15,6 +15,7 @@
             </span>
             {{ isEditing ? "កែប្រែទិន្នន័យសិស្ស" : "បញ្ចូលសិស្សថ្មី" }}
           </h2>
+
           <p class="text-[11px] text-slate-500 mt-0.5">
             សូមបំពេញព័ត៌មានសិស្ស និងព័ត៌មានអាណាព្យាបាល
           </p>
@@ -30,6 +31,65 @@
       </div>
 
       <form @submit.prevent="handleSubmit" class="p-3 space-y-3">
+        <!-- Student Image -->
+        <div class="bg-white border border-slate-200 p-3 rounded-xl">
+          <div class="flex items-center gap-3">
+            <div class="h-20 w-20 rounded-full overflow-hidden bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
+              <img
+                v-if="imagePreviewUrl"
+                :src="imagePreviewUrl"
+                class="h-full w-full object-cover"
+                alt="Student profile"
+              />
+
+              <span
+                v-else
+                class="text-xl font-extrabold text-blue-600"
+              >
+                {{ studentInitial }}
+              </span>
+            </div>
+
+            <div class="min-w-0">
+              <p class="text-xs font-extrabold text-slate-800">
+                រូបសិស្ស
+              </p>
+
+              <p class="text-[11px] text-slate-500 mt-0.5">
+                អាចប្រើ JPG, PNG ឬ WEBP។ ទំហំមិនលើស 2MB។
+              </p>
+
+              <div class="mt-2 flex flex-wrap items-center gap-2">
+                <label class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-xs font-bold cursor-pointer hover:bg-blue-700 transition">
+                  <i class="fa-solid fa-camera"></i>
+                  ជ្រើសរូប
+                  <input
+                    type="file"
+                    accept="image/jpeg,image/png,image/webp"
+                    class="hidden"
+                    @change="handleImageChange"
+                  />
+                </label>
+
+                <button
+                  v-if="selectedImageFile"
+                  type="button"
+                  @click="clearSelectedImage"
+                  class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 text-xs font-bold hover:bg-slate-200 transition"
+                >
+                  សម្អាតរូបថ្មី
+                </button>
+              </div>
+
+              <p
+                v-if="imageError"
+                class="text-[11px] font-bold text-red-600 mt-2"
+              >
+                {{ imageError }}
+              </p>
+            </div>
+          </div>
+        </div>
 
         <!-- Student Info -->
         <div class="bg-white border border-slate-200 p-3 rounded-xl">
@@ -37,6 +97,7 @@
             <span class="h-6 w-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-[10px]">
               <i class="fa-solid fa-id-card"></i>
             </span>
+
             <h3 class="text-xs font-extrabold text-slate-800">
               ព័ត៌មានសិស្ស
             </h3>
@@ -47,6 +108,7 @@
               <label class="block text-[11px] font-bold text-slate-600 mb-1">
                 ឈ្មោះខ្មែរ <span class="text-red-500">*</span>
               </label>
+
               <input
                 type="text"
                 v-model="form.khmerName"
@@ -60,6 +122,7 @@
               <label class="block text-[11px] font-bold text-slate-600 mb-1">
                 ឈ្មោះឡាតាំង <span class="text-red-500">*</span>
               </label>
+
               <input
                 type="text"
                 v-model="form.englishName"
@@ -73,6 +136,7 @@
               <label class="block text-[11px] font-bold text-slate-600 mb-1">
                 អត្តលេខ <span class="text-red-500">*</span>
               </label>
+
               <input
                 type="text"
                 v-model="form.studentId"
@@ -86,6 +150,7 @@
               <label class="block text-[11px] font-bold text-slate-600 mb-1">
                 សញ្ជាតិ <span class="text-red-500">*</span>
               </label>
+
               <input
                 type="text"
                 v-model="form.nationality.student"
@@ -99,6 +164,7 @@
               <label class="block text-[11px] font-bold text-slate-600 mb-1">
                 ភេទ <span class="text-red-500">*</span>
               </label>
+
               <select
                 v-model="form.gender"
                 class="form-input"
@@ -119,6 +185,7 @@
             <span class="h-6 w-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-[10px]">
               <i class="fa-solid fa-location-dot"></i>
             </span>
+
             <h3 class="text-xs font-extrabold text-slate-800">
               ថ្ងៃខែឆ្នាំកំណើត និងទីលំនៅបច្ចុប្បន្ន
             </h3>
@@ -129,6 +196,7 @@
               <label class="block text-[11px] font-bold text-slate-600 mb-1">
                 ថ្ងៃកំណើត <span class="text-red-500">*</span>
               </label>
+
               <input
                 type="date"
                 v-model="form.dob"
@@ -141,6 +209,7 @@
               <label class="block text-[11px] font-bold text-slate-600 mb-1">
                 ភូមិ
               </label>
+
               <input
                 type="text"
                 v-model="form.currentResidence.village"
@@ -154,6 +223,7 @@
               <label class="block text-[11px] font-bold text-slate-600 mb-1">
                 ឃុំ/សង្កាត់
               </label>
+
               <input
                 type="text"
                 v-model="form.currentResidence.commune"
@@ -167,6 +237,7 @@
               <label class="block text-[11px] font-bold text-slate-600 mb-1">
                 ស្រុក/ខណ្ឌ
               </label>
+
               <input
                 type="text"
                 v-model="form.currentResidence.district"
@@ -180,6 +251,7 @@
               <label class="block text-[11px] font-bold text-slate-600 mb-1">
                 ខេត្ត/ក្រុង
               </label>
+
               <input
                 type="text"
                 v-model="form.currentResidence.province"
@@ -193,6 +265,7 @@
               <label class="block text-[11px] font-bold text-slate-600 mb-1">
                 ថ្ងៃចូលរៀន <span class="text-red-500">*</span>
               </label>
+
               <input
                 type="date"
                 v-model="form.joinDate"
@@ -209,6 +282,7 @@
             <span class="h-6 w-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-[10px]">
               <i class="fa-solid fa-user-shield"></i>
             </span>
+
             <h3 class="text-xs font-extrabold text-slate-800">
               ព័ត៌មានអាណាព្យាបាល
             </h3>
@@ -219,6 +293,7 @@
               <label class="block text-[11px] font-bold text-slate-600 mb-1">
                 ឈ្មោះអាណាព្យាបាល
               </label>
+
               <input
                 type="text"
                 v-model="form.family.motherName"
@@ -231,6 +306,7 @@
               <label class="block text-[11px] font-bold text-slate-600 mb-1">
                 លេខទូរស័ព្ទ
               </label>
+
               <input
                 type="text"
                 v-model="form.family.motherNumber"
@@ -243,6 +319,7 @@
               <label class="block text-[11px] font-bold text-slate-600 mb-1">
                 Facebook
               </label>
+
               <input
                 type="text"
                 v-model="form.family.motherFacebook"
@@ -272,11 +349,13 @@
               v-if="students.loading.value"
               class="fa-solid fa-circle-notch fa-spin"
             ></i>
+
             <i
               v-else
               class="fa-solid fa-floppy-disk"
             ></i>
-            {{ students.loading.value ? 'កំពុងរក្សាទុក...' : (isEditing ? "រក្សាទុកការកែប្រែ" : "បញ្ចូលសិស្សថ្មី") }}
+
+            {{ students.loading.value ? "កំពុងរក្សាទុក..." : (isEditing ? "រក្សាទុកការកែប្រែ" : "បញ្ចូលសិស្សថ្មី") }}
           </button>
         </div>
       </form>
@@ -285,18 +364,29 @@
 </template>
 
 <script setup>
-import { ref, watch } from "vue";
+import { ref, computed, watch, onBeforeUnmount } from "vue";
 import { useCollection } from "../../hooks/useCollection";
 import { useQuery } from "../../hooks/useQuery";
 import { useToast } from "vue-toastification";
+import api from "../../config/api";
 
 const props = defineProps({
-  isOpen: { type: Boolean, default: false },
-  isEditing: { type: Boolean, default: false },
-  student: { type: Object, default: null },
+  isOpen: {
+    type: Boolean,
+    default: false
+  },
+  isEditing: {
+    type: Boolean,
+    default: false
+  },
+  student: {
+    type: Object,
+    default: null
+  }
 });
 
 const emit = defineEmits(["close", "save"]);
+
 const students = useCollection("students");
 const classesList = useQuery("classes");
 const toast = useToast();
@@ -309,26 +399,138 @@ const initialFormState = {
   gender: "",
   joinDate: "",
   grade: "",
-  nationality: { student: "ខ្មែរ" },
-  placeOfBirth: { village: "", commune: "", district: "", province: "" },
-  currentResidence: { village: "", commune: "", district: "", province: "" },
+  profileImage: "",
+  profileImageFile: null,
+  nationality: {
+    student: "ខ្មែរ"
+  },
+  placeOfBirth: {
+    village: "",
+    commune: "",
+    district: "",
+    province: ""
+  },
+  currentResidence: {
+    village: "",
+    commune: "",
+    district: "",
+    province: ""
+  },
   family: {
     motherName: "",
     motherNumber: "",
-    motherFacebook: "",
+    motherFacebook: ""
   },
-  status: "active",
+  status: "active"
 };
 
 const form = ref(JSON.parse(JSON.stringify(initialFormState)));
+const selectedImageFile = ref(null);
+const localImagePreviewUrl = ref("");
+const imageError = ref("");
+
+const getApiOrigin = () => {
+  const baseURL = api.defaults?.baseURL || import.meta.env.VITE_API_URL || "";
+
+  if (!baseURL || baseURL === "/api") {
+    return window.location.origin;
+  }
+
+  if (baseURL.startsWith("http")) {
+    return baseURL.replace(/\/api\/?$/, "").replace(/\/$/, "");
+  }
+
+  return window.location.origin;
+};
+
+const getImageUrl = (imagePath = "") => {
+  if (!imagePath) return "";
+
+  if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+    return imagePath;
+  }
+
+  return `${getApiOrigin()}${imagePath}`;
+};
+
+const imagePreviewUrl = computed(() => {
+  if (localImagePreviewUrl.value) return localImagePreviewUrl.value;
+  return getImageUrl(form.value.profileImage);
+});
+
+const studentInitial = computed(() => {
+  return (
+    form.value.khmerName?.charAt(0) ||
+    form.value.englishName?.charAt(0)?.toUpperCase() ||
+    "S"
+  );
+});
+
+/**
+ * IMPORTANT:
+ * This function must be declared before watch(..., { immediate: true })
+ * because the immediate watcher runs during setup.
+ */
+const clearLocalPreview = () => {
+  if (localImagePreviewUrl.value) {
+    URL.revokeObjectURL(localImagePreviewUrl.value);
+  }
+
+  localImagePreviewUrl.value = "";
+};
+
+const validateImageFile = (file) => {
+  const allowedTypes = ["image/jpeg", "image/png", "image/webp"];
+
+  if (!allowedTypes.includes(file.type)) {
+    return "សូមជ្រើសរូបភាពប្រភេទ JPG, PNG ឬ WEBP ប៉ុណ្ណោះ";
+  }
+
+  if (file.size > 2 * 1024 * 1024) {
+    return "រូបភាពមិនអាចលើស 2MB បានទេ";
+  }
+
+  return "";
+};
+
+const handleImageChange = (event) => {
+  const file = event.target.files?.[0];
+
+  if (!file) return;
+
+  const validationError = validateImageFile(file);
+
+  if (validationError) {
+    imageError.value = validationError;
+    event.target.value = "";
+    return;
+  }
+
+function clearLocalPreview() {
+  if (localImagePreviewUrl.value) {
+    URL.revokeObjectURL(localImagePreviewUrl.value);
+  }
+
+  localImagePreviewUrl.value = "";
+}
+};
+
+const clearSelectedImage = () => {
+  selectedImageFile.value = null;
+  form.value.profileImageFile = null;
+  imageError.value = "";
+  clearLocalPreview();
+};
 
 watch(
   () => props.student,
   (newStudent) => {
+    clearLocalPreview();
+
     if (newStudent) {
       const mergedData = {
         ...JSON.parse(JSON.stringify(initialFormState)),
-        ...JSON.parse(JSON.stringify(newStudent)),
+        ...JSON.parse(JSON.stringify(newStudent))
       };
 
       if (mergedData.birthDate) {
@@ -357,38 +559,85 @@ watch(
         mergedData.grade = mergedData.grade._id;
       }
 
+      mergedData.profileImageFile = null;
       form.value = mergedData;
     } else {
       form.value = JSON.parse(JSON.stringify(initialFormState));
     }
+
+    selectedImageFile.value = null;
+    imageError.value = "";
   },
-  { immediate: true, deep: true }
+  {
+    immediate: true,
+    deep: true
+  }
 );
+
+const appendNestedObjectToFormData = (formData, key, value = {}) => {
+  Object.entries(value || {}).forEach(([childKey, childValue]) => {
+    if (childValue === undefined || childValue === null) return;
+    formData.append(`${key}[${childKey}]`, childValue);
+  });
+};
+
+const buildFormDataPayload = () => {
+  const payload = {
+    ...form.value
+  };
+
+  if (payload.dob) {
+    payload.birthDate = new Date(payload.dob).toISOString();
+  }
+
+  if (payload.joinDate) {
+    payload.joinDate = new Date(payload.joinDate).toISOString();
+  }
+
+  delete payload.dob;
+  delete payload.profileImageFile;
+
+  if (!payload.grade) {
+    delete payload.grade;
+  }
+
+  const formData = new FormData();
+
+  Object.entries(payload).forEach(([key, value]) => {
+    if (value === undefined || value === null) return;
+
+    if (
+      key === "nationality" ||
+      key === "placeOfBirth" ||
+      key === "currentResidence" ||
+      key === "family"
+    ) {
+      appendNestedObjectToFormData(formData, key, value);
+      return;
+    }
+
+    formData.append(key, value);
+  });
+
+  if (selectedImageFile.value) {
+    formData.append("profileImage", selectedImageFile.value);
+  }
+
+  return formData;
+};
 
 const handleSubmit = async () => {
   try {
-    const payload = { ...form.value };
-
-    if (payload.dob) {
-      payload.birthDate = new Date(payload.dob);
-    }
-
-    if (payload.joinDate) {
-      payload.joinDate = new Date(payload.joinDate);
-    }
-
-    delete payload.dob;
-
-    if (!payload.grade) {
-      delete payload.grade;
-    }
-
+    const payload = buildFormDataPayload();
     emit("save", payload);
   } catch (err) {
-    console.error(err);
     toast.error(err.message || "មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យ");
   }
 };
+
+onBeforeUnmount(() => {
+  clearLocalPreview();
+});
 </script>
 
 <style scoped>

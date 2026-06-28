@@ -6,9 +6,9 @@
     <!-- Photo -->
     <td class="p-2 w-14">
       <img
-        :src="student.photo || placeholderAvatar"
+        :src="studentImageUrl"
         class="w-9 h-9 rounded-full object-cover border border-blue-100 shadow-sm"
-        :alt="`${student.khmerName} ${student.englishName}`"
+        :alt="`${student.khmerName || ''} ${student.englishName || ''}`"
       />
     </td>
 
@@ -46,7 +46,7 @@
 
     <!-- Nationality -->
     <td class="p-2 text-slate-600 text-xs hidden lg:table-cell">
-      {{ student.nationality?.student || 'ខ្មែរ' }}
+      {{ student.nationality?.student || "ខ្មែរ" }}
     </td>
 
     <!-- Join Date -->
@@ -62,6 +62,7 @@
       >
         {{ student.grade.className }}
       </span>
+
       <span v-else class="text-slate-400">-</span>
     </td>
 
@@ -73,6 +74,7 @@
       >
         {{ student.grade.classGrade }}
       </span>
+
       <span v-else class="text-slate-400">-</span>
     </td>
 
@@ -101,39 +103,64 @@
 </template>
 
 <script setup>
-import { computed } from 'vue'
+import { computed } from "vue";
+import api from "../../config/api";
 
 const props = defineProps({
   student: {
     type: Object,
     required: true
   }
-})
+});
 
-defineEmits(['view', 'edit', 'delete'])
+defineEmits(["view", "edit", "delete"]);
 
-const placeholderAvatar = 'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4cXH1syfrG2BHeN176taDZCnbb5AiP5Y9sw&s'
+const placeholderAvatar =
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4cXH1syfrG2BHeN176taDZCnbb5AiP5Y9sw&s";
+
+const getApiOrigin = () => {
+  const baseURL = api.defaults?.baseURL || import.meta.env.VITE_API_URL || "";
+
+  if (!baseURL || baseURL === "/api") {
+    return window.location.origin;
+  }
+
+  if (baseURL.startsWith("http")) {
+    return baseURL.replace(/\/api\/?$/, "").replace(/\/$/, "");
+  }
+
+  return window.location.origin;
+};
+
+const getImageUrl = (imagePath = "") => {
+  if (!imagePath) return "";
+
+  if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+    return imagePath;
+  }
+
+  return `${getApiOrigin()}${imagePath}`;
+};
+
+const studentImageUrl = computed(() => {
+  return getImageUrl(props.student?.profileImage) || placeholderAvatar;
+});
 
 const formatDate = (date) => {
-  if (!date) return '-'
+  if (!date) return "-";
 
-  const d = new Date(date)
+  const d = new Date(date);
 
-  return d.toLocaleDateString('km-KH', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  })
-}
-
-const isActive = computed(() => {
-  const s = props.student.status?.toLowerCase()
-  return s === 'active'
-})
+  return d.toLocaleDateString("km-KH", {
+    year: "numeric",
+    month: "short",
+    day: "numeric"
+  });
+};
 </script>
 
 <style scoped>
 .font-khmer {
-  font-family: 'Battambang', 'Siemreap', sans-serif;
+  font-family: "Battambang", "Siemreap", sans-serif;
 }
 </style>

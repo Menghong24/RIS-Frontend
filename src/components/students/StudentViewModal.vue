@@ -10,24 +10,24 @@
       <div class="px-3 py-3 border-b border-slate-100 bg-slate-50 flex items-start justify-between gap-3">
         <div class="flex items-center gap-3">
           <img
-            :src="student?.photo || avatar"
+            :src="studentImageUrl"
             class="w-14 h-14 rounded-full object-cover ring-2 ring-blue-100 border border-blue-200 shadow-sm"
             :alt="student?.khmerName || 'Student'"
           />
 
           <div>
             <h2 class="text-base font-extrabold text-slate-800">
-              {{ student?.khmerName || 'មិនមានឈ្មោះ' }}
+              {{ student?.khmerName || "មិនមានឈ្មោះ" }}
             </h2>
 
             <p class="text-[11px] text-slate-500 mt-0.5">
-              {{ student?.englishName || '-' }}
+              {{ student?.englishName || "-" }}
             </p>
 
             <div class="flex flex-wrap items-center gap-1.5 mt-1.5">
               <span class="bg-blue-50 text-blue-700 border border-blue-200 px-2 py-0.5 rounded-full text-[10px] font-bold">
                 <i class="fa-solid fa-id-card mr-1"></i>
-                {{ student?.studentId || '-' }}
+                {{ student?.studentId || "-" }}
               </span>
 
               <span
@@ -37,7 +37,7 @@
                 class="border px-2 py-0.5 rounded-full text-[10px] font-bold"
               >
                 <i class="fa-solid fa-venus-mars mr-1"></i>
-                {{ student?.gender || '-' }}
+                {{ student?.gender || "-" }}
               </span>
             </div>
           </div>
@@ -53,7 +53,6 @@
 
       <!-- Body -->
       <div class="p-3 space-y-3">
-
         <!-- Student Details -->
         <div class="border border-slate-200 p-3 rounded-xl bg-white">
           <h3 class="text-xs font-extrabold text-slate-800 mb-2 flex items-center gap-2">
@@ -66,22 +65,22 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-xs">
             <div class="info-box">
               <span class="info-label">ឈ្មោះខ្មែរ</span>
-              <p class="info-value">{{ student?.khmerName || '-' }}</p>
+              <p class="info-value">{{ student?.khmerName || "-" }}</p>
             </div>
 
             <div class="info-box">
               <span class="info-label">ឈ្មោះឡាតាំង</span>
-              <p class="info-value">{{ student?.englishName || '-' }}</p>
+              <p class="info-value">{{ student?.englishName || "-" }}</p>
             </div>
 
             <div class="info-box">
               <span class="info-label">ភេទ</span>
-              <p class="info-value">{{ student?.gender || '-' }}</p>
+              <p class="info-value">{{ student?.gender || "-" }}</p>
             </div>
 
             <div class="info-box">
               <span class="info-label">សញ្ជាតិ</span>
-              <p class="info-value">{{ student?.nationality?.student || 'ខ្មែរ' }}</p>
+              <p class="info-value">{{ student?.nationality?.student || "ខ្មែរ" }}</p>
             </div>
 
             <div class="info-box">
@@ -91,7 +90,7 @@
 
             <div class="info-box">
               <span class="info-label">អត្តលេខ</span>
-              <p class="info-value">{{ student?.studentId || '-' }}</p>
+              <p class="info-value">{{ student?.studentId || "-" }}</p>
             </div>
 
             <div class="info-box">
@@ -101,12 +100,12 @@
 
             <div class="info-box">
               <span class="info-label">ថ្នាក់រៀន</span>
-              <p class="info-value">{{ student?.grade?.className || '-' }}</p>
+              <p class="info-value">{{ student?.grade?.className || "-" }}</p>
             </div>
 
             <div class="info-box">
               <span class="info-label">កម្រិតថ្នាក់</span>
-              <p class="info-value">{{ student?.grade?.classGrade || '-' }}</p>
+              <p class="info-value">{{ student?.grade?.classGrade || "-" }}</p>
             </div>
           </div>
         </div>
@@ -123,17 +122,17 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
             <div class="info-box">
               <span class="info-label">ឈ្មោះអាណាព្យាបាល</span>
-              <p class="info-value">{{ student?.family?.motherName || '-' }}</p>
+              <p class="info-value">{{ student?.family?.motherName || "-" }}</p>
             </div>
 
             <div class="info-box">
               <span class="info-label">លេខទូរស័ព្ទ</span>
-              <p class="info-value">{{ student?.family?.motherNumber || '-' }}</p>
+              <p class="info-value">{{ student?.family?.motherNumber || "-" }}</p>
             </div>
 
             <div class="info-box sm:col-span-2">
               <span class="info-label">គណនី Facebook</span>
-              <p class="info-value">{{ student?.family?.motherFacebook || '-' }}</p>
+              <p class="info-value">{{ student?.family?.motherFacebook || "-" }}</p>
             </div>
           </div>
         </div>
@@ -150,22 +149,22 @@
           <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-xs">
             <div class="info-box">
               <span class="info-label">ភូមិ</span>
-              <p class="info-value">{{ student?.currentResidence?.village || '-' }}</p>
+              <p class="info-value">{{ student?.currentResidence?.village || "-" }}</p>
             </div>
 
             <div class="info-box">
               <span class="info-label">ឃុំ/សង្កាត់</span>
-              <p class="info-value">{{ student?.currentResidence?.commune || '-' }}</p>
+              <p class="info-value">{{ student?.currentResidence?.commune || "-" }}</p>
             </div>
 
             <div class="info-box">
               <span class="info-label">ស្រុក/ខណ្ឌ</span>
-              <p class="info-value">{{ student?.currentResidence?.district || '-' }}</p>
+              <p class="info-value">{{ student?.currentResidence?.district || "-" }}</p>
             </div>
 
             <div class="info-box">
               <span class="info-label">ខេត្ត/ក្រុង</span>
-              <p class="info-value">{{ student?.currentResidence?.province || '-' }}</p>
+              <p class="info-value">{{ student?.currentResidence?.province || "-" }}</p>
             </div>
           </div>
         </div>
@@ -180,33 +179,64 @@
             បិទ
           </button>
         </div>
-
       </div>
     </div>
   </div>
 </template>
 
 <script setup>
-defineProps({
+import { computed } from "vue";
+import api from "../../config/api";
+
+const props = defineProps({
   isOpen: Boolean,
-  student: Object,
+  student: {
+    type: Object,
+    default: null
+  }
 });
 
-import { ref } from 'vue';
+defineEmits(["close"]);
 
-const avatar = ref('https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4cXH1syfrG2BHeN176taDZCnbb5AiP5Y9sw&s');
+const avatar =
+  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcR4cXH1syfrG2BHeN176taDZCnbb5AiP5Y9sw&s";
 
-const formatDate = (date) => {
-  if (!date) return '-';
+const getApiOrigin = () => {
+  const baseURL = api.defaults?.baseURL || import.meta.env.VITE_API_URL || "";
 
-  return new Date(date).toLocaleDateString('km-KH', {
-    year: 'numeric',
-    month: 'short',
-    day: 'numeric'
-  });
+  if (!baseURL || baseURL === "/api") {
+    return window.location.origin;
+  }
+
+  if (baseURL.startsWith("http")) {
+    return baseURL.replace(/\/api\/?$/, "").replace(/\/$/, "");
+  }
+
+  return window.location.origin;
 };
 
-defineEmits(['close']);
+const getImageUrl = (imagePath = "") => {
+  if (!imagePath) return "";
+  if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+    return imagePath;
+  }
+
+  return `${getApiOrigin()}${imagePath}`;
+};
+
+const studentImageUrl = computed(() => {
+  return getImageUrl(props.student?.profileImage) || avatar;
+});
+
+const formatDate = (date) => {
+  if (!date) return "-";
+
+  return new Date(date).toLocaleDateString("km-KH", {
+    year: "numeric",
+    month: "short",
+    day: "numeric"
+  });
+};
 </script>
 
 <style scoped>
