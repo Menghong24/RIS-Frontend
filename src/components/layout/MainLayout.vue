@@ -1,12 +1,14 @@
 <template>
-  <div class="flex h-screen overflow-hidden bg-gray-100 text-gray-800">
+  <div class="min-h-screen overflow-hidden bg-slate-100 text-slate-800">
     <!-- Loading user role -->
     <div
       v-if="!isUserReady"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-white"
+      class="fixed inset-0 z-[100] flex items-center justify-center bg-white"
     >
       <div class="text-center">
-        <div class="mx-auto mb-3 h-11 w-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100">
+        <div
+          class="mx-auto mb-3 h-11 w-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100"
+        >
           <i class="fa-solid fa-circle-notch fa-spin text-xl"></i>
         </div>
 
@@ -18,47 +20,73 @@
 
     <template v-else>
       <!-- Mobile Sidebar Overlay -->
-      <div
-        v-if="isSidebarOpen"
-        @click="isSidebarOpen = false"
-        class="fixed inset-0 bg-black/30 backdrop-blur-[1px] z-30 lg:hidden"
-      ></div>
+      <Transition
+        enter-active-class="transition-opacity duration-200 ease-out"
+        enter-from-class="opacity-0"
+        enter-to-class="opacity-100"
+        leave-active-class="transition-opacity duration-150 ease-in"
+        leave-from-class="opacity-100"
+        leave-to-class="opacity-0"
+      >
+        <div
+          v-if="isMobileSidebarOpen"
+          @click="closeSidebar"
+          class="fixed inset-0 z-40 bg-slate-950/45 backdrop-blur-[2px] lg:hidden"
+          aria-hidden="true"
+        ></div>
+      </Transition>
 
-      <!-- Sidebar -->
-      <Sidebar
-        :is-sidebar-open="isSidebarOpen"
-        :menu-items="visibleMenuItems"
-        :active-menu="activeMenu"
-        @menu-click="handleNavigation"
-        @logout-click="isLogoutModalOpen = true"
-      />
-
-      <!-- Main -->
-      <div class="flex flex-col flex-1 overflow-hidden min-w-0">
-        <Header
-          @toggle-sidebar="isSidebarOpen = !isSidebarOpen"
-          @navigate="handleNavigation"
-        />
-
-        <main class="flex-1 overflow-y-auto p-3 md:p-4 bg-slate-50">
-          <component
-            :is="activeComponent"
-            @navigateTo="handleNavigation"
+      <!-- Layout Wrapper -->
+      <div class="flex h-screen overflow-hidden">
+        <!-- Sidebar -->
+        <aside
+          :class="[
+            'fixed inset-y-0 left-0 z-50 shrink-0 transform transition-transform duration-300 ease-in-out lg:static lg:z-auto lg:translate-x-0',
+            isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
+          ]"
+        >
+          <Sidebar
+            :is-sidebar-open="isSidebarOpen"
+            :menu-items="visibleMenuItems"
+            :active-menu="activeMenu"
+            @menu-click="handleNavigation"
+            @logout-click="openLogoutModal"
           />
-        </main>
+        </aside>
+
+        <!-- Main -->
+        <div class="flex min-w-0 flex-1 flex-col overflow-hidden">
+          <Header
+            @toggle-sidebar="toggleSidebar"
+            @navigate="handleNavigation"
+          />
+
+          <main class="flex-1 overflow-y-auto bg-slate-50 p-3 md:p-4">
+            <component
+              :is="activeComponent"
+              @navigateTo="handleNavigation"
+            />
+          </main>
+        </div>
       </div>
 
       <!-- Logout Modal -->
       <div
         v-if="isLogoutModalOpen"
-        class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/45 backdrop-blur-sm p-4"
+        class="fixed inset-0 z-[90] flex items-center justify-center bg-slate-900/45 backdrop-blur-sm p-4"
         @click.self="isLogoutModalOpen = false"
       >
-        <div class="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl border border-slate-200">
+        <div
+          class="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl border border-slate-200"
+        >
           <!-- Modal Header -->
-          <div class="px-5 py-4 border-b border-slate-100 flex items-center justify-between">
+          <div
+            class="px-5 py-4 border-b border-slate-100 flex items-center justify-between"
+          >
             <div class="flex items-center gap-3">
-              <div class="h-11 w-11 rounded-full bg-red-50 text-red-600 flex items-center justify-center">
+              <div
+                class="h-11 w-11 rounded-full bg-red-50 text-red-600 flex items-center justify-center"
+              >
                 <LogOut class="h-5 w-5" />
               </div>
 
@@ -77,6 +105,7 @@
               @click="isLogoutModalOpen = false"
               class="h-8 w-8 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 inline-flex items-center justify-center transition"
               aria-label="Close"
+              type="button"
             >
               <span class="text-xl leading-none">&times;</span>
             </button>
@@ -84,7 +113,9 @@
 
           <!-- Modal Body -->
           <div class="px-5 py-5">
-            <div class="rounded-xl bg-red-50 border border-red-100 px-4 py-3 text-left">
+            <div
+              class="rounded-xl bg-red-50 border border-red-100 px-4 py-3 text-left"
+            >
               <p class="text-sm font-bold text-red-700">
                 ចាកចេញពីប្រព័ន្ធ
               </p>
@@ -96,10 +127,13 @@
           </div>
 
           <!-- Modal Actions -->
-          <div class="px-5 py-4 bg-slate-50 border-t border-slate-100 flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+          <div
+            class="px-5 py-4 bg-slate-50 border-t border-slate-100 flex flex-col-reverse sm:flex-row sm:justify-end gap-2"
+          >
             <button
               @click="isLogoutModalOpen = false"
               class="w-full sm:w-auto px-4 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-100 text-xs font-extrabold transition"
+              type="button"
             >
               បោះបង់
             </button>
@@ -107,6 +141,7 @@
             <button
               @click="confirmLogout"
               class="w-full sm:w-auto px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 text-xs font-extrabold shadow-sm transition inline-flex items-center justify-center gap-2"
+              type="button"
             >
               <LogOut class="h-4 w-4" />
               ចាកចេញ
@@ -164,8 +199,10 @@ const toast = useToast();
 const { user, logout } = useAuth();
 
 const STORAGE_KEY = "school_active_menu";
+const DESKTOP_WIDTH = 1024;
 
-const isSidebarOpen = ref(true);
+const isDesktop = ref(false);
+const isSidebarOpen = ref(false);
 const isLogoutModalOpen = ref(false);
 const activeMenu = ref(localStorage.getItem(STORAGE_KEY) || "គ្រប់គ្រង");
 
@@ -182,30 +219,80 @@ const isUserReady = computed(() => {
   return Boolean(userRole.value);
 });
 
-// RESPONSIVE SIDEBAR
-const handleResize = () => {
-  isSidebarOpen.value = window.innerWidth >= 1024;
+// SIDEBAR
+const isMobileSidebarOpen = computed(() => {
+  return !isDesktop.value && isSidebarOpen.value;
+});
+
+const lockBodyScroll = () => {
+  if (typeof document === "undefined") return;
+
+  document.body.style.overflow = isMobileSidebarOpen.value ? "hidden" : "";
+};
+
+const syncScreenSize = () => {
+  if (typeof window === "undefined") return;
+
+  const wasDesktop = isDesktop.value;
+  isDesktop.value = window.innerWidth >= DESKTOP_WIDTH;
+
+  if (isDesktop.value && !wasDesktop) {
+    isSidebarOpen.value = true;
+  }
+
+  if (!isDesktop.value && wasDesktop) {
+    isSidebarOpen.value = false;
+  }
+
+  lockBodyScroll();
+};
+
+const toggleSidebar = () => {
+  isSidebarOpen.value = !isSidebarOpen.value;
+};
+
+const closeSidebar = () => {
+  if (!isDesktop.value) {
+    isSidebarOpen.value = false;
+  }
+};
+
+const openLogoutModal = () => {
+  closeSidebar();
+  isLogoutModalOpen.value = true;
 };
 
 const handleKeydown = (event) => {
   if (event.key === "Escape") {
     isLogoutModalOpen.value = false;
 
-    if (window.innerWidth < 1024) {
+    if (!isDesktop.value) {
       isSidebarOpen.value = false;
     }
   }
 };
 
 onMounted(() => {
-  handleResize();
-  window.addEventListener("resize", handleResize);
+  isDesktop.value = window.innerWidth >= DESKTOP_WIDTH;
+  isSidebarOpen.value = isDesktop.value;
+
+  window.addEventListener("resize", syncScreenSize);
   window.addEventListener("keydown", handleKeydown);
+
+  lockBodyScroll();
 });
 
 onUnmounted(() => {
-  window.removeEventListener("resize", handleResize);
+  window.removeEventListener("resize", syncScreenSize);
   window.removeEventListener("keydown", handleKeydown);
+
+  if (typeof document !== "undefined") {
+    document.body.style.overflow = "";
+  }
+});
+
+watch(isMobileSidebarOpen, () => {
+  lockBodyScroll();
 });
 
 // MENU
@@ -253,21 +340,9 @@ const allMenuItems = [
     roles: ["admin", "teacher"]
   },
   {
-    name: "របាយការណ៍វត្តមាន",
-    icon: CalendarCheck,
-    component: AttendanceReport,
-    roles: ["admin"]
-  },
-  {
     name: "បញ្ចូលពិន្ទុ",
     icon: ClipboardList,
     component: Score,
-    roles: ["admin", "teacher"]
-  },
-  {
-    name: "របាយការណ៍ពិន្ទុ",
-    icon: FileText,
-    component: ScoreReport,
     roles: ["admin", "teacher"]
   },
   {
@@ -277,16 +352,35 @@ const allMenuItems = [
     roles: ["admin"]
   },
   {
-    name: "របាយការណ៍បង់ប្រាក់",
-    icon: Receipt,
-    component: PaymentReport,
-    roles: ["admin"]
-  },
-  {
     name: "សេចក្ដីជូនដំណឹង",
     icon: Megaphone,
     component: Notices,
     roles: ["admin", "teacher"]
+  },
+  {
+    name: "របាយការណ៍",
+    icon: FileText,
+    roles: ["admin", "teacher"],
+    children: [
+      {
+        name: "របាយការណ៍វត្តមាន",
+        icon: CalendarCheck,
+        component: AttendanceReport,
+        roles: ["admin"]
+      },
+      {
+        name: "របាយការណ៍ពិន្ទុ",
+        icon: FileText,
+        component: ScoreReport,
+        roles: ["admin", "teacher"]
+      },
+      {
+        name: "របាយការណ៍បង់ប្រាក់",
+        icon: Receipt,
+        component: PaymentReport,
+        roles: ["admin"]
+      }
+    ]
   },
   {
     name: "អ្នកប្រើប្រាស់",
@@ -296,26 +390,66 @@ const allMenuItems = [
   }
 ];
 
+const filterMenuByRole = (items) => {
+  return items
+    .map((item) => {
+      const children = item.children ? filterMenuByRole(item.children) : [];
+
+      const canSeeSelf = item.roles?.includes(userRole.value);
+
+      if (children.length > 0) {
+        return {
+          ...item,
+          children
+        };
+      }
+
+      if (canSeeSelf) {
+        return {
+          ...item,
+          children: undefined
+        };
+      }
+
+      return null;
+    })
+    .filter(Boolean);
+};
+
 const visibleMenuItems = computed(() => {
   if (!isUserReady.value) return [];
 
-  return allMenuItems.filter((item) => item.roles.includes(userRole.value));
+  return filterMenuByRole(allMenuItems);
+});
+
+const flattenMenuItems = (items = []) => {
+  return items.flatMap((item) => {
+    if (item.children?.length) {
+      return flattenMenuItems(item.children);
+    }
+
+    return [item];
+  });
+};
+
+const visibleLeafMenuItems = computed(() => {
+  return flattenMenuItems(visibleMenuItems.value);
 });
 
 const canOpenMenu = (name) => {
-  return visibleMenuItems.value.some((menuItem) => menuItem.name === name);
+  return visibleLeafMenuItems.value.some((menuItem) => menuItem.name === name);
 };
 
 // SAFE ACTIVE MENU
 watch(
   visibleMenuItems,
-  (items) => {
+  () => {
     if (!isUserReady.value) return;
 
-    const hasActiveMenu = items.some((item) => item.name === activeMenu.value);
+    const hasActiveMenu = canOpenMenu(activeMenu.value);
 
     if (!hasActiveMenu) {
-      activeMenu.value = items[0]?.name || "គ្រប់គ្រង";
+      activeMenu.value = visibleLeafMenuItems.value[0]?.name || "គ្រប់គ្រង";
     }
   },
   {
@@ -336,7 +470,9 @@ watch(activeMenu, (menuName) => {
 
 // SAFE COMPONENT RESOLUTION
 const activeComponent = computed(() => {
-  const item = visibleMenuItems.value.find((menuItem) => menuItem.name === activeMenu.value);
+  const item = visibleLeafMenuItems.value.find(
+    (menuItem) => menuItem.name === activeMenu.value
+  );
 
   return item?.component || Dashboard;
 });
@@ -346,15 +482,13 @@ function handleNavigation(name) {
   if (!name) return;
 
   if (!canOpenMenu(name)) {
-    activeMenu.value = visibleMenuItems.value[0]?.name || "គ្រប់គ្រង";
+    activeMenu.value = visibleLeafMenuItems.value[0]?.name || "គ្រប់គ្រង";
+    closeSidebar();
     return;
   }
 
   activeMenu.value = name;
-
-  if (window.innerWidth < 1024) {
-    isSidebarOpen.value = false;
-  }
+  closeSidebar();
 }
 
 // LOGOUT
@@ -371,8 +505,8 @@ async function confirmLogout() {
   } catch (error) {
     toast.error(
       error?.response?.data?.err ||
-      error?.message ||
-      "មិនអាចចាកចេញបានទេ"
+        error?.message ||
+        "មិនអាចចាកចេញបានទេ"
     );
   }
 }

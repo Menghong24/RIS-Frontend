@@ -1,48 +1,50 @@
 <template>
-  <div class="bg-slate-50 p-3 md:p-4">
-    <div class="max-w-7xl mx-auto space-y-4">
+  <div class="bg-slate-50 p-2 sm:p-3 md:p-4">
+    <div class="max-w-7xl mx-auto space-y-3 md:space-y-4">
       <!-- Header + Filters -->
-      <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-3 md:p-4">
-        <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-3">
-          <div>
-            <h1 class="text-xl font-extrabold text-slate-800 flex items-center gap-2">
-              <span class="h-8 w-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-sm">
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-2.5 sm:p-3 md:p-4">
+        <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-2.5 sm:gap-3">
+          <div class="min-w-0">
+            <h1 class="text-base sm:text-lg md:text-xl font-extrabold text-slate-800 flex items-center gap-2">
+              <span class="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-xs sm:text-sm shrink-0">
                 <i class="fa-solid fa-user-graduate"></i>
               </span>
-              បញ្ជីឈ្មោះសិស្សទាំងអស់
+              <span class="truncate">
+                បញ្ជីឈ្មោះសិស្សទាំងអស់
+              </span>
             </h1>
 
-            <p class="text-xs text-slate-500 mt-1">
+            <p class="text-[11px] sm:text-xs text-slate-500 mt-1 leading-5">
               ស្វែងរក តម្រង និងគ្រប់គ្រងព័ត៌មានសិស្សទាំងអស់ក្នុងប្រព័ន្ធ
             </p>
           </div>
 
           <button
             @click="openAddModal"
-            class="flex items-center justify-center gap-2 w-full sm:w-auto bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition shadow-sm text-xs font-bold whitespace-nowrap"
+            class="flex items-center justify-center gap-1.5 sm:gap-2 w-full sm:w-auto bg-blue-600 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-blue-700 transition shadow-sm text-[11px] sm:text-xs font-bold whitespace-nowrap"
           >
-            <i class="fa-solid fa-user-plus"></i>
+            <i class="fa-solid fa-user-plus text-[11px] sm:text-xs"></i>
             បញ្ចូលសិស្សថ្មី
           </button>
         </div>
 
-        <div class="mt-4 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
+        <div class="mt-3 sm:mt-4 grid grid-cols-2 lg:grid-cols-4 gap-2 sm:gap-3">
           <!-- Search -->
-          <div class="relative">
-            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
+          <div class="relative col-span-2 sm:col-span-1">
+            <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-[10px] sm:text-xs"></i>
 
             <input
               v-model="searchQuery"
               type="text"
               placeholder="ស្វែងរកតាមឈ្មោះ ឬអត្តលេខ..."
-              class="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-xs text-slate-700 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition"
+              class="w-full pl-8 sm:pl-9 pr-3 py-1.5 sm:py-2 border border-slate-200 rounded-lg text-[11px] sm:text-xs text-slate-700 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition"
             />
           </div>
 
           <!-- Class Filter -->
           <select
             v-model="classFilter"
-            class="w-full border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-700 bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition"
+            class="w-full border border-slate-200 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 text-[11px] sm:text-xs text-slate-700 bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition"
           >
             <option value="All">ថ្នាក់ទាំងអស់</option>
 
@@ -58,7 +60,7 @@
           <!-- Gender Filter -->
           <select
             v-model="genderFilter"
-            class="w-full border border-slate-200 rounded-lg px-3 py-2 text-xs text-slate-700 bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition"
+            class="w-full border border-slate-200 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 text-[11px] sm:text-xs text-slate-700 bg-white focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition"
           >
             <option value="All">ភេទទាំងអស់</option>
             <option value="ប្រុស">ប្រុស</option>
@@ -66,7 +68,7 @@
           </select>
 
           <!-- Total -->
-          <div class="flex items-center justify-between bg-blue-50 border border-blue-100 rounded-lg px-3 py-2 text-xs">
+          <div class="col-span-2 sm:col-span-1 flex items-center justify-between bg-blue-50 border border-blue-100 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 text-[11px] sm:text-xs">
             <span class="font-bold text-blue-700">
               <i class="fa-solid fa-users mr-1"></i>
               សរុប
@@ -79,8 +81,147 @@
         </div>
       </div>
 
-      <!-- Table -->
-      <div class="overflow-x-auto rounded-xl shadow-sm border border-slate-200 bg-white w-full">
+      <!-- Mobile Student Cards -->
+      <div class="lg:hidden space-y-2">
+        <div
+          v-if="paginatedStudents.length > 0"
+          class="grid grid-cols-1 gap-2"
+        >
+          <div
+            v-for="student in paginatedStudents"
+            :key="student._id"
+            class="bg-white rounded-xl border border-slate-200 shadow-sm p-2.5 active:bg-blue-50/40 transition"
+            @click="openViewModal(student)"
+          >
+            <div class="flex items-start gap-2">
+              <div
+                class="h-9 w-9 rounded-full overflow-hidden border border-blue-100 bg-blue-50 text-blue-700 flex items-center justify-center font-extrabold shrink-0"
+              >
+                <img
+                  v-if="getStudentImageUrl(student)"
+                  :src="getStudentImageUrl(student)"
+                  class="h-full w-full object-cover"
+                  :alt="getStudentFullName(student)"
+                />
+
+                <span v-else class="text-[11px]">
+                  {{ getStudentInitial(student) }}
+                </span>
+              </div>
+
+              <div class="min-w-0 flex-1">
+                <div class="flex items-start justify-between gap-2">
+                  <div class="min-w-0">
+                    <p class="font-khmer text-sm font-extrabold text-slate-800 leading-tight truncate">
+                      {{ student.khmerName || "-" }}
+                    </p>
+
+                    <p
+                      v-if="student.englishName"
+                      class="text-[10px] text-slate-400 truncate mt-0.5"
+                    >
+                      {{ student.englishName }}
+                    </p>
+                  </div>
+
+                  <div class="flex items-center gap-1 shrink-0">
+                    <button
+                      type="button"
+                      @click.stop="openEditModal(student)"
+                      class="h-7 w-7 inline-flex items-center justify-center rounded-lg bg-blue-50 text-blue-600 border border-blue-100 hover:bg-blue-100 transition"
+                      title="កែប្រែ"
+                    >
+                      <i class="fa-solid fa-pen-to-square text-[11px]"></i>
+                    </button>
+
+                    <button
+                      type="button"
+                      @click.stop="openDeleteModal(student)"
+                      class="h-7 w-7 inline-flex items-center justify-center rounded-lg bg-red-50 text-red-500 border border-red-100 hover:bg-red-100 transition"
+                      title="លុប"
+                    >
+                      <i class="fa-solid fa-trash text-[11px]"></i>
+                    </button>
+                  </div>
+                </div>
+
+                <div class="mt-1.5 flex flex-wrap items-center gap-1">
+                  <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200 px-1.5 py-0.5 text-[10px] font-bold leading-none">
+                    <i class="fa-solid fa-id-card text-[9px] text-slate-400"></i>
+                    {{ student.studentId || "-" }}
+                  </span>
+
+                  <span
+                    :class="
+                      student.gender === 'ស្រី'
+                        ? 'bg-pink-50 text-pink-700 border-pink-200'
+                        : 'bg-blue-50 text-blue-700 border-blue-200'
+                    "
+                    class="inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[10px] font-bold leading-none"
+                  >
+                    <i class="fa-solid fa-user text-[9px]"></i>
+                    {{ student.gender || "-" }}
+                  </span>
+
+                  <span
+                    v-if="getStudentClassName(student)"
+                    class="inline-flex items-center gap-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200 px-1.5 py-0.5 text-[10px] font-bold leading-none"
+                  >
+                    <i class="fa-solid fa-school text-[9px]"></i>
+                    {{ getStudentClassName(student) }}
+                  </span>
+
+                  <span
+                    v-if="getStudentClassGrade(student)"
+                    class="inline-flex items-center rounded-full bg-slate-100 text-slate-700 border border-slate-200 px-1.5 py-0.5 text-[10px] font-bold leading-none"
+                  >
+                    {{ getStudentClassGrade(student) }}
+                  </span>
+                </div>
+
+                <div class="mt-1.5 grid grid-cols-1 min-[390px]:grid-cols-2 gap-x-2 gap-y-0.5 text-[10px] text-slate-500">
+                  <div class="flex items-center gap-1 min-w-0">
+                    <i class="fa-solid fa-cake-candles text-[9px] text-slate-400 w-3 shrink-0"></i>
+                    <span class="truncate">
+                      កំណើត៖ {{ formatDate(student.birthDate || student.dob) }}
+                    </span>
+                  </div>
+
+                  <div class="flex items-center gap-1 min-w-0">
+                    <i class="fa-solid fa-calendar-plus text-[9px] text-slate-400 w-3 shrink-0"></i>
+                    <span class="truncate">
+                      ចូលរៀន៖ {{ formatDate(student.joinDate) }}
+                    </span>
+                  </div>
+
+                  <div class="flex items-center gap-1 min-w-0">
+                    <i class="fa-solid fa-flag text-[9px] text-slate-400 w-3 shrink-0"></i>
+                    <span class="truncate">
+                      សញ្ជាតិ៖ {{ student.nationality?.student || "ខ្មែរ" }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div
+          v-else
+          class="text-center text-slate-400 py-8 bg-white rounded-xl border border-dashed border-slate-300"
+        >
+          <div class="mx-auto mb-2 h-9 w-9 rounded-xl bg-slate-100 flex items-center justify-center">
+            <i class="fa-solid fa-users-slash text-lg"></i>
+          </div>
+
+          <p class="text-xs font-bold text-slate-600">
+            មិនមានសិស្សដែលត្រូវនឹងតម្រងទេ
+          </p>
+        </div>
+      </div>
+
+      <!-- Desktop Table -->
+      <div class="hidden lg:block overflow-x-auto rounded-xl shadow-sm border border-slate-200 bg-white w-full">
         <table class="w-full text-left border-collapse text-xs min-w-[1050px]">
           <thead>
             <tr class="bg-slate-100 text-slate-700 border-b border-slate-200">
@@ -112,10 +253,10 @@
         </table>
       </div>
 
-      <!-- Empty -->
+      <!-- Empty Desktop -->
       <div
         v-if="filteredStudents.length === 0"
-        class="text-center text-slate-400 py-10 bg-white rounded-xl border border-dashed border-slate-300"
+        class="hidden lg:block text-center text-slate-400 py-10 bg-white rounded-xl border border-dashed border-slate-300"
       >
         <div class="mx-auto mb-2 h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center">
           <i class="fa-solid fa-users-slash text-xl"></i>
@@ -129,40 +270,40 @@
       <!-- Pagination -->
       <div
         v-if="filteredStudents.length > 0"
-        class="flex flex-col sm:flex-row flex-wrap items-center justify-between bg-white p-3 rounded-xl shadow-sm border border-slate-200 gap-3"
+        class="flex flex-col sm:flex-row flex-wrap items-center justify-between bg-white p-2.5 sm:p-3 rounded-xl shadow-sm border border-slate-200 gap-2 sm:gap-3"
       >
-        <div class="flex items-center gap-2 w-full sm:w-auto justify-center sm:justify-start">
+        <div class="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto justify-center sm:justify-start">
           <button
             @click="prevPage"
             :disabled="currentPage === 1"
-            class="px-3 py-1.5 border border-slate-200 rounded-lg text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed font-bold transition text-xs flex items-center gap-1"
+            class="px-2 sm:px-3 py-1.5 border border-slate-200 rounded-lg text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed font-bold transition text-[11px] sm:text-xs flex items-center gap-1"
           >
-            <i class="fa-solid fa-chevron-left"></i>
-            ថយក្រោយ
+            <i class="fa-solid fa-chevron-left text-[10px]"></i>
+            <span class="hidden min-[380px]:inline">ថយក្រោយ</span>
           </button>
 
-          <span class="text-slate-700 font-bold text-xs whitespace-nowrap">
-            ទំព័រ {{ currentPage }} នៃ {{ totalPages }}
+          <span class="text-slate-700 font-bold text-[11px] sm:text-xs whitespace-nowrap px-1">
+            {{ currentPage }} / {{ totalPages }}
           </span>
 
           <button
             @click="nextPage"
             :disabled="currentPage === totalPages"
-            class="px-3 py-1.5 border border-slate-200 rounded-lg text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed font-bold transition text-xs flex items-center gap-1"
+            class="px-2 sm:px-3 py-1.5 border border-slate-200 rounded-lg text-slate-700 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed font-bold transition text-[11px] sm:text-xs flex items-center gap-1"
           >
-            បន្ទាប់
-            <i class="fa-solid fa-chevron-right"></i>
+            <span class="hidden min-[380px]:inline">បន្ទាប់</span>
+            <i class="fa-solid fa-chevron-right text-[10px]"></i>
           </button>
         </div>
 
         <div class="flex items-center gap-2 w-full sm:w-auto justify-center sm:justify-end">
-          <label class="text-xs text-slate-600 font-bold whitespace-nowrap">
-            បង្ហាញចំនួន:
+          <label class="text-[11px] sm:text-xs text-slate-600 font-bold whitespace-nowrap">
+            បង្ហាញ:
           </label>
 
           <select
             v-model.number="rowsPerPage"
-            class="border border-slate-200 rounded-lg px-2 py-1.5 text-xs focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none"
+            class="border border-slate-200 rounded-lg px-2 py-1.5 text-[11px] sm:text-xs focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none"
           >
             <option :value="10">10</option>
             <option :value="15">15</option>
@@ -189,7 +330,7 @@
 
       <DeleteConfirmationModal
         :is-open="isDeleteModalOpen"
-        :item-name="`${studentToDelete?.khmerName || ''} ${studentToDelete?.englishName || ''}`"
+        :item-name="deleteStudentName"
         title="លុបសិស្ស?"
         @close="closeDeleteModal"
         @confirm="confirmDelete"
@@ -205,6 +346,7 @@ import StudentCard from "./students/StudentCard.vue";
 import StudentFormModal from "./students/StudentFormModal.vue";
 import StudentViewModal from "./students/StudentViewModal.vue";
 import DeleteConfirmationModal from "./shared/DeleteConfirmationModal.vue";
+import api from "../config/api";
 
 import { useQuery } from "../hooks/useQuery.js";
 import { useCollection } from "../hooks/useCollection.js";
@@ -235,8 +377,122 @@ const statusFilter = ref("All");
 const genderFilter = ref("All");
 const classFilter = ref("All");
 
-// Safely access classes list
-const classesList = computed(() => classesData.value || []);
+// Safely access list
+const normalizeArray = (value) => {
+  if (Array.isArray(value)) return value;
+  if (Array.isArray(value?.data)) return value.data;
+  if (Array.isArray(value?.result)) return value.result;
+  if (Array.isArray(value?.items)) return value.items;
+  return [];
+};
+
+const classesList = computed(() => normalizeArray(classesData.value));
+const studentsList = computed(() => normalizeArray(students.value));
+
+// --- Helpers ---
+const getId = (value) => {
+  return String(value?._id || value?.id || value || "").trim();
+};
+
+const getStudentClassObject = (student) => {
+  if (student?.grade && typeof student.grade === "object") return student.grade;
+  if (student?.class && typeof student.class === "object") return student.class;
+  if (student?.classId && typeof student.classId === "object") return student.classId;
+  return null;
+};
+
+const getStudentClassId = (student) => {
+  return (
+    getId(student?.grade) ||
+    getId(student?.class) ||
+    getId(student?.classId) ||
+    ""
+  );
+};
+
+const getStudentClassName = (student) => {
+  const classObject = getStudentClassObject(student);
+
+  if (classObject?.className) return classObject.className;
+
+  const classId = getStudentClassId(student);
+  const foundClass = classesList.value.find((cls) => getId(cls) === classId);
+
+  return foundClass?.className || "";
+};
+
+const getStudentClassGrade = (student) => {
+  const classObject = getStudentClassObject(student);
+
+  if (classObject?.classGrade) return classObject.classGrade;
+
+  const classId = getStudentClassId(student);
+  const foundClass = classesList.value.find((cls) => getId(cls) === classId);
+
+  return foundClass?.classGrade || "";
+};
+
+const getStudentFullName = (student) => {
+  return `${student?.khmerName || ""} ${student?.englishName || ""}`.trim();
+};
+
+const getStudentInitial = (student) => {
+  return (
+    student?.khmerName?.charAt(0) ||
+    student?.englishName?.charAt(0)?.toUpperCase() ||
+    "S"
+  );
+};
+
+const getApiOrigin = () => {
+  const baseURL = api.defaults?.baseURL || import.meta.env.VITE_API_URL || "";
+
+  if (!baseURL || baseURL === "/api") {
+    return window.location.origin;
+  }
+
+  if (baseURL.startsWith("http")) {
+    return baseURL.replace(/\/api\/?$/, "").replace(/\/$/, "");
+  }
+
+  return window.location.origin;
+};
+
+const getImageUrl = (imagePath = "") => {
+  if (!imagePath) return "";
+
+  if (imagePath.startsWith("http://") || imagePath.startsWith("https://")) {
+    return imagePath;
+  }
+
+  return `${getApiOrigin()}${imagePath}`;
+};
+
+const getStudentImageUrl = (student) => {
+  return getImageUrl(student?.profileImage);
+};
+
+const formatDate = (date) => {
+  if (!date) return "-";
+
+  const d = new Date(date);
+
+  if (Number.isNaN(d.getTime())) {
+    return "-";
+  }
+
+  return d.toLocaleDateString("km-KH", {
+    year: "numeric",
+    month: "short",
+    day: "numeric"
+  });
+};
+
+const deleteStudentName = computed(() => {
+  const name = `${studentToDelete.value?.khmerName || ""} ${studentToDelete.value?.englishName || ""}`.trim();
+
+  return name || "សិស្សនេះ";
+});
 
 // --- Pagination ---
 const currentPage = ref(1);
@@ -244,37 +500,41 @@ const rowsPerPage = ref(10);
 
 // --- Filter + Paginate Logic ---
 const filteredStudents = computed(() => {
-  if (!students.value) return [];
-
-  return students.value.filter((s) => {
-    const fullName = `${s.khmerName || ""} ${s.englishName || ""}`.toLowerCase();
+  return studentsList.value.filter((student) => {
+    const fullName = `${student.khmerName || ""} ${student.englishName || ""}`.toLowerCase();
+    const keyword = searchQuery.value.toLowerCase().trim();
 
     const nameMatch =
-      fullName.includes(searchQuery.value.toLowerCase()) ||
-      (s.studentId && s.studentId.toString().includes(searchQuery.value));
+      !keyword ||
+      fullName.includes(keyword) ||
+      String(student.studentId || "").toLowerCase().includes(keyword);
 
     const statusMatch =
       statusFilter.value === "All" ||
-      s.status?.toLowerCase() === statusFilter.value.toLowerCase();
+      student.status?.toLowerCase() === statusFilter.value.toLowerCase();
 
-    const studentGradeId = s.grade?._id || s.grade;
-    const classMatch = classFilter.value === "All" || studentGradeId === classFilter.value;
+    const classMatch =
+      classFilter.value === "All" ||
+      getStudentClassId(student) === String(classFilter.value);
 
-    const genderMatch = genderFilter.value === "All" || s.gender === genderFilter.value;
+    const genderMatch =
+      genderFilter.value === "All" || student.gender === genderFilter.value;
 
     return nameMatch && statusMatch && classMatch && genderMatch;
   });
 });
 
-const totalPages = computed(() =>
-  Math.max(1, Math.ceil(filteredStudents.value.length / rowsPerPage.value))
-);
+const totalPages = computed(() => {
+  return Math.max(1, Math.ceil(filteredStudents.value.length / rowsPerPage.value));
+});
 
-const start = computed(() => (currentPage.value - 1) * rowsPerPage.value);
+const start = computed(() => {
+  return (currentPage.value - 1) * rowsPerPage.value;
+});
 
-const paginatedStudents = computed(() =>
-  filteredStudents.value.slice(start.value, start.value + rowsPerPage.value)
-);
+const paginatedStudents = computed(() => {
+  return filteredStudents.value.slice(start.value, start.value + rowsPerPage.value);
+});
 
 // Reset to page 1 when filters change
 watch([searchQuery, statusFilter, genderFilter, classFilter, rowsPerPage], () => {
@@ -283,11 +543,15 @@ watch([searchQuery, statusFilter, genderFilter, classFilter, rowsPerPage], () =>
 
 // --- Pagination Actions ---
 const nextPage = () => {
-  if (currentPage.value < totalPages.value) currentPage.value++;
+  if (currentPage.value < totalPages.value) {
+    currentPage.value++;
+  }
 };
 
 const prevPage = () => {
-  if (currentPage.value > 1) currentPage.value--;
+  if (currentPage.value > 1) {
+    currentPage.value--;
+  }
 };
 
 // --- Modal Handlers ---
@@ -301,6 +565,7 @@ const openAddModal = () => {
     gender: "ប្រុស",
     dob: "",
     joinDate: "",
+    grade: "",
     email: "",
     status: "active",
     profileImage: "",
@@ -360,9 +625,13 @@ const closeViewModal = () => {
 
 const closeDeleteModal = () => {
   isDeleteModalOpen.value = false;
+  studentToDelete.value = null;
 };
 
-const getErrorMessage = (error, fallback = "មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យ") => {
+const getErrorMessage = (
+  error,
+  fallback = "មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យ"
+) => {
   return (
     error.response?.data?.err ||
     error.response?.data?.message ||

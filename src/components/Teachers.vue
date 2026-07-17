@@ -19,7 +19,8 @@
 
           <button
             @click="openAddModal"
-            class="flex items-center justify-center gap-2 bg-blue-600 text-white font-bold px-4 py-2 rounded-lg hover:bg-blue-700 transition shadow-sm w-full sm:w-auto text-xs"
+            :disabled="isSaving"
+            class="flex items-center justify-center gap-2 bg-blue-600 text-white font-bold px-4 py-2 rounded-lg hover:bg-blue-700 transition shadow-sm w-full sm:w-auto text-xs disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <i class="fa-solid fa-user-plus"></i>
             បញ្ចូលគ្រូថ្មី
@@ -52,9 +53,23 @@
         </div>
       </div>
 
+      <!-- Loading -->
+      <div
+        v-if="isLoadingTeachers"
+        class="text-center py-12 bg-white rounded-xl border border-slate-200 shadow-sm"
+      >
+        <div class="mx-auto mb-3 h-12 w-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+          <i class="fa-solid fa-circle-notch fa-spin text-2xl"></i>
+        </div>
+
+        <p class="text-sm font-bold text-slate-500">
+          កំពុងទាញយកទិន្នន័យគ្រូ...
+        </p>
+      </div>
+
       <!-- Teacher Cards -->
       <div
-        v-if="filteredTeachers.length > 0"
+        v-else-if="filteredTeachers.length > 0"
         class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3"
       >
         <TeacherCard
@@ -69,7 +84,7 @@
 
       <!-- Empty State -->
       <div
-        v-if="filteredTeachers.length === 0"
+        v-else
         class="text-center py-12 bg-white rounded-xl border border-dashed border-slate-300 shadow-sm"
       >
         <div class="mx-auto mb-3 h-12 w-12 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center">
@@ -130,7 +145,12 @@ import DeleteConfirmationModal from "./shared/DeleteConfirmationModal.vue";
 
 const toast = useToast();
 
-const { data: teachers, fetchData } = useQuery("teachers");
+const {
+  data: teachers,
+  fetchData,
+  loading: queryLoading,
+  isLoading: queryIsLoading
+} = useQuery("teachers");
 
 const {
   createDoc,
@@ -149,15 +169,31 @@ const teacherToDelete = ref(null);
 const teacherToView = ref(null);
 
 const searchQuery = ref("");
+const isSaving = ref(false);
+const isDeleting = ref(false);
+
+const normalizeArray = (value) => {
+  if (Array.isArray(value)) return value;
+  if (Array.isArray(value?.data)) return value.data;
+  if (Array.isArray(value?.result)) return value.result;
+  if (Array.isArray(value?.items)) return value.items;
+  return [];
+};
+
+const teachersList = computed(() => {
+  return normalizeArray(teachers.value);
+});
+
+const isLoadingTeachers = computed(() => {
+  return queryLoading?.value || queryIsLoading?.value || false;
+});
 
 const filteredTeachers = computed(() => {
-  if (!teachers.value) return [];
-
   const query = searchQuery.value.toLowerCase().trim();
 
-  if (!query) return teachers.value;
+  if (!query) return teachersList.value;
 
-  return teachers.value.filter((teacher) => {
+  return teachersList.value.filter((teacher) => {
     const khmerName = teacher.khmerName || "";
     const englishName = teacher.englishName || "";
     const phone = teacher.phone || "";
@@ -178,30 +214,31 @@ const filteredTeachers = computed(() => {
   });
 });
 
+const defaultTeacher = () => ({
+  khmerName: "",
+  englishName: "",
+  gender: "ប្រុស",
+  nationality: "ខ្មែរ",
+  dateOfBirth: "",
+  profileImage: "",
+  profileImageFile: null,
+  email: "",
+  phone: "",
+  telegram: "",
+  skill: "",
+  facebook: "",
+  currentResidence: {
+    village: "",
+    commune: "",
+    district: "",
+    province: ""
+  },
+  note: ""
+});
+
 const openAddModal = () => {
   isEditing.value = false;
-
-  teacherToEdit.value = {
-    khmerName: "",
-    englishName: "",
-    gender: "ប្រុស",
-    nationality: "Cambodian",
-    dateOfBirth: "",
-    profileImage: "",
-    email: "",
-    phone: "",
-    telegram: "",
-    skill: "",
-    facebook: "",
-    currentResidence: {
-      village: "",
-      commune: "",
-      district: "",
-      province: ""
-    },
-    note: ""
-  };
-
+  teacherToEdit.value = defaultTeacher();
   isFormModalOpen.value = true;
 };
 
@@ -221,19 +258,36 @@ const openDeleteModal = (teacher) => {
   isDeleteModalOpen.value = true;
 };
 
-const closeFormModal = () => {
+const forceCloseFormModal = () => {
   isFormModalOpen.value = false;
+  isEditing.value = false;
+  teacherToEdit.value = null;
+};
+
+const closeFormModal = () => {
+  if (isSaving.value) return;
+  forceCloseFormModal();
 };
 
 const closeViewModal = () => {
   isViewModalOpen.value = false;
+  teacherToView.value = null;
+};
+
+const forceCloseDeleteModal = () => {
+  isDeleteModalOpen.value = false;
+  teacherToDelete.value = null;
 };
 
 const closeDeleteModal = () => {
-  isDeleteModalOpen.value = false;
+  if (isDeleting.value) return;
+  forceCloseDeleteModal();
 };
 
-const getErrorMessage = (error, fallback = "មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យគ្រូ") => {
+const getErrorMessage = (
+  error,
+  fallback = "មានបញ្ហាក្នុងការរក្សាទុកទិន្នន័យគ្រូ"
+) => {
   return (
     error.response?.data?.err ||
     error.response?.data?.message ||
@@ -243,8 +297,14 @@ const getErrorMessage = (error, fallback = "មានបញ្ហាក្នុ
 };
 
 const saveTeacher = async (teacherData) => {
+  if (isSaving.value) return;
+
+  const wasEditing = isEditing.value;
+
+  isSaving.value = true;
+
   try {
-    if (isEditing.value) {
+    if (wasEditing) {
       const id = teacherToEdit.value?._id || teacherToEdit.value?.id;
 
       if (!id) {
@@ -257,20 +317,25 @@ const saveTeacher = async (teacherData) => {
     }
 
     await fetchData();
-    closeFormModal();
+
+    forceCloseFormModal();
 
     toast.success(
-      isEditing.value
+      wasEditing
         ? "បានកែប្រែព័ត៌មានគ្រូដោយជោគជ័យ"
         : "បានបញ្ចូលគ្រូថ្មីដោយជោគជ័យ"
     );
   } catch (error) {
     toast.error(getErrorMessage(error));
+  } finally {
+    isSaving.value = false;
   }
 };
 
 const confirmDelete = async () => {
-  if (!teacherToDelete.value) return;
+  if (!teacherToDelete.value || isDeleting.value) return;
+
+  isDeleting.value = true;
 
   try {
     const id = teacherToDelete.value._id || teacherToDelete.value.id;
@@ -281,11 +346,14 @@ const confirmDelete = async () => {
 
     await deleteDoc(id);
     await fetchData();
-    closeDeleteModal();
+
+    forceCloseDeleteModal();
 
     toast.success("បានលុបគ្រូដោយជោគជ័យ");
   } catch (error) {
     toast.error(getErrorMessage(error, "មិនអាចលុបគ្រូបានទេ"));
+  } finally {
+    isDeleting.value = false;
   }
 };
 </script>

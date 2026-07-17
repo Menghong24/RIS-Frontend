@@ -9,32 +9,45 @@
   >
     <div
       v-if="isOpen"
-      class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-3"
+      class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-2 sm:p-3"
       @click.self="$emit('close')"
     >
       <div
-        class="bg-white rounded-xl shadow-xl w-full max-w-2xl max-h-[86vh] overflow-y-auto border border-slate-100"
+        class="bg-white rounded-t-2xl sm:rounded-xl shadow-xl w-full max-w-2xl max-h-[92vh] sm:max-h-[86vh] overflow-hidden border border-slate-100 flex flex-col"
       >
         <!-- Header -->
-        <div class="px-3 py-3 border-b border-slate-100 bg-slate-50 sticky top-0 z-10 flex items-center justify-between">
-          <div class="flex items-center gap-3">
-            <img
-              :src="teacherImageUrl"
-              class="w-12 h-12 rounded-full object-cover ring-2 ring-blue-100 border border-blue-200 shadow-sm"
-              :alt="teacher?.englishName || teacher?.khmerName || 'Teacher'"
-              @error="handleImageError"
-            />
+        <div
+          class="px-2.5 sm:px-3 py-2.5 sm:py-3 border-b border-slate-100 bg-slate-50 flex items-start justify-between gap-2 sm:gap-3 shrink-0"
+        >
+          <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+            <div
+              class="w-11 h-11 sm:w-12 sm:h-12 rounded-full overflow-hidden ring-2 ring-blue-100 border border-blue-200 shadow-sm bg-blue-50 text-blue-700 flex items-center justify-center font-extrabold shrink-0"
+            >
+              <img
+                v-if="teacherImageUrl && !imageLoadError"
+                :src="teacherImageUrl"
+                class="w-full h-full object-cover"
+                :alt="teacherFullName || 'Teacher'"
+                @error="imageLoadError = true"
+              />
 
-            <div>
-              <h2 class="text-base font-extrabold text-slate-800 font-khmer">
+              <span v-else class="text-sm sm:text-base">
+                {{ teacherInitial }}
+              </span>
+            </div>
+
+            <div class="min-w-0">
+              <h2 class="text-sm sm:text-base font-extrabold text-slate-800 font-khmer truncate">
                 {{ teacher?.khmerName || "ឈ្មោះគ្រូ" }}
               </h2>
 
-              <p class="text-[11px] text-slate-500 mt-0.5">
+              <p class="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 truncate">
                 {{ teacher?.englishName || "Teacher Name" }}
               </p>
 
-              <span class="inline-flex items-center mt-1 px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-[10px] font-bold">
+              <span
+                class="inline-flex items-center mt-1 px-1.5 sm:px-2 py-0.5 rounded-full bg-blue-50 text-blue-700 border border-blue-200 text-[9px] sm:text-[10px] font-bold leading-none"
+              >
                 <i class="fa-solid fa-briefcase mr-1"></i>
                 {{ teacher?.skill || "ទូទៅ" }}
               </span>
@@ -44,27 +57,27 @@
           <button
             type="button"
             @click="$emit('close')"
-            class="h-7 w-7 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"
+            class="h-7 w-7 sm:h-8 sm:w-8 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition shrink-0"
           >
             <i class="fa-solid fa-xmark text-sm"></i>
           </button>
         </div>
 
         <!-- Body -->
-        <div class="p-3 space-y-3">
+        <div class="p-2.5 sm:p-3 space-y-2.5 sm:space-y-3 overflow-y-auto modal-scroll">
           <!-- Detail -->
-          <div class="bg-white rounded-xl border border-slate-200 p-3">
-            <h3 class="text-xs font-extrabold text-slate-800 mb-2 flex items-center gap-2">
-              <span class="h-6 w-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-[10px]">
+          <div class="section-card">
+            <h3 class="section-title">
+              <span class="section-icon">
                 <i class="fa-solid fa-id-card"></i>
               </span>
               ព័ត៌មានលម្អិតរបស់គ្រូ
             </h3>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2 text-xs">
+            <div class="grid grid-cols-2 lg:grid-cols-3 gap-1.5 sm:gap-2 text-xs">
               <div class="info-box">
                 <span class="info-label">ឈ្មោះខ្មែរ</span>
-                <p class="info-value">{{ teacher?.khmerName || "-" }}</p>
+                <p class="info-value font-khmer">{{ teacher?.khmerName || "-" }}</p>
               </div>
 
               <div class="info-box">
@@ -83,7 +96,7 @@
               </div>
 
               <div class="info-box">
-                <span class="info-label">ថ្ងៃខែឆ្នាំកំណើត</span>
+                <span class="info-label">ថ្ងៃកំណើត</span>
                 <p class="info-value">{{ formatDate(teacher?.dateOfBirth) }}</p>
               </div>
 
@@ -92,7 +105,7 @@
                 <p class="info-value">{{ teacher?.phone || "-" }}</p>
               </div>
 
-              <div class="info-box sm:col-span-2 lg:col-span-3">
+              <div class="info-box col-span-2 lg:col-span-3">
                 <span class="info-label">អ៊ីមែល</span>
                 <p class="info-value break-all">{{ teacher?.email || "-" }}</p>
               </div>
@@ -100,15 +113,15 @@
           </div>
 
           <!-- Address -->
-          <div class="bg-white rounded-xl border border-slate-200 p-3">
-            <h3 class="text-xs font-extrabold text-slate-800 mb-2 flex items-center gap-2">
-              <span class="h-6 w-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-[10px]">
+          <div class="section-card">
+            <h3 class="section-title">
+              <span class="section-icon">
                 <i class="fa-solid fa-location-dot"></i>
               </span>
               លំនៅដ្ឋានបច្ចុប្បន្ន
             </h3>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-2 text-xs">
+            <div class="grid grid-cols-2 lg:grid-cols-4 gap-1.5 sm:gap-2 text-xs">
               <div class="info-box">
                 <span class="info-label">ភូមិ</span>
                 <p class="info-value">{{ teacher?.currentResidence?.village || "-" }}</p>
@@ -132,15 +145,15 @@
           </div>
 
           <!-- More Info -->
-          <div class="bg-white rounded-xl border border-slate-200 p-3">
-            <h3 class="text-xs font-extrabold text-slate-800 mb-2 flex items-center gap-2">
-              <span class="h-6 w-6 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-[10px]">
+          <div class="section-card">
+            <h3 class="section-title">
+              <span class="section-icon">
                 <i class="fa-solid fa-circle-info"></i>
               </span>
               ព័ត៌មានបន្ថែម
             </h3>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 text-xs">
+            <div class="grid grid-cols-2 gap-1.5 sm:gap-2 text-xs">
               <div class="info-box">
                 <span class="info-label">ជំនាញ</span>
                 <p class="info-value">{{ teacher?.skill || "-" }}</p>
@@ -162,17 +175,17 @@
               </div>
             </div>
           </div>
+        </div>
 
-          <!-- Footer -->
-          <div class="pt-2 flex justify-end border-t border-slate-100">
-            <button
-              @click="$emit('close')"
-              class="px-4 py-1.5 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition flex items-center gap-2"
-            >
-              <i class="fa-solid fa-xmark"></i>
-              បិទ
-            </button>
-          </div>
+        <!-- Footer -->
+        <div class="px-2.5 sm:px-3 py-2.5 border-t border-slate-100 bg-white flex justify-end shrink-0">
+          <button
+            @click="$emit('close')"
+            class="px-3 sm:px-4 py-1.5 text-[11px] sm:text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition flex items-center gap-1.5 sm:gap-2"
+          >
+            <i class="fa-solid fa-xmark text-[10px] sm:text-xs"></i>
+            បិទ
+          </button>
         </div>
       </div>
     </div>
@@ -180,7 +193,7 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 import api from "../../config/api";
 
 const props = defineProps({
@@ -193,14 +206,25 @@ const props = defineProps({
 
 defineEmits(["close"]);
 
-const placeholderImage = computed(() => {
-  const name = encodeURIComponent(
-    props.teacher?.englishName ||
-      props.teacher?.khmerName ||
-      "Teacher"
-  );
+const imageLoadError = ref(false);
 
-  return `https://ui-avatars.com/api/?name=${name}&background=2563eb&color=fff&size=128`;
+watch(
+  () => props.teacher?.profileImage,
+  () => {
+    imageLoadError.value = false;
+  }
+);
+
+const teacherFullName = computed(() => {
+  return `${props.teacher?.khmerName || ""} ${props.teacher?.englishName || ""}`.trim();
+});
+
+const teacherInitial = computed(() => {
+  return (
+    props.teacher?.khmerName?.charAt(0) ||
+    props.teacher?.englishName?.charAt(0)?.toUpperCase() ||
+    "T"
+  );
 });
 
 const getApiOrigin = () => {
@@ -228,17 +252,19 @@ const getImageUrl = (imagePath = "") => {
 };
 
 const teacherImageUrl = computed(() => {
-  return getImageUrl(props.teacher?.profileImage) || placeholderImage.value;
+  return getImageUrl(props.teacher?.profileImage);
 });
-
-const handleImageError = (event) => {
-  event.target.src = placeholderImage.value;
-};
 
 const formatDate = (dateString) => {
   if (!dateString) return "-";
 
-  return new Date(dateString).toLocaleDateString("km-KH", {
+  const parsedDate = new Date(dateString);
+
+  if (Number.isNaN(parsedDate.getTime())) {
+    return "-";
+  }
+
+  return parsedDate.toLocaleDateString("km-KH", {
     day: "numeric",
     month: "short",
     year: "numeric"
@@ -247,28 +273,96 @@ const formatDate = (dateString) => {
 </script>
 
 <style scoped>
+.section-card {
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  border-radius: 0.75rem;
+  padding: 0.65rem;
+}
+
+.section-title {
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: #1e293b;
+  margin-bottom: 0.45rem;
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+}
+
+.section-icon {
+  height: 1.45rem;
+  width: 1.45rem;
+  border-radius: 0.5rem;
+  background: #eff6ff;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.62rem;
+  flex-shrink: 0;
+}
+
 .info-box {
   border: 1px solid #e2e8f0;
   background: #f8fafc;
-  border-radius: 0.6rem;
-  padding: 0.45rem 0.6rem;
+  border-radius: 0.55rem;
+  padding: 0.4rem 0.48rem;
+  min-width: 0;
 }
 
 .info-label {
   display: block;
-  font-size: 0.62rem;
+  font-size: 0.58rem;
   font-weight: 700;
   color: #64748b;
-  margin-bottom: 0.15rem;
+  margin-bottom: 0.1rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .info-value {
-  font-size: 0.75rem;
-  font-weight: 700;
+  font-size: 0.68rem;
+  font-weight: 800;
   color: #1e293b;
+  line-height: 1.35;
+  word-break: break-word;
 }
 
 .font-khmer {
+  font-family: "Battambang", "Siemreap", sans-serif;
   line-height: 1.45;
+}
+
+.modal-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.modal-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+
+.modal-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@media (min-width: 640px) {
+  .section-card {
+    padding: 0.75rem;
+  }
+
+  .info-box {
+    padding: 0.45rem 0.6rem;
+  }
+
+  .info-label {
+    font-size: 0.62rem;
+  }
+
+  .info-value {
+    font-size: 0.75rem;
+  }
 }
 </style>

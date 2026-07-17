@@ -52,7 +52,7 @@ export function useAttendance() {
       attendance.value = response.data.data?.records || [];
       mode.value = "edit"; // ក្រោយរក្សាទុករួច ស្ថានភាពនឹងក្លាយជា Edit Mode វិញ
 
-      toast.success(response.data.message || "រក្សាទុកវត្តមានជោគជ័យដឹង!");
+      toast.success(response.data.message || "រក្សាទុកវត្តមានជោគជ័យជ័យ");
       return response.data;
     } catch (err) {
       console.error(err);

@@ -1,12 +1,12 @@
 <template>
-  <div class="bg-slate-50 p-3 md:p-4 text-slate-800">
-    <div class="max-w-7xl mx-auto space-y-4">
+  <div class="bg-slate-50 p-2 sm:p-3 md:p-4 text-slate-800">
+    <div class="max-w-7xl mx-auto space-y-3 md:space-y-4">
       <!-- Header -->
-      <div class="bg-white rounded-xl border border-slate-200 shadow-sm px-3 py-3 md:px-4">
-        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-3">
+      <div class="bg-white rounded-xl border border-slate-200 shadow-sm px-2.5 sm:px-3 py-3 md:px-4">
+        <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2.5 md:gap-3">
           <div class="min-w-0">
-            <h1 class="text-lg md:text-xl font-extrabold text-slate-800 flex items-center gap-2">
-              <span class="h-8 w-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-sm shrink-0">
+            <h1 class="text-base sm:text-lg md:text-xl font-extrabold text-slate-800 flex items-center gap-2">
+              <span class="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-xs sm:text-sm shrink-0">
                 <i class="fa-solid fa-money-bill-wave"></i>
               </span>
 
@@ -15,7 +15,7 @@
               </span>
             </h1>
 
-            <p class="text-xs text-slate-500 mt-1 truncate">
+            <p class="text-[11px] sm:text-xs text-slate-500 mt-1 truncate">
               <span v-if="currentView === 'classes'">
                 សូមជ្រើសរើសថ្នាក់រៀនដើម្បីគ្រប់គ្រងការបង់ប្រាក់
               </span>
@@ -30,7 +30,7 @@
           <button
             v-if="currentView === 'students'"
             @click="backToClasses"
-            class="w-full md:w-auto bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-3 py-2 rounded-lg text-xs font-bold transition shadow-sm flex items-center justify-center gap-2"
+            class="w-full md:w-auto bg-white hover:bg-slate-50 text-slate-700 border border-slate-200 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg text-[11px] sm:text-xs font-bold transition shadow-sm flex items-center justify-center gap-1.5 sm:gap-2"
           >
             <i class="fa-solid fa-arrow-left text-[10px]"></i>
             ត្រឡប់ទៅថ្នាក់រៀនវិញ
@@ -38,12 +38,36 @@
         </div>
       </div>
 
+      <!-- Class Search -->
+      <div
+        v-if="currentView === 'classes'"
+        class="bg-white p-2.5 sm:p-3 rounded-xl shadow-sm border border-slate-200"
+      >
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
+          <div class="relative w-full sm:w-80">
+            <i class="search-icon fa-solid fa-magnifying-glass"></i>
+
+            <input
+              type="text"
+              v-model="classSearchQuery"
+              placeholder="ស្វែងរកថ្នាក់ / គ្រូ / កម្រិត..."
+              class="form-input search-input"
+            />
+          </div>
+
+          <div class="inline-flex items-center gap-1.5 text-[11px] sm:text-xs font-bold text-blue-700 bg-blue-50 border border-blue-100 rounded-lg px-2.5 sm:px-3 py-1.5 sm:py-2 w-fit">
+            <i class="fa-solid fa-layer-group text-[10px]"></i>
+            សរុប {{ filteredClassesList.length }} ថ្នាក់
+          </div>
+        </div>
+      </div>
+
       <!-- Filters -->
       <div
         v-if="currentView === 'students'"
-        class="bg-white p-3 rounded-xl shadow-sm border border-slate-200"
+        class="bg-white p-2.5 sm:p-3 rounded-xl shadow-sm border border-slate-200"
       >
-        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-[160px_160px_160px_1fr_auto] gap-2 items-end">
+        <div class="grid grid-cols-2 lg:grid-cols-[160px_160px_160px_1fr_auto] gap-2 items-end">
           <!-- Month -->
           <div>
             <label class="form-label">ខែបង់ប្រាក់</label>
@@ -70,7 +94,7 @@
 
           <!-- Default Due Amount -->
           <div>
-            <label class="form-label">តម្លៃត្រូវបង់លំនាំដើម</label>
+            <label class="form-label">តម្លៃត្រូវបង់</label>
 
             <input
               v-model.number="filters.defaultDueAmount"
@@ -82,13 +106,11 @@
           </div>
 
           <!-- Search -->
-          <div>
+          <div class="col-span-2 lg:col-span-1">
             <label class="form-label">ស្វែងរក</label>
 
             <div class="relative">
-              <span class="pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs z-10">
-                <i class="fa-solid fa-magnifying-glass"></i>
-              </span>
+              <i class="search-icon fa-solid fa-magnifying-glass"></i>
 
               <input
                 type="text"
@@ -100,12 +122,12 @@
           </div>
 
           <!-- Total -->
-          <div class="bg-blue-50 border border-blue-100 px-3 py-2 rounded-lg flex flex-col justify-center min-w-[180px] shadow-sm h-[2.45rem]">
+          <div class="col-span-2 lg:col-span-1 bg-blue-50 border border-blue-100 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg flex flex-col justify-center shadow-sm min-h-[2.15rem] sm:min-h-[2.45rem]">
             <div class="text-[10px] text-blue-600 font-bold leading-none mb-1">
               លុយប្រមូលបានសរុប
             </div>
 
-            <div class="text-base font-extrabold text-blue-700 leading-none">
+            <div class="text-sm sm:text-base font-extrabold text-blue-700 leading-none">
               ៛{{ formatMoney(totalCollectedThisMonth) }}
             </div>
           </div>
@@ -115,41 +137,41 @@
       <!-- Class Cards -->
       <div
         v-if="currentView === 'classes'"
-        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-3"
+        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-3"
       >
         <div
-          v-for="c in classesList"
+          v-for="c in filteredClassesList"
           :key="c._id"
           @click="selectClass(c)"
-          class="bg-white p-3 rounded-xl shadow-sm border border-slate-200 hover:border-blue-400 hover:shadow-md transition-all duration-200 cursor-pointer group relative overflow-hidden"
+          class="bg-white p-2.5 sm:p-3 rounded-xl shadow-sm border border-slate-200 hover:border-blue-400 hover:shadow-md transition-all duration-200 cursor-pointer group relative overflow-hidden"
         >
           <div class="absolute top-0 left-0 w-full h-1 bg-blue-600 transform scale-x-0 group-hover:scale-x-100 transition-transform duration-300"></div>
 
           <div class="flex items-start justify-between gap-2 mb-2">
-            <div class="h-9 w-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition shrink-0">
-              <i class="fa-solid fa-school"></i>
+            <div class="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center group-hover:bg-blue-600 group-hover:text-white transition shrink-0">
+              <i class="fa-solid fa-school text-xs sm:text-sm"></i>
             </div>
 
-            <span class="px-2 py-0.5 text-[10px] font-bold bg-slate-100 text-slate-600 rounded-full truncate max-w-[90px]">
-              {{ c.classGrade || 'N/A' }}
+            <span class="px-1.5 sm:px-2 py-0.5 text-[10px] font-bold bg-slate-100 text-slate-600 rounded-full truncate max-w-[90px]">
+              {{ c.classGrade || "N/A" }}
             </span>
           </div>
 
-          <h3 class="text-sm font-extrabold text-slate-800 mb-1 group-hover:text-blue-600 transition-colors truncate">
+          <h3 class="text-xs sm:text-sm font-extrabold text-slate-800 mb-1 group-hover:text-blue-600 transition-colors truncate">
             {{ c.className }}
           </h3>
 
-          <div class="flex items-center gap-2 mb-2 text-[11px] text-slate-600">
+          <div class="flex items-center gap-1.5 sm:gap-2 mb-2 text-[10px] sm:text-[11px] text-slate-600">
             <span class="text-slate-400">
               <i class="fa-solid fa-chalkboard-user"></i>
             </span>
 
             <span class="font-medium text-slate-700 truncate">
-              {{ c.teacher?.khmerName || c.teacherName || 'មិនទាន់មាន' }}
+              {{ c.teacher?.khmerName || c.teacher?.englishName || c.teacherName || "មិនទាន់មាន" }}
             </span>
           </div>
 
-          <div class="mt-2 flex justify-between items-center text-[11px] text-slate-600 bg-slate-50 px-2 py-1.5 rounded-lg">
+          <div class="mt-2 flex justify-between items-center text-[10px] sm:text-[11px] text-slate-600 bg-slate-50 px-2 py-1.5 rounded-lg">
             <span>សិស្សសរុប:</span>
             <span class="font-bold text-blue-600">{{ getClassStudents(c).length }} នាក់</span>
           </div>
@@ -158,36 +180,226 @@
 
       <!-- Empty Classes -->
       <div
-        v-if="currentView === 'classes' && !loadingClasses && classesList.length === 0"
-        class="bg-white border border-dashed border-slate-300 rounded-xl p-8 text-center text-slate-400"
+        v-if="currentView === 'classes' && !loadingClasses && filteredClassesList.length === 0"
+        class="bg-white border border-dashed border-slate-300 rounded-xl p-7 sm:p-8 text-center text-slate-400"
       >
-        <div class="text-2xl mb-2">
+        <div class="text-xl sm:text-2xl mb-2">
           <i class="fa-solid fa-school-circle-xmark"></i>
         </div>
 
-        <p class="text-sm font-bold text-slate-500">
-          មិនមានថ្នាក់រៀនទេ
+        <p class="text-xs sm:text-sm font-bold text-slate-500">
+          មិនមានថ្នាក់រៀនដែលត្រូវនឹងការស្វែងរកទេ
         </p>
       </div>
 
-      <!-- Students Payment Table -->
+      <!-- Students Payment -->
       <div
         v-if="currentView === 'students'"
         class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden"
       >
         <!-- Loading -->
-        <div v-if="loadingPayments || loadingStudents" class="p-8 text-center text-slate-400">
-          <div class="mx-auto mb-2 h-10 w-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
-            <i class="fa-solid fa-circle-notch fa-spin text-xl"></i>
+        <div v-if="loadingPayments || loadingStudents" class="p-7 sm:p-8 text-center text-slate-400">
+          <div class="mx-auto mb-2 h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
+            <i class="fa-solid fa-circle-notch fa-spin text-lg sm:text-xl"></i>
           </div>
 
-          <span class="text-sm font-bold text-slate-500">
+          <span class="text-xs sm:text-sm font-bold text-slate-500">
             កំពុងទាញយកទិន្នន័យ...
           </span>
         </div>
 
         <div v-else>
-          <div class="overflow-x-auto scroll-smooth">
+          <!-- Mobile Cards -->
+          <div class="lg:hidden bg-slate-50 p-2.5 space-y-2">
+            <div
+              v-for="row in paginatedList"
+              :key="row.uniqueKey"
+              class="bg-white rounded-xl border border-slate-200 shadow-sm p-2.5"
+            >
+              <!-- Student -->
+              <div class="flex items-start gap-2">
+                <div class="h-10 w-10 rounded-full bg-blue-50 flex items-center justify-center text-blue-700 font-extrabold border border-blue-100 shadow-sm shrink-0 overflow-hidden">
+                  <span class="font-khmer text-sm">
+                    {{ getStudentInitial(row.student) }}
+                  </span>
+                </div>
+
+                <div class="min-w-0 flex-1">
+                  <div class="flex items-start justify-between gap-2">
+                    <div class="min-w-0">
+                      <div class="text-sm font-extrabold text-slate-800 truncate font-khmer">
+                        {{ row.student?.khmerName || "-" }}
+                      </div>
+
+                      <div class="text-[10px] text-slate-500 truncate">
+                        {{ row.student?.englishName || "-" }}
+                      </div>
+                    </div>
+
+                    <span
+                      :class="getStatusClass(getDisplayStatus(row))"
+                      class="px-2 py-0.5 text-[10px] font-bold rounded-full inline-flex items-center justify-center gap-1 border whitespace-nowrap shrink-0"
+                    >
+                      <span class="w-1.5 h-1.5 rounded-full bg-current"></span>
+                      {{ translateStatus(getDisplayStatus(row)) }}
+                    </span>
+                  </div>
+
+                  <div class="mt-1 flex flex-wrap items-center gap-1 text-[10px] text-slate-500">
+                    <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 border border-slate-200 px-1.5 py-0.5 font-bold">
+                      <i class="fa-solid fa-id-card text-slate-400"></i>
+                      {{ row.student?.studentId || row.student?.idCode || "-" }}
+                    </span>
+
+                    <span class="inline-flex items-center gap-1 rounded-full bg-purple-50 text-purple-700 border border-purple-100 px-1.5 py-0.5 font-bold">
+                      <i class="fa-solid fa-phone text-purple-500"></i>
+                      {{ row.student?.family?.motherNumber || "គ្មាន" }}
+                    </span>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Payment Info -->
+              <div class="mt-2 grid grid-cols-2 gap-2">
+                <div>
+                  <label class="mobile-label">ថ្ងៃត្រូវបង់</label>
+
+                  <input
+                    type="date"
+                    v-model="row.dueDate"
+                    :disabled="true"
+                    class="date-input mobile-input"
+                  />
+
+                  <div class="text-[10px] text-slate-400 mt-1 truncate">
+                    ចូលរៀន: {{ formatDate(row.student?.joinDate) }}
+                  </div>
+                </div>
+
+                <div>
+                  <label class="mobile-label">តម្លៃត្រូវបង់</label>
+
+                  <input
+                    type="number"
+                    v-model.number="row.inputExpectedAmount"
+                    :disabled="!row.isVirtual"
+                    class="money-input mobile-input"
+                    placeholder="0"
+                  />
+                </div>
+
+                <div>
+                  <label class="mobile-label">បានបង់</label>
+
+                  <input
+                    type="number"
+                    v-model.number="row.inputPaidAmount"
+                    :disabled="!row.isVirtual"
+                    class="money-input mobile-input"
+                    placeholder="0"
+                  />
+                </div>
+
+                <div>
+                  <label class="mobile-label">នៅខ្វះ</label>
+
+                  <div class="h-[1.95rem] rounded-lg bg-red-50 text-red-600 border border-red-100 flex items-center justify-end px-2 text-[11px] font-extrabold">
+                    ៛{{ formatMoney(getBalanceAmount(row)) }}
+                  </div>
+                </div>
+              </div>
+
+              <!-- Add More / Remark -->
+              <div class="mt-2 grid grid-cols-1 min-[420px]:grid-cols-2 gap-2">
+                <div>
+                  <label class="mobile-label">បង់បន្ថែម</label>
+
+                  <template v-if="!row.isVirtual && getBalanceAmount(row) > 0">
+                    <input
+                      type="number"
+                      v-model.number="row.additionalAmount"
+                      min="0"
+                      :max="getBalanceAmount(row)"
+                      class="additional-input mobile-input"
+                      placeholder="0"
+                    />
+                  </template>
+
+                  <template v-else>
+                    <div class="h-[1.95rem] rounded-lg bg-slate-50 text-slate-400 border border-slate-200 flex items-center justify-center text-[11px] font-bold">
+                      -
+                    </div>
+                  </template>
+                </div>
+
+                <div>
+                  <label class="mobile-label">ផ្សេងៗ</label>
+
+                  <input
+                    type="text"
+                    v-model="row.remark"
+                    :disabled="!row.isVirtual && getBalanceAmount(row) <= 0"
+                    class="remark-input mobile-input"
+                    placeholder="កំណត់សម្គាល់"
+                  />
+                </div>
+              </div>
+
+              <!-- Actions -->
+              <div class="mt-2 flex items-center justify-end gap-2 border-t border-slate-100 pt-2">
+                <button
+                  v-if="row.isVirtual"
+                  @click="handleOneClickPay(row)"
+                  class="bg-blue-600 text-white hover:bg-blue-700 px-3 py-1.5 rounded-lg text-[11px] font-bold transition shadow-sm inline-flex items-center gap-1"
+                >
+                  <i class="fa-solid fa-circle-check text-[10px]"></i>
+                  បង់ប្រាក់
+                </button>
+
+                <template v-else>
+                  <button
+                    v-if="getBalanceAmount(row) > 0"
+                    @click="handleAddPayment(row)"
+                    class="bg-orange-600 text-white hover:bg-orange-700 px-3 py-1.5 rounded-lg text-[11px] font-bold transition shadow-sm inline-flex items-center gap-1"
+                  >
+                    <i class="fa-solid fa-plus-circle text-[10px]"></i>
+                    បង់បន្ថែម
+                  </button>
+
+                  <span
+                    v-else
+                    class="text-green-600 bg-green-50 text-[11px] font-bold px-2 py-1 rounded-lg"
+                  >
+                    រួចរាល់
+                  </span>
+
+                  <button
+                    @click="handleDelete(row)"
+                    class="text-red-500 hover:text-red-700 text-[11px] font-bold flex items-center gap-1"
+                  >
+                    <i class="fa-solid fa-trash"></i>
+                    លុប
+                  </button>
+                </template>
+              </div>
+            </div>
+
+            <div
+              v-if="paginatedList.length === 0"
+              class="px-4 py-10 text-center text-slate-400 bg-white rounded-xl border border-dashed border-slate-300"
+            >
+              <div class="mx-auto mb-2 h-10 w-10 rounded-xl bg-slate-100 flex items-center justify-center">
+                <i class="fa-solid fa-receipt text-xl"></i>
+              </div>
+
+              <p class="text-xs font-bold text-slate-500">
+                មិនមានទិន្នន័យសិស្សឡើយ
+              </p>
+            </div>
+          </div>
+
+          <!-- Desktop Table -->
+          <div class="hidden lg:block overflow-x-auto scroll-smooth">
             <table class="w-full text-left border-collapse text-xs min-w-[1260px]">
               <thead>
                 <tr class="bg-slate-100 text-slate-700">
@@ -238,22 +450,24 @@
                   <!-- Student -->
                   <td class="table-td">
                     <div class="flex items-center gap-2">
-                      <div class="h-9 w-9 rounded-lg bg-blue-50 flex items-center justify-center text-blue-700 font-bold border border-blue-100 shadow-sm shrink-0">
-                        {{ row.student?.englishName?.charAt(0) || row.student?.khmerName?.charAt(0) || '?' }}
+                      <div class="h-9 w-9 rounded-full bg-blue-50 flex items-center justify-center text-blue-700 font-extrabold border border-blue-100 shadow-sm shrink-0 overflow-hidden">
+                        <span class="font-khmer text-sm">
+                          {{ getStudentInitial(row.student) }}
+                        </span>
                       </div>
 
                       <div class="min-w-0">
-                        <div class="text-sm font-bold text-slate-800 truncate">
-                          {{ row.student?.khmerName || '-' }}
+                        <div class="text-sm font-bold text-slate-800 truncate font-khmer">
+                          {{ row.student?.khmerName || "-" }}
                         </div>
 
                         <div class="text-[11px] text-slate-500 truncate">
-                          {{ row.student?.englishName || '-' }}
+                          {{ row.student?.englishName || "-" }}
                         </div>
 
                         <div class="text-[10px] text-purple-600 font-medium mt-0.5 truncate">
                           <i class="fa-solid fa-phone mr-1"></i>
-                          ម្តាយ: {{ row.student?.family?.motherNumber || 'គ្មានទិន្នន័យ' }}
+                          ម្តាយ: {{ row.student?.family?.motherNumber || "គ្មានទិន្នន័យ" }}
                         </div>
                       </div>
                     </div>
@@ -416,59 +630,60 @@
           </div>
 
           <!-- Pagination -->
-          <div class="bg-slate-50 px-4 py-3 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <div class="flex items-center gap-2 text-xs text-slate-600">
+          <div class="bg-slate-50 px-2.5 sm:px-4 py-2.5 sm:py-3 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-3">
+            <div class="flex items-center gap-2 text-[11px] sm:text-xs text-slate-600">
               <span>បង្ហាញ</span>
 
               <select
                 v-model.number="perPage"
                 @change="currentPage = 1"
-                class="border border-slate-200 rounded-lg px-2 py-1.5 bg-white font-bold outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 text-xs cursor-pointer"
+                class="border border-slate-200 rounded-lg px-2 py-1.5 bg-white font-bold outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 text-[11px] sm:text-xs cursor-pointer"
               >
                 <option :value="6">6</option>
                 <option :value="10">10</option>
                 <option :value="20">20</option>
               </select>
 
-              <span>ជួរ ក្នុងចំណោមសិស្សសរុប {{ processedList.length }} នាក់</span>
+              <span class="hidden sm:inline">ជួរ ក្នុងចំណោមសិស្សសរុប {{ processedList.length }} នាក់</span>
+              <span class="sm:hidden">/ {{ processedList.length }} នាក់</span>
             </div>
 
-            <div class="flex items-center gap-2">
+            <div class="flex items-center gap-1.5 sm:gap-2">
               <button
                 @click="prevPage"
                 :disabled="currentPage === 1"
-                class="px-3 py-1.5 border border-slate-200 rounded-lg text-xs font-bold bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center gap-1"
+                class="px-2.5 sm:px-3 py-1.5 border border-slate-200 rounded-lg text-[11px] sm:text-xs font-bold bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center gap-1"
               >
-                <i class="fa-solid fa-chevron-left"></i>
-                មុន
+                <i class="fa-solid fa-chevron-left text-[10px]"></i>
+                <span class="hidden min-[380px]:inline">មុន</span>
               </button>
 
-              <span class="text-xs text-slate-700 font-bold mx-1">
-                ទំព័រ {{ currentPage }} នៃ {{ totalPages }}
+              <span class="text-[11px] sm:text-xs text-slate-700 font-bold mx-1 whitespace-nowrap">
+                {{ currentPage }} / {{ totalPages }}
               </span>
 
               <button
                 @click="nextPage"
                 :disabled="currentPage === totalPages"
-                class="px-3 py-1.5 border border-slate-200 rounded-lg text-xs font-bold bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center gap-1"
+                class="px-2.5 sm:px-3 py-1.5 border border-slate-200 rounded-lg text-[11px] sm:text-xs font-bold bg-white hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center gap-1"
               >
-                បន្ទាប់
-                <i class="fa-solid fa-chevron-right"></i>
+                <span class="hidden min-[380px]:inline">បន្ទាប់</span>
+                <i class="fa-solid fa-chevron-right text-[10px]"></i>
               </button>
             </div>
           </div>
         </div>
       </div>
-    </div>
 
-    <DeleteConfirmationModal
-      :is-open="showDeleteModal"
-      item-name="ទិន្នន័យបង់ប្រាក់"
-      title="លុបទិន្នន័យបង់ប្រាក់"
-      message="តើអ្នកពិតជាចង់លុបទិន្នន័យបង់ប្រាក់នេះមែនទេ?"
-      @close="closeDeleteModal"
-      @confirm="confirmDelete"
-    />
+      <DeleteConfirmationModal
+        :is-open="showDeleteModal"
+        item-name="ទិន្នន័យបង់ប្រាក់"
+        title="លុបទិន្នន័យបង់ប្រាក់"
+        message="តើអ្នកពិតជាចង់លុបទិន្នន័យបង់ប្រាក់នេះមែនទេ?"
+        @close="closeDeleteModal"
+        @confirm="confirmDelete"
+      />
+    </div>
   </div>
 </template>
 
@@ -507,6 +722,7 @@ const { createDoc, updateDoc, deleteDoc } = useCollection("payments");
 
 const currentView = ref("classes");
 const selectedClass = ref(null);
+const classSearchQuery = ref("");
 
 const filters = reactive({
   month: new Date().toISOString().slice(0, 7),
@@ -533,6 +749,33 @@ const paymentsList = computed(() => normalizeArray(payments?.value));
 const classesList = computed(() => normalizeArray(classes?.value));
 const allStudentsList = computed(() => normalizeArray(allStudents?.value));
 
+const filteredClassesList = computed(() => {
+  const keyword = classSearchQuery.value.trim().toLowerCase();
+
+  if (!keyword) return classesList.value;
+
+  return classesList.value.filter((cls) => {
+    const className = String(cls.className || "").toLowerCase();
+    const classGrade = String(cls.classGrade || "").toLowerCase();
+    const classNumber = String(cls.classNumber || "").toLowerCase();
+    const timeStudy = String(cls.timeStudy || "").toLowerCase();
+    const teacherName = String(
+      cls.teacher?.khmerName ||
+        cls.teacher?.englishName ||
+        cls.teacherName ||
+        ""
+    ).toLowerCase();
+
+    return (
+      className.includes(keyword) ||
+      classGrade.includes(keyword) ||
+      classNumber.includes(keyword) ||
+      timeStudy.includes(keyword) ||
+      teacherName.includes(keyword)
+    );
+  });
+});
+
 const pad2 = (value) => String(value).padStart(2, "0");
 
 const toLocalDateInput = (year, month, day) => {
@@ -543,14 +786,30 @@ const getId = (value) => {
   return String(value?._id || value || "");
 };
 
+const getStudentInitial = (student) => {
+  const khmerName = String(student?.khmerName || "").trim();
+
+  if (khmerName) {
+    return khmerName.charAt(0);
+  }
+
+  const englishName = String(student?.englishName || "").trim();
+
+  if (englishName) {
+    return englishName.charAt(0).toUpperCase();
+  }
+
+  return "?";
+};
+
 const getStudentClassId = (student) => {
   return getId(
     student?.grade?._id ||
-    student?.grade ||
-    student?.class?._id ||
-    student?.class ||
-    student?.classId?._id ||
-    student?.classId
+      student?.grade ||
+      student?.class?._id ||
+      student?.class ||
+      student?.classId?._id ||
+      student?.classId
   );
 };
 
@@ -558,7 +817,9 @@ const getClassStudents = (cls) => {
   if (!cls) return [];
 
   const classStudents = Array.isArray(cls.students) ? cls.students : [];
-  const populatedStudents = classStudents.filter((student) => typeof student === "object" && student?._id);
+  const populatedStudents = classStudents.filter((student) => {
+    return typeof student === "object" && student?._id;
+  });
 
   if (populatedStudents.length > 0) {
     return populatedStudents;
@@ -579,7 +840,9 @@ watch(
   () => {
     currentPage.value = 1;
   },
-  { deep: true }
+  {
+    deep: true
+  }
 );
 
 const selectClass = (cls) => {
@@ -599,12 +862,12 @@ const backToClasses = () => {
 const getClassDefaultDueAmount = (cls) => {
   return Number(
     cls?.dueAmount ||
-    cls?.tuitionFee ||
-    cls?.monthlyFee ||
-    cls?.fee ||
-    cls?.price ||
-    filters.defaultDueAmount ||
-    0
+      cls?.tuitionFee ||
+      cls?.monthlyFee ||
+      cls?.fee ||
+      cls?.price ||
+      filters.defaultDueAmount ||
+      0
   );
 };
 
@@ -617,9 +880,7 @@ const getDeadlineDate = (student) => {
 
   const joinDate = student?.joinDate ? new Date(student.joinDate) : null;
   const joinDay =
-    joinDate && !Number.isNaN(joinDate.getTime())
-      ? joinDate.getDate()
-      : 1;
+    joinDate && !Number.isNaN(joinDate.getTime()) ? joinDate.getDate() : 1;
 
   const lastDayOfMonth = new Date(year, month, 0).getDate();
   const safeDay = Math.min(joinDay, lastDayOfMonth);
@@ -657,11 +918,13 @@ const totalCollectedThisMonth = computed(() => {
   const classId = selectedClass.value._id;
 
   return paymentsList.value
-    .filter((payment) =>
-      getId(payment.class) === getId(classId) &&
-      getPaymentMonth(payment) === targetMonth &&
-      ["paid", "partial"].includes(payment.status)
-    )
+    .filter((payment) => {
+      return (
+        getId(payment.class) === getId(classId) &&
+        getPaymentMonth(payment) === targetMonth &&
+        ["paid", "partial"].includes(payment.status)
+      );
+    })
     .reduce((sum, payment) => {
       return sum + Number(payment.paidAmount || payment.amount || 0);
     }, 0);
@@ -677,12 +940,14 @@ const processedList = computed(() => {
   if (filters.searchQuery.trim() !== "") {
     const query = filters.searchQuery.toLowerCase().trim();
 
-    classStudents = classStudents.filter((student) =>
-      student.khmerName?.toLowerCase().includes(query) ||
-      student.englishName?.toLowerCase().includes(query) ||
-      String(student.studentId || "").toLowerCase().includes(query) ||
-      String(student.idCode || "").toLowerCase().includes(query)
-    );
+    classStudents = classStudents.filter((student) => {
+      return (
+        student.khmerName?.toLowerCase().includes(query) ||
+        student.englishName?.toLowerCase().includes(query) ||
+        String(student.studentId || "").toLowerCase().includes(query) ||
+        String(student.idCode || "").toLowerCase().includes(query)
+      );
+    });
   }
 
   const todayStr = new Date().toISOString().split("T")[0];
@@ -700,16 +965,15 @@ const processedList = computed(() => {
     if (existingPayment) {
       const expectedAmount = Number(
         existingPayment.expectedAmount ||
-        Number(existingPayment.tuitionFee || 0) + Number(existingPayment.extraFee || 0) ||
-        existingPayment.amount ||
-        defaultDueAmount ||
-        0
+          Number(existingPayment.tuitionFee || 0) +
+            Number(existingPayment.extraFee || 0) ||
+          existingPayment.amount ||
+          defaultDueAmount ||
+          0
       );
 
       const paidAmount = Number(
-        existingPayment.paidAmount ||
-        existingPayment.amount ||
-        0
+        existingPayment.paidAmount || existingPayment.amount || 0
       );
 
       const balance = Number(
@@ -735,9 +999,10 @@ const processedList = computed(() => {
         ...existingPayment,
         uniqueKey: existingPayment._id,
         isVirtual: false,
-        student: existingPayment.student && typeof existingPayment.student === "object"
-          ? existingPayment.student
-          : student,
+        student:
+          existingPayment.student && typeof existingPayment.student === "object"
+            ? existingPayment.student
+            : student,
         dueDate: paymentDueDate,
         paymentDeadline: paymentDueDate,
         inputExpectedAmount: expectedAmount,
@@ -770,19 +1035,27 @@ const processedList = computed(() => {
   });
 
   if (filters.status === "paid") {
-    mappedList = mappedList.filter((row) => !row.isVirtual && getDisplayStatus(row) === "paid");
+    mappedList = mappedList.filter((row) => {
+      return !row.isVirtual && getDisplayStatus(row) === "paid";
+    });
   }
 
   if (filters.status === "partial") {
-    mappedList = mappedList.filter((row) => !row.isVirtual && getDisplayStatus(row) === "partial");
+    mappedList = mappedList.filter((row) => {
+      return !row.isVirtual && getDisplayStatus(row) === "partial";
+    });
   }
 
   if (filters.status === "unpaid") {
-    mappedList = mappedList.filter((row) => row.isVirtual && getDisplayStatus(row) === "unpaid");
+    mappedList = mappedList.filter((row) => {
+      return getDisplayStatus(row) === "unpaid";
+    });
   }
 
   if (filters.status === "late") {
-    mappedList = mappedList.filter((row) => getDisplayStatus(row) === "late");
+    mappedList = mappedList.filter((row) => {
+      return getDisplayStatus(row) === "late";
+    });
   }
 
   return mappedList;
@@ -826,13 +1099,6 @@ const getBalanceAmount = (row) => {
 };
 
 const getDisplayStatus = (row) => {
-  if (!row.isVirtual) {
-    const balance = getBalanceAmount(row);
-
-    if (balance > 0) return "partial";
-    return "paid";
-  }
-
   const expectedAmount = getExpectedAmount(row);
   const paidAmount = getPaidAmount(row);
   const balance = getBalanceAmount(row);
@@ -842,9 +1108,13 @@ const getDisplayStatus = (row) => {
     return row.dueDate && todayStr > row.dueDate ? "late" : "unpaid";
   }
 
-  if (balance > 0) return "partial";
+  if (balance > 0) {
+    return "partial";
+  }
 
-  if (expectedAmount > 0 && paidAmount >= expectedAmount) return "paid";
+  if (expectedAmount > 0 && paidAmount >= expectedAmount) {
+    return "paid";
+  }
 
   return "unpaid";
 };
@@ -906,22 +1176,15 @@ const handleOneClickPay = async (row) => {
     student: row.student._id,
     class: selectedClass.value._id,
     teacher: selectedClass.value.teacher?._id || selectedClass.value.teacher || null,
-
     paymentMonth: filters.month,
-
-    // ថ្ងៃត្រូវបង់ប្រាក់ = ថ្ងៃចូលរៀនរបស់សិស្សក្នុងខែដែលបានជ្រើស
     dueDate: row.dueDate,
-
     payDate: today,
-
     tuitionFee: expectedAmount,
     extraFee: 0,
     expectedAmount,
-
     paidAmount,
     amount: paidAmount,
     balance,
-
     status: balance > 0 ? "partial" : "paid",
     remark: row.remark || ""
   };
@@ -935,8 +1198,8 @@ const handleOneClickPay = async (row) => {
     console.error(err);
     toast.error(
       err.response?.data?.err ||
-      err.response?.data?.message ||
-      "ការបង់ប្រាក់បានបរាជ័យ"
+        err.response?.data?.message ||
+        "ការបង់ប្រាក់បានបរាជ័យ"
     );
   }
 };
@@ -972,22 +1235,14 @@ const handleAddPayment = async (row) => {
   const today = new Date().toISOString().split("T")[0];
 
   const payload = {
-    student: row.student?._id || row.student,
-    class: selectedClass.value._id,
-    teacher: selectedClass.value.teacher?._id || selectedClass.value.teacher || null,
-
-    paymentMonth: filters.month,
     dueDate: row.dueDate,
     payDate: today,
-
     tuitionFee: expectedAmount,
     extraFee: 0,
     expectedAmount,
-
     paidAmount: newPaidAmount,
     amount: newPaidAmount,
     balance: newBalance,
-
     status: newBalance > 0 ? "partial" : "paid",
     remark: row.remark || ""
   };
@@ -1006,8 +1261,8 @@ const handleAddPayment = async (row) => {
     console.error(err);
     toast.error(
       err.response?.data?.err ||
-      err.response?.data?.message ||
-      "មិនអាចបង់បន្ថែមបានទេ"
+        err.response?.data?.message ||
+        "មិនអាចបង់បន្ថែមបានទេ"
     );
   }
 };
@@ -1034,8 +1289,8 @@ const confirmDelete = async () => {
     console.error(err);
     toast.error(
       err.response?.data?.err ||
-      err.response?.data?.message ||
-      "មិនអាចលុបទិន្នន័យបង់ប្រាក់បានទេ"
+        err.response?.data?.message ||
+        "មិនអាចលុបទិន្នន័យបង់ប្រាក់បានទេ"
     );
   } finally {
     closeDeleteModal();
@@ -1078,7 +1333,7 @@ const formatDate = (date) => {
 <style scoped>
 .form-label {
   display: block;
-  font-size: 0.68rem;
+  font-size: 0.62rem;
   font-weight: 800;
   color: #64748b;
   margin-bottom: 0.2rem;
@@ -1088,12 +1343,12 @@ const formatDate = (date) => {
   width: 100%;
   border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
-  padding: 0.44rem 0.6rem;
-  font-size: 0.75rem;
+  padding: 0.36rem 0.55rem;
+  font-size: 0.7rem;
   color: #334155;
   background: #ffffff;
   outline: none;
-  min-height: 2.45rem;
+  min-height: 1.95rem;
   transition: all 0.2s ease;
 }
 
@@ -1103,8 +1358,19 @@ const formatDate = (date) => {
   box-shadow: 0 0 0 3px rgb(59 130 246 / 0.1);
 }
 
+.search-icon {
+  position: absolute;
+  left: 0.72rem;
+  top: 50%;
+  transform: translateY(-50%);
+  color: #94a3b8;
+  font-size: 0.68rem;
+  pointer-events: none;
+  z-index: 2;
+}
+
 .search-input {
-  padding-left: 2.35rem !important;
+  padding-left: 2.15rem !important;
 }
 
 .table-th {
@@ -1126,13 +1392,25 @@ const formatDate = (date) => {
 .remark-input,
 .date-input {
   width: 100%;
-  padding: 0.38rem 0.5rem;
+  padding: 0.36rem 0.5rem;
   border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   outline: none;
   transition: all 0.2s ease;
   background: #ffffff;
+}
+
+.mobile-input {
+  min-height: 1.95rem;
+}
+
+.mobile-label {
+  display: block;
+  font-size: 0.6rem;
+  font-weight: 800;
+  color: #64748b;
+  margin-bottom: 0.15rem;
 }
 
 .money-input {
@@ -1156,10 +1434,10 @@ const formatDate = (date) => {
 
 .additional-input {
   width: 100%;
-  padding: 0.38rem 0.5rem;
+  padding: 0.36rem 0.5rem;
   border: 1px solid #fed7aa;
   border-radius: 0.5rem;
-  font-size: 0.72rem;
+  font-size: 0.7rem;
   outline: none;
   background: #fff7ed;
   color: #9a3412;
@@ -1171,5 +1449,29 @@ const formatDate = (date) => {
 .additional-input:focus {
   border-color: #f97316;
   box-shadow: 0 0 0 3px rgb(249 115 22 / 0.12);
+}
+
+.font-khmer {
+  font-family: "Battambang", "Siemreap", "Kantumruy Pro", sans-serif;
+}
+
+@media (min-width: 640px) {
+  .form-label {
+    font-size: 0.68rem;
+  }
+
+  .form-input {
+    padding: 0.44rem 0.6rem;
+    font-size: 0.75rem;
+    min-height: 2.45rem;
+  }
+
+  .money-input,
+  .remark-input,
+  .date-input,
+  .additional-input {
+    padding: 0.38rem 0.5rem;
+    font-size: 0.72rem;
+  }
 }
 </style>

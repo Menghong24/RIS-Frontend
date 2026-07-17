@@ -2,37 +2,45 @@
   <div class="bg-slate-50 p-3 md:p-4 animate-fade-in-up">
     <div class="max-w-7xl mx-auto space-y-4">
       <!-- Header -->
-      <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-3 md:p-4">
-        <div>
-          <h1 class="text-xl font-extrabold text-slate-800 flex items-center gap-2">
-            <span class="h-8 w-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-sm">
-              <i class="fa-solid fa-gauge-high"></i>
-            </span>
-            ផ្ទាំងគ្រប់គ្រងសាលា
-          </h1>
+      <div
+        class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3 md:p-4"
+      >
+        <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
+          <div class="min-w-0">
+            <h1
+              class="text-lg md:text-xl font-extrabold text-slate-800 flex items-center gap-2"
+            >
+              <span
+                class="h-9 w-9 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center text-sm shrink-0"
+              >
+                <i class="fa-solid fa-gauge-high"></i>
+              </span>
+              <span class="truncate">ផ្ទាំងគ្រប់គ្រងសាលា</span>
+            </h1>
 
-          <p class="text-xs text-slate-500 mt-1">
-            សង្ខេបចំនួនសិស្ស គ្រូ ថ្នាក់រៀន ចំណូល និងរបាយការណ៍សំខាន់ៗ
-          </p>
+            <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+              សង្ខេបចំនួនសិស្ស គ្រូ ថ្នាក់រៀន ចំណូល និងរបាយការណ៍សំខាន់ៗ
+            </p>
+          </div>
         </div>
       </div>
 
       <!-- Stats -->
-      <div class="grid grid-cols-1 gap-3 sm:grid-cols-2 lg:grid-cols-4">
+      <div class="grid grid-cols-2 gap-3 lg:grid-cols-4">
         <div
           v-for="(stat, index) in statCards"
           :key="stat.title"
-          class="bg-white rounded-xl border border-slate-200 shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-300 cursor-pointer p-3 animate-fade-in-up"
-          :style="{ animationDelay: `${index * 100}ms` }"
+          class="bg-white rounded-2xl border border-slate-200 shadow-sm hover:shadow-md hover:border-blue-300 transition-all duration-300 cursor-pointer p-3 animate-fade-in-up"
+          :style="{ animationDelay: `${index * 80}ms` }"
           @click="navigate(stat.targetMenu)"
         >
           <div class="flex items-start justify-between gap-3">
             <div class="min-w-0">
-              <p class="text-xs font-bold text-slate-500 truncate">
+              <p class="text-[11px] sm:text-xs font-bold text-slate-500 truncate">
                 {{ stat.title }}
               </p>
 
-              <p class="text-2xl font-extrabold text-slate-900 mt-1">
+              <p class="text-xl sm:text-2xl font-extrabold text-slate-900 mt-1">
                 <span
                   v-if="stat.value === null"
                   class="animate-pulse text-slate-300"
@@ -45,7 +53,7 @@
                 </span>
               </p>
 
-              <p class="text-[11px] text-slate-400 mt-0.5">
+              <p class="text-[10px] sm:text-[11px] text-slate-400 mt-0.5 truncate">
                 {{ stat.subtitle }}
               </p>
             </div>
@@ -61,18 +69,20 @@
       </div>
 
       <!-- Charts -->
-      <div class="grid grid-cols-1 gap-4 lg:grid-cols-3">
+      <div class="grid grid-cols-1 gap-4 xl:grid-cols-3">
         <div
-          class="lg:col-span-2 bg-white rounded-xl border border-slate-200 shadow-sm p-3 md:p-4 animate-fade-in-up"
-          style="animation-delay: 500ms;"
+          class="xl:col-span-2 bg-white rounded-2xl border border-slate-200 shadow-sm p-3 md:p-4 animate-fade-in-up"
+          style="animation-delay: 360ms;"
         >
-          <div class="flex items-center justify-between gap-2 mb-3">
-            <div>
+          <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
+            <div class="min-w-0">
               <h2 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
-                <span class="h-7 w-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs">
+                <span
+                  class="h-8 w-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xs shrink-0"
+                >
                   <i class="fa-solid fa-chart-column"></i>
                 </span>
-                វត្តមានសិស្សប្រចាំសប្តាហ៍
+                <span class="truncate">វត្តមានសិស្សប្រចាំសប្តាហ៍</span>
               </h2>
 
               <p class="text-[11px] text-slate-500 mt-0.5">
@@ -84,6 +94,7 @@
               @click="fetchWeeklyAttendance"
               :disabled="isAttendanceLoading"
               class="px-3 py-1.5 rounded-lg border border-slate-200 bg-white text-xs font-bold text-slate-600 hover:bg-slate-50 disabled:opacity-50 transition"
+              type="button"
             >
               <i
                 class="fa-solid mr-1"
@@ -106,16 +117,18 @@
         </div>
 
         <div
-          class="bg-white rounded-xl border border-slate-200 shadow-sm p-3 md:p-4 animate-fade-in-up"
-          style="animation-delay: 650ms;"
+          class="bg-white rounded-2xl border border-slate-200 shadow-sm p-3 md:p-4 animate-fade-in-up"
+          style="animation-delay: 460ms;"
         >
           <div class="flex items-center justify-between gap-2 mb-3">
-            <div>
+            <div class="min-w-0">
               <h2 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
-                <span class="h-7 w-7 rounded-lg bg-blue-50 text-blue-600 flex items-center justify-center text-xs">
+                <span
+                  class="h-8 w-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xs shrink-0"
+                >
                   <i class="fa-solid fa-chart-pie"></i>
                 </span>
-                សិស្សតាមកម្រិតថ្នាក់
+                <span class="truncate">សិស្សតាមកម្រិតថ្នាក់</span>
               </h2>
 
               <p class="text-[11px] text-slate-500 mt-0.5">
@@ -176,6 +189,7 @@ const normalizeList = (payload) => {
   if (Array.isArray(payload)) return payload;
   if (Array.isArray(payload?.result)) return payload.result;
   if (Array.isArray(payload?.data)) return payload.data;
+  if (Array.isArray(payload?.items)) return payload.items;
   return [];
 };
 
@@ -212,7 +226,6 @@ const getCurrentWeekDays = () => {
   const today = new Date();
   const day = today.getDay();
 
-  // Sunday = 0, Monday = 1
   const mondayOffset = day === 0 ? -6 : 1 - day;
 
   const monday = new Date(today);
@@ -261,10 +274,12 @@ const isPresentRecord = (record) => {
 
   const status = String(
     record?.status ||
-    record?.attendanceStatus ||
-    record?.value ||
-    ""
-  ).trim().toLowerCase();
+      record?.attendanceStatus ||
+      record?.value ||
+      ""
+  )
+    .trim()
+    .toLowerCase();
 
   return [
     "present",
@@ -279,7 +294,8 @@ const fetchAttendanceByClassAndDate = async (classId, dateKey) => {
   const response = await api.get("/attendance", {
     params: {
       classId,
-      date: dateKey
+      date: dateKey,
+      session: "morning"
     }
   });
 
@@ -293,17 +309,21 @@ const weeklyAttendanceData = ref({
   presents: []
 });
 
+const setEmptyWeeklyAttendance = async () => {
+  weeklyAttendanceData.value = {
+    labels: getCurrentWeekDays().map((day) => day.label),
+    percentages: [0, 0, 0, 0, 0],
+    totals: [0, 0, 0, 0, 0],
+    presents: [0, 0, 0, 0, 0]
+  };
+
+  await nextTick();
+  renderAttendanceChart();
+};
+
 const fetchWeeklyAttendance = async () => {
   if (!classesList.value.length) {
-    weeklyAttendanceData.value = {
-      labels: getCurrentWeekDays().map((day) => day.label),
-      percentages: [0, 0, 0, 0, 0],
-      totals: [0, 0, 0, 0, 0],
-      presents: [0, 0, 0, 0, 0]
-    };
-
-    await nextTick();
-    renderAttendanceChart();
+    await setEmptyWeeklyAttendance();
     return;
   }
 
@@ -321,8 +341,12 @@ const fetchWeeklyAttendance = async () => {
         await Promise.all(
           classesList.value.map(async (cls) => {
             try {
+              const classId = cls._id || cls.id;
+
+              if (!classId) return;
+
               const records = await fetchAttendanceByClassAndDate(
-                cls._id,
+                classId,
                 day.dateKey
               );
 
@@ -584,7 +608,7 @@ function renderAttendanceChart() {
           backgroundColor: "rgba(37, 99, 235, 0.65)",
           borderColor: "rgba(37, 99, 235, 1)",
           borderWidth: 1,
-          borderRadius: 6,
+          borderRadius: 8,
           barThickness: 26
         }
       ]
@@ -656,8 +680,20 @@ onBeforeUnmount(() => {
 <style scoped>
 .chart-container {
   position: relative;
-  height: 260px;
+  height: 240px;
   width: 100%;
+}
+
+@media (min-width: 640px) {
+  .chart-container {
+    height: 260px;
+  }
+}
+
+@media (min-width: 1280px) {
+  .chart-container {
+    height: 280px;
+  }
 }
 
 @keyframes fadeInUp {

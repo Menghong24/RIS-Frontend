@@ -9,22 +9,30 @@
   >
     <div
       v-if="isOpen"
-      class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-2"
+      class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-2 sm:p-3"
+      @click.self="$emit('close')"
     >
       <div
-        class="bg-white rounded-xl shadow-xl w-full max-w-4xl max-h-[86vh] overflow-y-auto border border-slate-100"
+        class="bg-white rounded-t-2xl sm:rounded-xl shadow-xl w-full max-w-4xl max-h-[94dvh] sm:max-h-[86vh] overflow-hidden border border-slate-100 flex flex-col"
       >
         <!-- Header -->
-        <div class="px-3 py-2 border-b border-slate-100 bg-slate-50 sticky top-0 z-10 flex items-center justify-between">
-          <div>
-            <h1 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
-              <span class="h-6 w-6 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-[10px]">
+        <div
+          class="px-2.5 sm:px-3 py-2.5 border-b border-slate-100 bg-slate-50 flex items-start justify-between gap-2 shrink-0"
+        >
+          <div class="min-w-0">
+            <h1 class="text-sm sm:text-base font-extrabold text-slate-800 flex items-center gap-2">
+              <span
+                class="h-7 w-7 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-xs shrink-0"
+              >
                 <i :class="isEditing ? 'fa-solid fa-user-pen' : 'fa-solid fa-user-plus'"></i>
               </span>
-              {{ isEditing ? "កែប្រែព័ត៌មានគ្រូ" : "បញ្ចូលគ្រូបង្រៀនថ្មី" }}
+
+              <span class="truncate">
+                {{ isEditing ? "កែប្រែព័ត៌មានគ្រូ" : "បញ្ចូលគ្រូបង្រៀនថ្មី" }}
+              </span>
             </h1>
 
-            <p class="text-[10px] text-slate-500 mt-0.5">
+            <p class="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 truncate">
               បំពេញព័ត៌មានគ្រូបង្រៀន
             </p>
           </div>
@@ -32,17 +40,22 @@
           <button
             type="button"
             @click="$emit('close')"
-            class="h-6 w-6 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"
+            class="h-7 w-7 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition shrink-0"
           >
-            <i class="fa-solid fa-xmark text-xs"></i>
+            <i class="fa-solid fa-xmark text-sm"></i>
           </button>
         </div>
 
-        <form @submit.prevent="handleSubmit" class="p-2.5 space-y-2.5">
+        <form
+          @submit.prevent="handleSubmit"
+          class="p-2.5 sm:p-3 space-y-2.5 sm:space-y-3 overflow-y-auto modal-scroll"
+        >
           <!-- Teacher Image -->
-          <div class="bg-white border border-slate-200 p-2.5 rounded-lg">
-            <div class="flex items-center gap-3">
-              <div class="h-20 w-20 rounded-full overflow-hidden bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0">
+          <div class="form-section">
+            <div class="flex items-center gap-2.5 sm:gap-3">
+              <div
+                class="h-14 w-14 sm:h-20 sm:w-20 rounded-full overflow-hidden bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0"
+              >
                 <img
                   v-if="imagePreviewUrl"
                   :src="imagePreviewUrl"
@@ -52,25 +65,28 @@
 
                 <span
                   v-else
-                  class="text-xl font-extrabold text-blue-600"
+                  class="text-base sm:text-xl font-extrabold text-blue-600"
                 >
                   {{ teacherInitial }}
                 </span>
               </div>
 
-              <div class="min-w-0">
-                <p class="text-xs font-extrabold text-slate-800">
+              <div class="min-w-0 flex-1">
+                <p class="text-[11px] sm:text-xs font-extrabold text-slate-800">
                   រូបគ្រូបង្រៀន
                 </p>
 
-                <p class="text-[10px] text-slate-500 mt-0.5">
-                  អាចប្រើ JPG, PNG ឬ WEBP។ ទំហំមិនលើស 2MB។
+                <p class="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 leading-5">
+                  JPG, PNG ឬ WEBP។ ទំហំមិនលើស 2MB។
                 </p>
 
-                <div class="mt-2 flex flex-wrap items-center gap-2">
-                  <label class="inline-flex items-center gap-2 px-3 py-1.5 rounded-lg bg-blue-600 text-white text-[11px] font-bold cursor-pointer hover:bg-blue-700 transition">
-                    <i class="fa-solid fa-camera"></i>
+                <div class="mt-1.5 sm:mt-2 flex flex-wrap items-center gap-1.5 sm:gap-2">
+                  <label
+                    class="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg bg-blue-600 text-white text-[11px] sm:text-xs font-bold cursor-pointer hover:bg-blue-700 transition"
+                  >
+                    <i class="fa-solid fa-camera text-[10px] sm:text-xs"></i>
                     ជ្រើសរូប
+
                     <input
                       type="file"
                       accept="image/jpeg,image/png,image/webp"
@@ -80,18 +96,18 @@
                   </label>
 
                   <button
-                    v-if="imagePreviewUrl"
+                    v-if="selectedImageFile"
                     type="button"
                     @click="clearSelectedImage"
-                    class="px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 text-[11px] font-bold hover:bg-slate-200 transition"
+                    class="px-2.5 sm:px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 text-[11px] sm:text-xs font-bold hover:bg-slate-200 transition"
                   >
-                    សម្អាត
+                    សម្អាតរូបថ្មី
                   </button>
                 </div>
 
                 <p
                   v-if="imageError"
-                  class="text-[10px] font-bold text-red-600 mt-2"
+                  class="text-[10px] sm:text-[11px] font-bold text-red-600 mt-1.5 sm:mt-2"
                 >
                   {{ imageError }}
                 </p>
@@ -100,18 +116,18 @@
           </div>
 
           <!-- Name Info -->
-          <div class="bg-white border border-slate-200 p-2.5 rounded-lg">
-            <div class="flex items-center gap-1.5 mb-2">
-              <span class="h-5 w-5 rounded-md bg-blue-50 text-blue-600 flex items-center justify-center text-[9px]">
+          <div class="form-section">
+            <div class="section-heading">
+              <span class="section-icon">
                 <i class="fa-solid fa-id-card"></i>
               </span>
 
-              <h3 class="text-[11px] font-extrabold text-slate-800">
+              <h3 class="section-title">
                 ព័ត៌មានឈ្មោះគ្រូ
               </h3>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
               <div>
                 <label class="form-label">
                   ឈ្មោះខ្មែរ <span class="text-red-500">*</span>
@@ -119,7 +135,7 @@
 
                 <input
                   type="text"
-                  v-model="form.khmerName"
+                  v-model.trim="form.khmerName"
                   class="form-input"
                   placeholder="ឈ្មោះខ្មែរ"
                   required
@@ -133,7 +149,7 @@
 
                 <input
                   type="text"
-                  v-model="form.englishName"
+                  v-model.trim="form.englishName"
                   class="form-input"
                   placeholder="ឈ្មោះឡាតាំង"
                   required
@@ -147,7 +163,7 @@
 
                 <input
                   type="text"
-                  v-model="form.nationality"
+                  v-model.trim="form.nationality"
                   class="form-input"
                   placeholder="សញ្ជាតិ"
                   required
@@ -174,21 +190,21 @@
           </div>
 
           <!-- Contact -->
-          <div class="bg-white border border-slate-200 p-2.5 rounded-lg">
-            <div class="flex items-center gap-1.5 mb-2">
-              <span class="h-5 w-5 rounded-md bg-blue-50 text-blue-600 flex items-center justify-center text-[9px]">
+          <div class="form-section">
+            <div class="section-heading">
+              <span class="section-icon">
                 <i class="fa-solid fa-address-book"></i>
               </span>
 
-              <h3 class="text-[11px] font-extrabold text-slate-800">
+              <h3 class="section-title">
                 ថ្ងៃកំណើត និងទំនាក់ទំនង
               </h3>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-2">
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
               <div>
                 <label class="form-label">
-                  ថ្ងៃខែឆ្នាំកំណើត <span class="text-red-500">*</span>
+                  ថ្ងៃកំណើត <span class="text-red-500">*</span>
                 </label>
 
                 <input
@@ -206,21 +222,21 @@
 
                 <input
                   type="text"
-                  v-model="form.phone"
+                  v-model.trim="form.phone"
                   class="form-input"
                   placeholder="លេខទូរស័ព្ទ"
                   required
                 />
               </div>
 
-              <div>
+              <div class="col-span-2 md:col-span-1">
                 <label class="form-label">
                   Telegram
                 </label>
 
                 <input
                   type="text"
-                  v-model="form.telegram"
+                  v-model.trim="form.telegram"
                   class="form-input"
                   placeholder="Telegram"
                 />
@@ -229,18 +245,18 @@
           </div>
 
           <!-- Address -->
-          <div class="bg-white border border-slate-200 p-2.5 rounded-lg">
-            <div class="flex items-center gap-1.5 mb-2">
-              <span class="h-5 w-5 rounded-md bg-blue-50 text-blue-600 flex items-center justify-center text-[9px]">
+          <div class="form-section">
+            <div class="section-heading">
+              <span class="section-icon">
                 <i class="fa-solid fa-location-dot"></i>
               </span>
 
-              <h3 class="text-[11px] font-extrabold text-slate-800">
+              <h3 class="section-title">
                 លំនៅដ្ឋានបច្ចុប្បន្ន
               </h3>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-4 gap-2">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
               <div>
                 <label class="form-label">
                   ភូមិ
@@ -248,7 +264,7 @@
 
                 <input
                   type="text"
-                  v-model="form.currentResidence.village"
+                  v-model.trim="form.currentResidence.village"
                   class="form-input"
                   placeholder="ភូមិ"
                 />
@@ -261,7 +277,7 @@
 
                 <input
                   type="text"
-                  v-model="form.currentResidence.commune"
+                  v-model.trim="form.currentResidence.commune"
                   class="form-input"
                   placeholder="ឃុំ/សង្កាត់"
                 />
@@ -274,7 +290,7 @@
 
                 <input
                   type="text"
-                  v-model="form.currentResidence.district"
+                  v-model.trim="form.currentResidence.district"
                   class="form-input"
                   placeholder="ស្រុក/ខណ្ឌ"
                 />
@@ -287,7 +303,7 @@
 
                 <input
                   type="text"
-                  v-model="form.currentResidence.province"
+                  v-model.trim="form.currentResidence.province"
                   class="form-input"
                   placeholder="ខេត្ត/ក្រុង"
                 />
@@ -296,18 +312,18 @@
           </div>
 
           <!-- Skill -->
-          <div class="bg-white border border-slate-200 p-2.5 rounded-lg">
-            <div class="flex items-center gap-1.5 mb-2">
-              <span class="h-5 w-5 rounded-md bg-blue-50 text-blue-600 flex items-center justify-center text-[9px]">
+          <div class="form-section">
+            <div class="section-heading">
+              <span class="section-icon">
                 <i class="fa-solid fa-briefcase"></i>
               </span>
 
-              <h3 class="text-[11px] font-extrabold text-slate-800">
+              <h3 class="section-title">
                 ជំនាញ និងព័ត៌មានផ្សេងៗ
               </h3>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
+            <div class="grid grid-cols-2 md:grid-cols-2 gap-2 mb-2">
               <div>
                 <label class="form-label">
                   ជំនាញឯកទេស <span class="text-red-500">*</span>
@@ -315,7 +331,7 @@
 
                 <input
                   type="text"
-                  v-model="form.skill"
+                  v-model.trim="form.skill"
                   class="form-input"
                   placeholder="ជំនាញឯកទេស"
                   required
@@ -329,14 +345,14 @@
 
                 <input
                   type="email"
-                  v-model="form.email"
+                  v-model.trim="form.email"
                   class="form-input"
                   placeholder="Email"
                 />
               </div>
             </div>
 
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-2">
+            <div class="grid grid-cols-2 md:grid-cols-2 gap-2">
               <div>
                 <label class="form-label">
                   Facebook
@@ -344,7 +360,7 @@
 
                 <input
                   type="text"
-                  v-model="form.facebook"
+                  v-model.trim="form.facebook"
                   class="form-input"
                   placeholder="Facebook"
                 />
@@ -357,7 +373,7 @@
 
                 <input
                   type="text"
-                  v-model="form.note"
+                  v-model.trim="form.note"
                   class="form-input"
                   placeholder="កំណត់សម្គាល់"
                 />
@@ -366,21 +382,33 @@
           </div>
 
           <!-- Actions -->
-          <div class="pt-2 flex justify-end gap-2 border-t border-slate-100">
+          <div
+            class="sticky bottom-0 -mx-2.5 sm:-mx-3 px-2.5 sm:px-3 py-2.5 bg-white border-t border-slate-100 flex justify-end gap-2"
+          >
             <button
               type="button"
               @click="$emit('close')"
-              class="px-3 py-1.5 text-[11px] font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition"
+              class="px-3 py-1.5 text-[11px] sm:text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition"
             >
               បោះបង់
             </button>
 
             <button
               type="submit"
-              class="px-3.5 py-1.5 text-[11px] font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition flex items-center gap-1.5"
+              :disabled="isSubmitting"
+              class="px-3.5 py-1.5 text-[11px] sm:text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
             >
-              <i class="fa-solid fa-floppy-disk text-[10px]"></i>
-              {{ isEditing ? "រក្សាទុក" : "បញ្ចូលគ្រូថ្មី" }}
+              <i
+                v-if="isSubmitting"
+                class="fa-solid fa-circle-notch fa-spin text-[10px] sm:text-xs"
+              ></i>
+
+              <i
+                v-else
+                class="fa-solid fa-floppy-disk text-[10px] sm:text-xs"
+              ></i>
+
+              {{ isSubmitting ? "កំពុងរក្សាទុក..." : (isEditing ? "រក្សាទុក" : "បញ្ចូលគ្រូថ្មី") }}
             </button>
           </div>
         </form>
@@ -430,6 +458,27 @@ const form = ref(JSON.parse(JSON.stringify(defaultForm)));
 const selectedImageFile = ref(null);
 const localImagePreviewUrl = ref("");
 const imageError = ref("");
+const isSubmitting = ref(false);
+
+function clone(value) {
+  return JSON.parse(JSON.stringify(value));
+}
+
+function formatDateInput(value) {
+  if (!value) return "";
+
+  const date = new Date(value);
+
+  if (Number.isNaN(date.getTime())) {
+    return "";
+  }
+
+  const year = date.getFullYear();
+  const month = String(date.getMonth() + 1).padStart(2, "0");
+  const day = String(date.getDate()).padStart(2, "0");
+
+  return `${year}-${month}-${day}`;
+}
 
 function getApiOrigin() {
   const baseURL = api.defaults?.baseURL || import.meta.env.VITE_API_URL || "";
@@ -550,21 +599,33 @@ function buildFormDataPayload() {
 }
 
 function handleSubmit() {
-  const payload = buildFormDataPayload();
-  emit("save", payload);
+  if (isSubmitting.value) return;
+
+  isSubmitting.value = true;
+
+  try {
+    const payload = buildFormDataPayload();
+    emit("save", payload);
+  } catch (error) {
+    isSubmitting.value = false;
+  }
 }
 
 watch(
   () => props.isOpen,
   (newVal) => {
-    if (!newVal) return;
+    if (!newVal) {
+      isSubmitting.value = false;
+      clearLocalPreview();
+      return;
+    }
 
     clearLocalPreview();
 
     if (props.isEditing && props.teacher) {
       const data = {
-        ...JSON.parse(JSON.stringify(defaultForm)),
-        ...JSON.parse(JSON.stringify(props.teacher))
+        ...clone(defaultForm),
+        ...clone(props.teacher)
       };
 
       if (!data.currentResidence) {
@@ -573,17 +634,48 @@ watch(
         };
       }
 
+      data.dateOfBirth = formatDateInput(data.dateOfBirth);
       data.profileImageFile = null;
+
       form.value = data;
     } else {
-      form.value = JSON.parse(JSON.stringify(defaultForm));
+      form.value = clone(defaultForm);
     }
 
     selectedImageFile.value = null;
     imageError.value = "";
+    isSubmitting.value = false;
   },
   {
     immediate: true
+  }
+);
+
+watch(
+  () => props.teacher,
+  () => {
+    if (!props.isOpen) return;
+
+    if (props.isEditing && props.teacher) {
+      const data = {
+        ...clone(defaultForm),
+        ...clone(props.teacher)
+      };
+
+      if (!data.currentResidence) {
+        data.currentResidence = {
+          ...defaultForm.currentResidence
+        };
+      }
+
+      data.dateOfBirth = formatDateInput(data.dateOfBirth);
+      data.profileImageFile = null;
+
+      form.value = data;
+    }
+  },
+  {
+    deep: true
   }
 );
 
@@ -591,20 +683,57 @@ onBeforeUnmount(() => {
   clearLocalPreview();
 });
 </script>
+
 <style scoped>
+.form-section {
+  border: 1px solid #e2e8f0;
+  background: #ffffff;
+  border-radius: 0.75rem;
+  padding: 0.65rem;
+}
+
+.section-heading {
+  display: flex;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.5rem;
+}
+
+.section-icon {
+  height: 1.45rem;
+  width: 1.45rem;
+  border-radius: 0.5rem;
+  background: #eff6ff;
+  color: #2563eb;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 0.62rem;
+  flex-shrink: 0;
+}
+
+.section-title {
+  font-size: 0.72rem;
+  font-weight: 900;
+  color: #1e293b;
+}
+
 .form-label {
   display: block;
   font-size: 0.62rem;
-  font-weight: 700;
-  color: #475569;
-  margin-bottom: 0.18rem;
+  font-weight: 800;
+  color: #64748b;
+  margin-bottom: 0.2rem;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
 }
 
 .form-input {
   width: 100%;
   border: 1px solid #e2e8f0;
-  border-radius: 0.4rem;
-  padding: 0.3rem 0.5rem;
+  border-radius: 0.45rem;
+  padding: 0.36rem 0.52rem;
   font-size: 0.7rem;
   color: #334155;
   background: #ffffff;
@@ -615,6 +744,35 @@ onBeforeUnmount(() => {
 
 .form-input:focus {
   border-color: #3b82f6;
-  box-shadow: 0 0 0 2px rgb(59 130 246 / 0.12);
+  box-shadow: 0 0 0 3px rgb(59 130 246 / 0.12);
+}
+
+.modal-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.modal-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+
+.modal-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@media (min-width: 640px) {
+  .form-section {
+    padding: 0.75rem;
+  }
+
+  .form-label {
+    font-size: 0.68rem;
+  }
+
+  .form-input {
+    padding: 0.38rem 0.6rem;
+    font-size: 0.75rem;
+    min-height: 2.05rem;
+  }
 }
 </style>

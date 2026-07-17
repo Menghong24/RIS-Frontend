@@ -2,24 +2,39 @@
   <div class="shrink-0">
     <!-- Header -->
     <header
-      class="h-16 px-3 md:px-5 bg-white border-b border-slate-200 shadow-sm shrink-0 flex items-center justify-between"
+      class="sticky top-0 z-30 h-16 px-3 md:px-5 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm shrink-0 flex items-center justify-between"
     >
-      <!-- Toggle Sidebar -->
-      <button
-        @click="$emit('toggle-sidebar')"
-        class="h-9 w-9 rounded-lg hover:bg-blue-50 text-slate-600 hover:text-blue-600 transition flex items-center justify-center"
-        title="បើក/បិទម៉ឺនុយ"
-      >
-        <i class="fa-solid fa-bars text-base"></i>
-      </button>
+      <!-- Left Side -->
+      <div class="flex items-center gap-2 min-w-0">
+        <!-- Toggle Sidebar -->
+        <button
+          @click="$emit('toggle-sidebar')"
+          class="h-10 w-10 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-100 text-slate-600 hover:text-blue-600 transition flex items-center justify-center shadow-sm"
+          title="បើក/បិទម៉ឺនុយ"
+          type="button"
+          aria-label="Toggle sidebar"
+        >
+          <i class="fa-solid fa-bars text-base"></i>
+        </button>
+
+        <div class="hidden sm:block min-w-0">
+          <h2 class="text-sm md:text-base font-extrabold text-slate-800 truncate">
+            RIS School Management
+          </h2>
+          <p class="text-[11px] text-slate-400 font-bold truncate">
+            ប្រព័ន្ធគ្រប់គ្រងសាលារៀន
+          </p>
+        </div>
+      </div>
 
       <!-- Right Side -->
-      <div class="flex items-center gap-3">
+      <div class="flex items-center gap-2 md:gap-3">
         <!-- Notification Button -->
         <button
           @click="isNoticeModalOpen = true"
-          class="h-9 w-9 rounded-lg hover:bg-blue-50 relative transition text-slate-600 hover:text-blue-600 flex items-center justify-center"
+          class="h-10 w-10 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-100 relative transition text-slate-600 hover:text-blue-600 flex items-center justify-center shadow-sm"
           title="សេចក្តីជូនដំណឹង"
+          type="button"
         >
           <i class="fa-solid fa-bell text-base"></i>
 
@@ -32,12 +47,15 @@
         </button>
 
         <!-- User Profile -->
-        <div
+        <button
           v-if="user"
           @click="isProfileModalOpen = true"
-          class="flex items-center cursor-pointer group pl-3 border-l border-slate-200"
+          class="flex items-center cursor-pointer group pl-2 md:pl-3 border-l border-slate-200 text-left"
+          type="button"
         >
-          <div class="w-9 h-9 rounded-full overflow-hidden ring-2 ring-blue-50 group-hover:ring-blue-200 transition-all shadow-sm bg-blue-100 flex items-center justify-center">
+          <div
+            class="w-10 h-10 rounded-full overflow-hidden ring-2 ring-blue-50 group-hover:ring-blue-200 transition-all shadow-sm bg-blue-100 flex items-center justify-center shrink-0"
+          >
             <img
               v-if="profileImageUrl"
               class="w-full h-full object-cover"
@@ -53,51 +71,59 @@
             </span>
           </div>
 
-          <div class="ml-3 select-none hidden sm:block">
-            <span class="font-extrabold text-sm capitalize text-slate-800 leading-none">
+          <div class="ml-3 select-none hidden sm:block min-w-0">
+            <span
+              class="font-extrabold text-sm capitalize text-slate-800 leading-none block truncate max-w-[150px] md:max-w-[220px]"
+            >
               {{ user?.username }}
             </span>
 
-            <p class="text-[11px] text-slate-500 font-bold mt-0.5">
+            <p class="text-[11px] text-slate-500 font-bold mt-0.5 truncate">
               {{ formattedRole }}
             </p>
           </div>
 
-          <i class="fa-solid fa-chevron-down text-[10px] text-slate-400 ml-2 hidden sm:block"></i>
-        </div>
+          <i
+            class="fa-solid fa-chevron-down text-[10px] text-slate-400 ml-2 hidden sm:block"
+          ></i>
+        </button>
       </div>
     </header>
 
     <!-- Notice Modal -->
     <div
       v-if="isNoticeModalOpen"
-      class="fixed inset-0 bg-slate-900/30 backdrop-blur-sm flex items-center justify-center z-40 p-3"
+      class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[80] p-3"
       @click="isNoticeModalOpen = false"
     >
       <div
-        class="bg-white rounded-xl shadow-xl w-full max-w-md max-h-[85vh] flex flex-col overflow-hidden border border-slate-100"
+        class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[85vh] flex flex-col overflow-hidden border border-slate-100"
         @click.stop
       >
         <!-- Notice Header -->
-        <div class="px-4 py-3 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-          <div class="flex items-center gap-2">
-            <div class="h-8 w-8 bg-blue-100 text-blue-600 rounded-lg flex items-center justify-center">
+        <div
+          class="px-4 py-3 border-b border-slate-100 flex justify-between items-center bg-slate-50"
+        >
+          <div class="flex items-center gap-2 min-w-0">
+            <div
+              class="h-9 w-9 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center shrink-0"
+            >
               <i class="fa-solid fa-bell text-sm"></i>
             </div>
 
-            <div>
-              <h3 class="font-extrabold text-sm text-slate-800">
+            <div class="min-w-0">
+              <h3 class="font-extrabold text-sm text-slate-800 truncate">
                 សេចក្តីជូនដំណឹង
               </h3>
 
-              <p class="text-[10px] text-slate-500">
+              <p class="text-[10px] text-slate-500 truncate">
                 ព័ត៌មានថ្មីៗសម្រាប់អ្នក
               </p>
             </div>
 
             <span
               v-if="unreadAnnouncements.length > 0"
-              class="bg-red-50 text-red-600 border border-red-100 text-[10px] font-extrabold px-2 py-0.5 rounded-full"
+              class="bg-red-50 text-red-600 border border-red-100 text-[10px] font-extrabold px-2 py-0.5 rounded-full shrink-0"
             >
               {{ unreadAnnouncements.length }} ថ្មី
             </span>
@@ -105,7 +131,9 @@
 
           <button
             @click="isNoticeModalOpen = false"
-            class="h-7 w-7 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition"
+            class="h-8 w-8 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition shrink-0"
+            type="button"
+            aria-label="Close notices"
           >
             <i class="fa-solid fa-xmark text-sm"></i>
           </button>
@@ -117,7 +145,9 @@
             v-if="unreadAnnouncements.length === 0"
             class="flex flex-col items-center justify-center py-12 text-center bg-white rounded-xl border border-dashed border-slate-300"
           >
-            <div class="w-14 h-14 bg-green-50 text-green-500 rounded-xl flex items-center justify-center mb-3">
+            <div
+              class="w-14 h-14 bg-green-50 text-green-500 rounded-xl flex items-center justify-center mb-3"
+            >
               <i class="fa-solid fa-circle-check text-2xl"></i>
             </div>
 
@@ -141,7 +171,9 @@
 
               <div class="flex justify-between items-start gap-3 pl-2">
                 <div class="min-w-0">
-                  <h4 class="font-extrabold text-sm text-slate-800 group-hover:text-blue-600 transition pr-6 truncate">
+                  <h4
+                    class="font-extrabold text-sm text-slate-800 group-hover:text-blue-600 transition pr-6 truncate"
+                  >
                     {{ notice.title || "គ្មានចំណងជើង" }}
                   </h4>
 
@@ -149,7 +181,9 @@
                     {{ notice.content || notice.description || "មិនមានព័ត៌មានបន្ថែម។" }}
                   </p>
 
-                  <span class="inline-flex mt-2 text-[10px] font-bold text-slate-400 bg-slate-50 px-2 py-1 rounded-md">
+                  <span
+                    class="inline-flex mt-2 text-[10px] font-bold text-slate-400 bg-slate-50 px-2 py-1 rounded-md"
+                  >
                     <i class="fa-regular fa-clock mr-1"></i>
                     {{ formatDate(notice.createdAt || notice.date) }}
                   </span>
@@ -157,8 +191,9 @@
 
                 <button
                   @click.stop="clearNotice(notice._id || notice.id)"
-                  class="h-7 w-7 rounded-lg text-slate-400 hover:text-green-600 bg-slate-50 hover:bg-green-50 transition flex items-center justify-center"
+                  class="h-7 w-7 rounded-lg text-slate-400 hover:text-green-600 bg-slate-50 hover:bg-green-50 transition flex items-center justify-center shrink-0"
                   title="Mark as read"
+                  type="button"
                 >
                   <i class="fa-solid fa-check text-xs"></i>
                 </button>
@@ -175,6 +210,7 @@
           <button
             @click="clearAllNotices"
             class="text-xs font-extrabold text-slate-500 hover:text-slate-800 transition"
+            type="button"
           >
             <i class="fa-solid fa-check-double mr-1"></i>
             សម្អាតទាំងអស់
@@ -183,6 +219,7 @@
           <button
             @click="handleNoticeClick"
             class="text-xs font-extrabold text-blue-600 hover:text-blue-800 transition"
+            type="button"
           >
             មើលទាំងអស់
             <i class="fa-solid fa-arrow-right ml-1"></i>
@@ -194,24 +231,28 @@
     <!-- Profile Modal -->
     <div
       v-if="isProfileModalOpen"
-      class="fixed inset-0 bg-slate-900/30 backdrop-blur-sm flex items-center justify-center z-40 p-3"
+      class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[80] p-3"
       @click="isProfileModalOpen = false"
     >
       <div
-        class="bg-white rounded-xl shadow-xl w-full max-w-sm overflow-hidden border border-slate-100"
+        class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden border border-slate-100"
         @click.stop
       >
         <!-- Profile Header -->
         <div class="px-4 py-5 bg-blue-50 border-b border-blue-100 text-center relative">
           <button
             @click="isProfileModalOpen = false"
-            class="absolute top-3 right-3 h-7 w-7 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-white transition"
+            class="absolute top-3 right-3 h-8 w-8 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-white transition"
+            type="button"
+            aria-label="Close profile"
           >
             <i class="fa-solid fa-xmark text-sm"></i>
           </button>
 
           <div class="relative w-20 h-20 mx-auto">
-            <div class="w-20 h-20 rounded-full overflow-hidden ring-4 ring-white shadow-sm bg-blue-100 flex items-center justify-center">
+            <div
+              class="w-20 h-20 rounded-full overflow-hidden ring-4 ring-white shadow-sm bg-blue-100 flex items-center justify-center"
+            >
               <img
                 v-if="profileImageUrl"
                 class="w-full h-full object-cover"
@@ -276,7 +317,9 @@
           <!-- User Info -->
           <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2">
             <div class="flex items-center gap-2">
-              <span class="h-7 w-7 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-xs">
+              <span
+                class="h-7 w-7 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-xs shrink-0"
+              >
                 <i class="fa-solid fa-user"></i>
               </span>
 
@@ -292,7 +335,9 @@
             </div>
 
             <div class="flex items-center gap-2">
-              <span class="h-7 w-7 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-xs">
+              <span
+                class="h-7 w-7 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-xs shrink-0"
+              >
                 <i class="fa-solid fa-user-shield"></i>
               </span>
 
@@ -311,7 +356,9 @@
               v-if="user?.email"
               class="flex items-center gap-2"
             >
-              <span class="h-7 w-7 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-xs">
+              <span
+                class="h-7 w-7 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-xs shrink-0"
+              >
                 <i class="fa-solid fa-envelope"></i>
               </span>
 
@@ -330,7 +377,9 @@
               v-if="user?.phone"
               class="flex items-center gap-2"
             >
-              <span class="h-7 w-7 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-xs">
+              <span
+                class="h-7 w-7 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-xs shrink-0"
+              >
                 <i class="fa-solid fa-phone"></i>
               </span>
 
@@ -349,7 +398,9 @@
               v-if="user?._id || user?.id"
               class="flex items-center gap-2"
             >
-              <span class="h-7 w-7 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-xs">
+              <span
+                class="h-7 w-7 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-xs shrink-0"
+              >
                 <i class="fa-solid fa-id-card"></i>
               </span>
 
@@ -388,6 +439,7 @@
           <button
             @click="isProfileModalOpen = false"
             class="px-3 py-1.5 text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-100 transition"
+            type="button"
           >
             បិទ
           </button>
@@ -398,25 +450,27 @@
     <!-- Logout Confirm Modal -->
     <div
       v-if="isLogoutConfirmOpen"
-      class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-50 p-3"
+      class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-[90] p-3"
       @click="isLogoutConfirmOpen = false"
     >
       <div
-        class="bg-white rounded-xl shadow-xl w-full max-w-sm overflow-hidden border border-slate-100"
+        class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden border border-slate-100"
         @click.stop
       >
         <!-- Logout Header -->
         <div class="px-4 py-3 bg-red-50 border-b border-red-100 flex items-center gap-3">
-          <div class="h-10 w-10 rounded-full bg-white text-red-600 flex items-center justify-center shadow-sm border border-red-100">
+          <div
+            class="h-10 w-10 rounded-full bg-white text-red-600 flex items-center justify-center shadow-sm border border-red-100 shrink-0"
+          >
             <i class="fa-solid fa-right-from-bracket text-base"></i>
           </div>
 
-          <div>
-            <h3 class="text-sm font-extrabold text-slate-800">
+          <div class="min-w-0">
+            <h3 class="text-sm font-extrabold text-slate-800 truncate">
               បញ្ជាក់ការចាកចេញ
             </h3>
 
-            <p class="text-[11px] text-red-600 font-bold mt-0.5">
+            <p class="text-[11px] text-red-600 font-bold mt-0.5 truncate">
               Logout Confirmation
             </p>
           </div>
@@ -435,6 +489,7 @@
             @click="isLogoutConfirmOpen = false"
             class="px-3.5 py-1.5 text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-100 transition"
             :disabled="isLoggingOut"
+            type="button"
           >
             បោះបង់
           </button>
@@ -443,6 +498,7 @@
             @click="handleLogout"
             class="px-3.5 py-1.5 text-xs font-bold text-white bg-red-600 rounded-lg hover:bg-red-700 transition shadow-sm flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
             :disabled="isLoggingOut"
+            type="button"
           >
             <i
               v-if="isLoggingOut"
@@ -506,16 +562,26 @@ onMounted(() => {
   }
 });
 
+const normalizeArray = (value) => {
+  if (Array.isArray(value)) return value;
+  if (Array.isArray(value?.data)) return value.data;
+  if (Array.isArray(value?.result)) return value.result;
+  if (Array.isArray(value?.items)) return value.items;
+  return [];
+};
+
+const announcementsList = computed(() => {
+  return normalizeArray(announcements.value);
+});
+
 const profileImageUrl = computed(() => {
   return getProfileImageUrl(user.value?.profileImage);
 });
 
 const unreadAnnouncements = computed(() => {
-  if (!announcements.value) return [];
-
-  return announcements.value.filter((notice) => {
+  return announcementsList.value.filter((notice) => {
     const id = notice._id || notice.id;
-    return !clearedNoticeIds.value.includes(id);
+    return id && !clearedNoticeIds.value.includes(id);
   });
 });
 
@@ -538,9 +604,9 @@ const clearNotice = (id) => {
 };
 
 const clearAllNotices = () => {
-  if (!announcements.value) return;
+  if (!announcementsList.value.length) return;
 
-  const allIds = announcements.value
+  const allIds = announcementsList.value
     .map((notice) => notice._id || notice.id)
     .filter(Boolean);
 
@@ -634,6 +700,10 @@ const formatDate = (dateString) => {
 
   try {
     const date = new Date(dateString);
+
+    if (Number.isNaN(date.getTime())) {
+      return "ថ្មីៗនេះ";
+    }
 
     return new Intl.DateTimeFormat("km-KH", {
       month: "short",

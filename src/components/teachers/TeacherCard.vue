@@ -5,12 +5,21 @@
   >
     <!-- Avatar -->
     <div class="relative flex-shrink-0">
-      <img
-        :src="teacherImageUrl"
-        class="w-12 h-12 rounded-full object-cover border-2 border-blue-100 shadow-sm transition-transform duration-300 group-hover:scale-105"
-        :alt="teacher.englishName || teacher.khmerName || 'Teacher'"
-        @error="handleImageError"
-      />
+      <div
+        class="w-12 h-12 rounded-full overflow-hidden border-2 border-blue-100 shadow-sm bg-blue-50 text-blue-700 flex items-center justify-center font-extrabold transition-transform duration-300 group-hover:scale-105"
+      >
+        <img
+          v-if="teacherImageUrl && !imageLoadError"
+          :src="teacherImageUrl"
+          class="w-full h-full object-cover"
+          :alt="teacherFullName || 'Teacher'"
+          @error="imageLoadError = true"
+        />
+
+        <span v-else class="text-base">
+          {{ teacherInitial }}
+        </span>
+      </div>
     </div>
 
     <!-- Info -->
@@ -43,7 +52,9 @@
     </div>
 
     <!-- Actions -->
-    <div class="flex-shrink-0 flex gap-1.5 opacity-100 sm:opacity-0 sm:translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300">
+    <div
+      class="flex-shrink-0 flex gap-1.5 opacity-100 sm:opacity-0 sm:translate-x-2 group-hover:opacity-100 group-hover:translate-x-0 transition-all duration-300"
+    >
       <button
         @click.stop="$emit('edit', teacher)"
         class="flex items-center justify-center w-8 h-8 rounded-lg bg-blue-50 text-blue-600 hover:bg-blue-600 hover:text-white transition shadow-sm"
@@ -64,7 +75,7 @@
 </template>
 
 <script setup>
-import { computed } from "vue";
+import { computed, ref, watch } from "vue";
 import api from "../../config/api";
 
 const props = defineProps({
@@ -77,14 +88,25 @@ const props = defineProps({
 
 defineEmits(["view", "edit", "delete"]);
 
-const placeholderImage = computed(() => {
-  const name = encodeURIComponent(
-    props.teacher.englishName ||
-      props.teacher.khmerName ||
-      "Teacher"
-  );
+const imageLoadError = ref(false);
 
-  return `https://ui-avatars.com/api/?name=${name}&background=2563eb&color=fff&size=128`;
+watch(
+  () => props.teacher?.profileImage,
+  () => {
+    imageLoadError.value = false;
+  }
+);
+
+const teacherFullName = computed(() => {
+  return `${props.teacher?.khmerName || ""} ${props.teacher?.englishName || ""}`.trim();
+});
+
+const teacherInitial = computed(() => {
+  return (
+    props.teacher?.khmerName?.charAt(0) ||
+    props.teacher?.englishName?.charAt(0)?.toUpperCase() ||
+    "T"
+  );
 });
 
 const getApiOrigin = () => {
@@ -112,12 +134,8 @@ const getImageUrl = (imagePath = "") => {
 };
 
 const teacherImageUrl = computed(() => {
-  return getImageUrl(props.teacher?.profileImage) || placeholderImage.value;
+  return getImageUrl(props.teacher?.profileImage);
 });
-
-const handleImageError = (event) => {
-  event.target.src = placeholderImage.value;
-};
 </script>
 
 <style scoped>
