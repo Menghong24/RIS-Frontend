@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-slate-50 p-2 sm:p-3 md:p-4 text-slate-800">
+  <div class="schedules-page-mobile-safe bg-slate-50 p-2 sm:p-3 md:p-4 text-slate-800">
     <div class="max-w-7xl mx-auto space-y-3 md:space-y-4">
       <!-- Header -->
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm px-2.5 sm:px-3 py-3 md:px-4">
@@ -105,7 +105,7 @@
         <!-- Classes Grid -->
         <div
           v-if="classesList.length > 0"
-          class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-3"
+          class="schedules-class-list-mobile-safe grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-3"
         >
           <button
             v-for="c in filteredClasses"
@@ -231,7 +231,7 @@
         </div>
 
         <!-- Days -->
-        <div v-else class="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-2.5 sm:gap-3">
+        <div v-else class="schedules-board-mobile-safe grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-2.5 sm:gap-3">
           <div
             v-for="day in daysOfWeek"
             :key="day.id"
@@ -323,7 +323,7 @@
       >
         <div
           v-if="showModal"
-          class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-2 sm:p-4"
+          class="schedule-modal-overlay-mobile-safe fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-2 sm:p-4"
           @click.self="closeModal"
         >
           <Transition
@@ -337,7 +337,7 @@
           >
             <div
               v-if="showModal"
-              class="bg-white rounded-t-2xl sm:rounded-xl shadow-xl w-full max-w-lg overflow-hidden border border-slate-100 flex flex-col max-h-[94dvh] sm:max-h-[90vh]"
+              class="schedule-modal-panel-mobile-safe bg-white rounded-t-2xl sm:rounded-xl shadow-xl w-full max-w-lg overflow-hidden border border-slate-100 flex flex-col max-h-[94dvh] sm:max-h-[90vh]"
             >
               <div class="px-3 sm:px-4 py-2.5 sm:py-3 border-b border-slate-100 flex justify-between items-start gap-2 bg-slate-50 shrink-0">
                 <div class="min-w-0">
@@ -366,7 +366,7 @@
                 </button>
               </div>
 
-              <form @submit.prevent="handleSubmit" class="overflow-y-auto modal-scroll">
+              <form @submit.prevent="handleSubmit" class="schedule-modal-body-mobile-safe overflow-y-auto modal-scroll">
                 <div class="p-3 sm:p-4 space-y-3 sm:space-y-4">
                   <div class="rounded-lg border border-blue-100 bg-blue-50 px-3 py-2 text-[11px] font-bold text-blue-700">
                     <i class="fa-solid fa-school mr-1"></i>
@@ -445,7 +445,7 @@
                   </div>
                 </div>
 
-                <div class="sticky bottom-0 px-3 sm:px-4 py-2.5 flex justify-end gap-2.5 border-t border-slate-100 bg-white shrink-0">
+                <div class="schedule-modal-footer-mobile-safe sticky bottom-0 px-3 sm:px-4 py-2.5 flex justify-end gap-2.5 border-t border-slate-100 bg-white shrink-0">
                   <button
                     type="button"
                     @click="closeModal"
@@ -482,7 +482,7 @@
       >
         <div
           v-if="showDeleteModal"
-          class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[60] p-3 sm:p-4"
+          class="schedule-modal-overlay-mobile-safe fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[60] p-3 sm:p-4"
           @click.self="closeDeleteModal"
         >
           <Transition
@@ -496,7 +496,7 @@
           >
             <div
               v-if="showDeleteModal"
-              class="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden border border-slate-100"
+              class="schedule-modal-panel-mobile-safe bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden border border-slate-100"
             >
               <div class="px-4 py-3 bg-red-50 border-b border-red-100 flex items-start justify-between gap-3">
                 <div class="flex items-center gap-3 min-w-0">
@@ -544,7 +544,7 @@
                 </div>
               </div>
 
-              <div class="px-4 py-3 bg-slate-50 border-t border-slate-100 flex justify-end gap-2.5">
+              <div class="schedule-modal-footer-mobile-safe px-4 py-3 bg-slate-50 border-t border-slate-100 flex justify-end gap-2.5">
                 <button
                   type="button"
                   @click="closeDeleteModal"
@@ -574,13 +574,56 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from "vue";
+import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
 import { useQuery } from "../hooks/useQuery";
 import { useCollection } from "../hooks/useCollection";
 import api from "../config/api";
 import { useToast } from "vue-toastification";
 
 const toast = useToast();
+
+const originalViewportContent = ref("");
+const viewportMetaWasCreated = ref(false);
+
+const setNoZoomViewport = () => {
+  if (typeof document === "undefined") return;
+
+  let viewportMeta = document.querySelector('meta[name="viewport"]');
+
+  if (!viewportMeta) {
+    viewportMeta = document.createElement("meta");
+    viewportMeta.setAttribute("name", "viewport");
+    document.head.appendChild(viewportMeta);
+    viewportMetaWasCreated.value = true;
+  } else if (!originalViewportContent.value) {
+    viewportMetaWasCreated.value = false;
+    originalViewportContent.value = viewportMeta.getAttribute("content") || "";
+  }
+
+  viewportMeta.setAttribute(
+    "content",
+    "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+  );
+};
+
+const restoreViewport = () => {
+  if (typeof document === "undefined") return;
+
+  const viewportMeta = document.querySelector('meta[name="viewport"]');
+
+  if (!viewportMeta) return;
+
+  if (viewportMetaWasCreated.value) {
+    viewportMeta.remove();
+    return;
+  }
+
+  viewportMeta.setAttribute(
+    "content",
+    originalViewportContent.value || "width=device-width, initial-scale=1"
+  );
+};
+
 const { createDoc, updateDoc, deleteDoc } = useCollection("schedules");
 
 const { data: classes } = useQuery("classes");
@@ -984,6 +1027,15 @@ const confirmDelete = async () => {
     isDeleting.value = false;
   }
 };
+
+onMounted(() => {
+  setNoZoomViewport();
+});
+
+onBeforeUnmount(() => {
+  restoreViewport();
+});
+
 </script>
 
 <style scoped>
@@ -1069,6 +1121,55 @@ const confirmDelete = async () => {
 
 .modal-scroll::-webkit-scrollbar-track {
   background: transparent;
+}
+
+
+/* Chrome mobile bottom toolbar fix - small screens only, compact spacing */
+@media (max-width: 640px) {
+  .schedules-page-mobile-safe {
+    padding-bottom: calc(2.75rem + env(safe-area-inset-bottom));
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  .schedules-page-mobile-safe > .max-w-7xl {
+    padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+  }
+
+  .schedules-class-list-mobile-safe,
+  .schedules-board-mobile-safe {
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+  }
+
+  .schedules-class-list-mobile-safe > :last-child,
+  .schedules-board-mobile-safe > :last-child {
+    margin-bottom: calc(1.25rem + env(safe-area-inset-bottom));
+  }
+
+  .schedule-modal-overlay-mobile-safe {
+    min-height: 100vh;
+    min-height: 100dvh;
+    align-items: flex-end;
+    padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+  }
+
+  .schedule-modal-panel-mobile-safe {
+    max-height: calc(100vh - 0.75rem);
+    max-height: calc(100dvh - 0.75rem);
+  }
+
+  .schedule-modal-body-mobile-safe {
+    max-height: calc(100vh - 8.5rem);
+    max-height: calc(100dvh - 8.5rem);
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .schedule-modal-footer-mobile-safe {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    padding-bottom: calc(0.65rem + env(safe-area-inset-bottom)) !important;
+  }
 }
 
 @media (min-width: 640px) {

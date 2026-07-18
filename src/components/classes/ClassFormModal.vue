@@ -2,13 +2,13 @@
   <Transition name="fade">
     <div
       v-if="isOpen"
-      class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-3"
+      class="class-form-modal-overlay-mobile-safe fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-3"
       @click.self="handleClose"
     >
       <Transition name="scale">
         <div
           v-if="isOpen"
-          class="bg-white rounded-xl shadow-xl w-full max-w-xl overflow-hidden flex flex-col max-h-[86vh] border border-slate-100"
+          class="class-form-modal-panel-mobile-safe bg-white rounded-xl shadow-xl w-full max-w-xl overflow-hidden flex flex-col max-h-[86vh] border border-slate-100"
         >
           <!-- Header -->
           <div class="px-3 py-2.5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
@@ -34,7 +34,7 @@
           </div>
 
           <!-- Form -->
-          <div class="overflow-y-auto flex-1 p-3">
+          <div class="class-form-modal-body-mobile-safe overflow-y-auto flex-1 p-3">
             <form id="classForm" @submit.prevent="submitForm" class="space-y-3">
 
               <!-- Class Basic Info -->
@@ -212,7 +212,7 @@
           </div>
 
           <!-- Actions -->
-          <div class="px-3 py-2.5 bg-slate-50 border-t border-slate-100 flex justify-end gap-2">
+          <div class="class-form-modal-footer-mobile-safe px-3 py-2.5 bg-slate-50 border-t border-slate-100 flex justify-end gap-2">
             <button
               type="button"
               @click="handleClose"
@@ -263,6 +263,49 @@ const emit = defineEmits(['close', 'save'])
 const isSubmitting = ref(false)
 const firstInput = ref(null)
 
+
+const originalViewportContent = ref("")
+const viewportMetaWasCreated = ref(false)
+
+const setNoZoomViewport = () => {
+  if (typeof document === "undefined") return
+
+  let viewportMeta = document.querySelector('meta[name="viewport"]')
+
+  if (!viewportMeta) {
+    viewportMeta = document.createElement("meta")
+    viewportMeta.setAttribute("name", "viewport")
+    document.head.appendChild(viewportMeta)
+    viewportMetaWasCreated.value = true
+  } else if (!originalViewportContent.value) {
+    viewportMetaWasCreated.value = false
+    originalViewportContent.value = viewportMeta.getAttribute("content") || ""
+  }
+
+  viewportMeta.setAttribute(
+    "content",
+    "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+  )
+}
+
+const restoreViewport = () => {
+  if (typeof document === "undefined") return
+
+  const viewportMeta = document.querySelector('meta[name="viewport"]')
+
+  if (!viewportMeta) return
+
+  if (viewportMetaWasCreated.value) {
+    viewportMeta.remove()
+    return
+  }
+
+  viewportMeta.setAttribute(
+    "content",
+    originalViewportContent.value || "width=device-width, initial-scale=1"
+  )
+}
+
 const initialForm = {
   classNumber: '',
   className: '',
@@ -278,6 +321,7 @@ const form = reactive({ ...initialForm })
 
 watch(() => props.isOpen, async (isOpen) => {
   if (isOpen) {
+    setNoZoomViewport()
     isSubmitting.value = false
 
     if (props.isEditing && props.classData) {
@@ -300,6 +344,8 @@ watch(() => props.isOpen, async (isOpen) => {
 
     await nextTick()
     if (firstInput.value) firstInput.value.focus()
+  } else {
+    restoreViewport()
   }
 })
 
@@ -318,6 +364,7 @@ const submitForm = async () => {
 }
 
 const handleClose = () => {
+  restoreViewport()
   emit('close')
 }
 
@@ -326,10 +373,44 @@ const onKeydown = (e) => {
 }
 
 onMounted(() => window.addEventListener('keydown', onKeydown))
-onUnmounted(() => window.removeEventListener('keydown', onKeydown))
+onUnmounted(() => {
+  restoreViewport()
+  window.removeEventListener('keydown', onKeydown)
+})
 </script>
 
 <style scoped>
+
+/* Chrome mobile bottom toolbar fix + no visual input-size changes */
+@media (max-width: 640px) {
+  .class-form-modal-overlay-mobile-safe {
+    min-height: 100vh;
+    min-height: 100dvh;
+    align-items: flex-end;
+    padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  .class-form-modal-panel-mobile-safe {
+    max-height: calc(100vh - 0.75rem);
+    max-height: calc(100dvh - 0.75rem);
+  }
+
+  .class-form-modal-body-mobile-safe {
+    max-height: calc(100vh - 8.5rem);
+    max-height: calc(100dvh - 8.5rem);
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .class-form-modal-footer-mobile-safe {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    padding-bottom: calc(0.65rem + env(safe-area-inset-bottom)) !important;
+  }
+}
+
 .form-label {
   display: block;
   font-size: 0.68rem;

@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-slate-50 p-2 sm:p-3 md:p-4 text-slate-800">
+  <div class="subjects-page-mobile-safe bg-slate-50 p-2 sm:p-3 md:p-4 text-slate-800">
     <div class="max-w-7xl mx-auto space-y-3 md:space-y-4">
       <!-- Header -->
       <div
@@ -169,7 +169,7 @@
 
         <template v-else>
           <!-- Mobile Cards -->
-          <div class="lg:hidden bg-slate-50 p-2.5 space-y-2">
+          <div class="subjects-mobile-list lg:hidden bg-slate-50 p-2.5 space-y-2">
             <div
               v-for="sub in filteredSubjects"
               :key="sub._id"
@@ -456,10 +456,10 @@
       >
         <div
           v-if="showModal"
-          class="fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm overflow-y-auto"
+          class="subject-modal-overlay-mobile-safe fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm overflow-y-auto"
           @click.self="closeModal"
         >
-          <div class="min-h-full flex items-end sm:items-center justify-center p-2 sm:p-4">
+          <div class="subject-modal-wrapper-mobile-safe min-h-full flex items-end sm:items-center justify-center p-2 sm:p-4">
             <Transition
               appear
               enter-active-class="transition duration-200 ease-out"
@@ -471,7 +471,7 @@
             >
               <div
                 v-if="showModal"
-                class="bg-white rounded-t-2xl sm:rounded-xl shadow-xl w-full max-w-xl overflow-hidden border border-slate-100 flex flex-col max-h-[94dvh] sm:max-h-[90vh]"
+                class="subject-modal-panel-mobile-safe bg-white rounded-t-2xl sm:rounded-xl shadow-xl w-full max-w-xl overflow-hidden border border-slate-100 flex flex-col max-h-[94dvh] sm:max-h-[90vh]"
               >
                 <div class="px-3 sm:px-4 py-2.5 sm:py-3 border-b border-slate-100 flex justify-between items-start gap-2 bg-slate-50 shrink-0">
                   <div class="min-w-0">
@@ -504,7 +504,7 @@
 
                 <form
                   @submit.prevent="handleSubmit"
-                  class="p-3 sm:p-4 space-y-3 overflow-y-auto modal-scroll"
+                  class="subject-modal-body-mobile-safe p-3 sm:p-4 space-y-3 overflow-y-auto modal-scroll"
                 >
                   <div>
                     <label class="form-label">
@@ -696,7 +696,7 @@
                     ></textarea>
                   </div>
 
-                  <div class="sticky bottom-0 -mx-3 sm:-mx-4 px-3 sm:px-4 py-2.5 flex justify-end gap-2.5 border-t border-slate-100 bg-white">
+                  <div class="subject-modal-footer-mobile-safe sticky bottom-0 -mx-3 sm:-mx-4 px-3 sm:px-4 py-2.5 flex justify-end gap-2.5 border-t border-slate-100 bg-white">
                     <button
                       type="button"
                       @click="closeModal"
@@ -737,10 +737,10 @@
       >
         <div
           v-if="showDeleteModal"
-          class="fixed inset-0 z-[60] bg-slate-900/40 backdrop-blur-sm overflow-y-auto"
+          class="subject-modal-overlay-mobile-safe fixed inset-0 z-[60] bg-slate-900/40 backdrop-blur-sm overflow-y-auto"
           @click.self="closeDeleteConfirm"
         >
-          <div class="min-h-full flex items-center justify-center p-3 sm:p-4">
+          <div class="subject-modal-wrapper-mobile-safe min-h-full flex items-center justify-center p-3 sm:p-4">
             <Transition
               appear
               enter-active-class="transition duration-200 ease-out"
@@ -752,7 +752,7 @@
             >
               <div
                 v-if="showDeleteModal"
-                class="bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden border border-slate-100"
+                class="subject-modal-panel-mobile-safe bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden border border-slate-100"
               >
                 <div class="px-4 py-3 border-b border-slate-100 flex justify-between items-center bg-slate-50">
                   <div>
@@ -795,7 +795,7 @@
                   </div>
                 </div>
 
-                <div class="px-4 py-3 bg-slate-50 border-t border-slate-100 flex justify-end gap-2.5">
+                <div class="subject-modal-footer-mobile-safe px-4 py-3 bg-slate-50 border-t border-slate-100 flex justify-end gap-2.5">
                   <button
                     type="button"
                     @click="closeDeleteConfirm"
@@ -829,12 +829,63 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { useQuery } from "../hooks/useQuery";
 import { useCollection } from "../hooks/useCollection";
 import { useToast } from "vue-toastification";
 
 const toast = useToast();
+
+
+const originalViewportContent = ref("");
+const viewportMetaWasCreated = ref(false);
+
+const setNoZoomViewport = () => {
+  if (typeof document === "undefined") return;
+
+  let viewportMeta = document.querySelector('meta[name="viewport"]');
+
+  if (!viewportMeta) {
+    viewportMeta = document.createElement("meta");
+    viewportMeta.setAttribute("name", "viewport");
+    document.head.appendChild(viewportMeta);
+    viewportMetaWasCreated.value = true;
+  } else {
+    viewportMetaWasCreated.value = false;
+    originalViewportContent.value = viewportMeta.getAttribute("content") || "";
+  }
+
+  viewportMeta.setAttribute(
+    "content",
+    "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+  );
+};
+
+const restoreViewport = () => {
+  if (typeof document === "undefined") return;
+
+  const viewportMeta = document.querySelector('meta[name="viewport"]');
+
+  if (!viewportMeta) return;
+
+  if (viewportMetaWasCreated.value) {
+    viewportMeta.remove();
+    return;
+  }
+
+  viewportMeta.setAttribute(
+    "content",
+    originalViewportContent.value || "width=device-width, initial-scale=1"
+  );
+};
+
+onMounted(() => {
+  setNoZoomViewport();
+});
+
+onBeforeUnmount(() => {
+  restoreViewport();
+});
 
 const { data: subjects, fetchData, loading } = useQuery("subjects");
 const { data: teachers } = useQuery("teachers");
@@ -1302,6 +1353,58 @@ const confirmDeleteSubject = async () => {
 
 .modal-scroll::-webkit-scrollbar-track {
   background: transparent;
+}
+
+
+/* Chrome mobile bottom toolbar fix + no visual input-size changes */
+@media (max-width: 640px) {
+  .subjects-page-mobile-safe {
+    padding-bottom: calc(2.75rem + env(safe-area-inset-bottom));
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  .subjects-page-mobile-safe > .max-w-7xl {
+    padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+  }
+
+  .subjects-mobile-list {
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+  }
+
+  .subjects-mobile-list > :last-child {
+    margin-bottom: calc(1.25rem + env(safe-area-inset-bottom));
+  }
+
+  .subject-modal-overlay-mobile-safe {
+    min-height: 100vh;
+    min-height: 100dvh;
+  }
+
+  .subject-modal-wrapper-mobile-safe {
+    min-height: 100vh;
+    min-height: 100dvh;
+    align-items: flex-end;
+    padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+  }
+
+  .subject-modal-panel-mobile-safe {
+    max-height: calc(100vh - 0.75rem);
+    max-height: calc(100dvh - 0.75rem);
+  }
+
+  .subject-modal-body-mobile-safe {
+    max-height: calc(100vh - 8.5rem);
+    max-height: calc(100dvh - 8.5rem);
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .subject-modal-footer-mobile-safe {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    padding-bottom: calc(0.65rem + env(safe-area-inset-bottom)) !important;
+  }
 }
 
 @media (min-width: 640px) {

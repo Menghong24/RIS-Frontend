@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-slate-50 p-2 sm:p-3 md:p-4">
+  <div class="students-page-mobile-safe bg-slate-50 p-2 sm:p-3 md:p-4">
     <div class="max-w-7xl mx-auto space-y-3 md:space-y-4">
       <!-- Header + Filters -->
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-2.5 sm:p-3 md:p-4">
@@ -82,7 +82,7 @@
       </div>
 
       <!-- Mobile Student Cards -->
-      <div class="lg:hidden space-y-2">
+      <div class="students-mobile-list lg:hidden space-y-2">
         <div
           v-if="paginatedStudents.length > 0"
           class="grid grid-cols-1 gap-2"
@@ -112,7 +112,7 @@
               <div class="min-w-0 flex-1">
                 <div class="flex items-start justify-between gap-2">
                   <div class="min-w-0">
-                    <p class="font-khmer text-sm font-extrabold text-slate-800 leading-tight truncate">
+                    <p class="text-sm font-extrabold text-slate-800 leading-tight truncate">
                       {{ student.khmerName || "-" }}
                     </p>
 
@@ -270,7 +270,7 @@
       <!-- Pagination -->
       <div
         v-if="filteredStudents.length > 0"
-        class="flex flex-col sm:flex-row flex-wrap items-center justify-between bg-white p-2.5 sm:p-3 rounded-xl shadow-sm border border-slate-200 gap-2 sm:gap-3"
+        class="students-pagination-mobile-safe flex flex-col sm:flex-row flex-wrap items-center justify-between bg-white p-2.5 sm:p-3 rounded-xl shadow-sm border border-slate-200 gap-2 sm:gap-3"
       >
         <div class="flex items-center gap-1.5 sm:gap-2 w-full sm:w-auto justify-center sm:justify-start">
           <button
@@ -684,6 +684,27 @@ const confirmDelete = async () => {
 </script>
 
 <style scoped>
+
+/* Chrome mobile bottom toolbar fix - small screens only, compact spacing */
+@media (max-width: 640px) {
+  .students-page-mobile-safe {
+    padding-bottom: calc(2.75rem + env(safe-area-inset-bottom));
+  }
+
+  .students-page-mobile-safe > .max-w-7xl {
+    padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+  }
+
+  .students-mobile-list {
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+  }
+
+  .students-pagination-mobile-safe {
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom)) !important;
+    margin-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+  }
+}
+
 .font-khmer {
   font-family: "Battambang", "Siemreap", sans-serif;
 }

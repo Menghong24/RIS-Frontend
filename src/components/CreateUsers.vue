@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-slate-50 p-2 sm:p-3 md:p-4">
+  <div class="users-page-mobile-safe bg-slate-50 p-2 sm:p-3 md:p-4">
     <div class="max-w-7xl mx-auto space-y-3 md:space-y-4">
       <!-- Header -->
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm px-2.5 sm:px-3 py-3 md:px-4">
@@ -132,21 +132,21 @@
 
         <template v-else>
           <!-- Mobile Cards -->
-          <div class="lg:hidden bg-slate-50 p-2.5 space-y-2">
+          <div class="users-mobile-list lg:hidden bg-slate-50 p-2.5 space-y-2">
             <div
               v-for="user in users"
               :key="user._id"
               class="bg-white rounded-xl border border-slate-200 shadow-sm p-2.5"
             >
               <div class="flex items-start gap-2">
-                <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-700 border border-blue-100 flex items-center justify-center font-extrabold shadow-sm text-sm shrink-0 font-khmer overflow-hidden">
+                <div class="w-10 h-10 rounded-full bg-blue-50 text-blue-700 border border-blue-100 flex items-center justify-center font-extrabold shadow-sm text-sm shrink-0 overflow-hidden">
                   {{ getUserInitial(user) }}
                 </div>
 
                 <div class="min-w-0 flex-1">
                   <div class="flex items-start justify-between gap-2">
                     <div class="min-w-0">
-                      <p class="font-extrabold text-sm text-slate-800 leading-tight truncate font-khmer">
+                      <p class="font-extrabold text-sm text-slate-800 leading-tight truncate">
                         {{ user.username }}
                       </p>
 
@@ -170,7 +170,7 @@
                       </p>
 
                       <template v-if="user.role === 'teacher'">
-                        <p class="text-[11px] font-extrabold text-slate-700 truncate font-khmer">
+                        <p class="text-[11px] font-extrabold text-slate-700 truncate">
                           {{ getTeacherDisplayName(user) }}
                         </p>
 
@@ -219,7 +219,7 @@
                     </button>
 
                     <button
-                      @click="handleDelete(user._id, user.username)"
+                      @click="openDeleteModal(user)"
                       class="inline-flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition disabled:opacity-40"
                       title="លុបគណនី"
                       :disabled="isDeleting === user._id"
@@ -277,12 +277,12 @@
                 >
                   <td class="table-td">
                     <div class="flex items-center gap-2">
-                      <div class="w-9 h-9 rounded-full bg-blue-50 text-blue-700 border border-blue-100 flex items-center justify-center font-extrabold shadow-sm text-sm shrink-0 font-khmer overflow-hidden">
+                      <div class="w-9 h-9 rounded-full bg-blue-50 text-blue-700 border border-blue-100 flex items-center justify-center font-extrabold shadow-sm text-sm shrink-0 overflow-hidden">
                         {{ getUserInitial(user) }}
                       </div>
 
                       <div class="min-w-0">
-                        <p class="font-bold text-slate-800 truncate font-khmer">
+                        <p class="font-bold text-slate-800 truncate">
                           {{ user.username }}
                         </p>
 
@@ -307,7 +307,7 @@
                       v-if="user.role === 'teacher'"
                       class="min-w-0"
                     >
-                      <p class="font-bold text-slate-700 truncate font-khmer">
+                      <p class="font-bold text-slate-700 truncate">
                         {{ getTeacherDisplayName(user) }}
                       </p>
 
@@ -349,7 +349,7 @@
                       </button>
 
                       <button
-                        @click="handleDelete(user._id, user.username)"
+                        @click="openDeleteModal(user)"
                         class="p-2 text-slate-400 hover:text-red-600 hover:bg-red-50 rounded-lg transition disabled:opacity-40"
                         title="លុបគណនី"
                         :disabled="isDeleting === user._id"
@@ -375,7 +375,7 @@
         <!-- Pagination -->
         <div
           v-if="users.length > 0"
-          class="bg-slate-50 px-2.5 sm:px-4 py-2.5 sm:py-3 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-3"
+          class="users-pagination-mobile-safe bg-slate-50 px-2.5 sm:px-4 py-2.5 sm:py-3 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-3"
         >
           <div class="flex items-center gap-1.5 text-[11px] sm:text-xs text-slate-600 font-medium">
             <span>ទំព័រ</span>
@@ -417,12 +417,12 @@
       <Transition name="fade">
         <div
           v-if="modal.isOpen"
-          class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-end sm:items-center justify-center p-2 sm:p-4 z-50"
+          class="modal-overlay-mobile-safe fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-end sm:items-center justify-center p-2 sm:p-4 z-50"
           @click.self="closeModal"
         >
           <Transition name="scale">
             <div
-              class="bg-white rounded-t-2xl sm:rounded-xl shadow-xl max-w-md w-full border border-slate-100 overflow-hidden flex flex-col max-h-[94dvh] sm:max-h-[90vh]"
+              class="modal-panel-mobile-safe bg-white rounded-t-2xl sm:rounded-xl shadow-xl max-w-md w-full border border-slate-100 overflow-hidden flex flex-col max-h-[94dvh] sm:max-h-[90vh]"
               @click.stop
             >
               <div class="px-3 sm:px-4 py-2.5 sm:py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50 shrink-0">
@@ -450,7 +450,7 @@
 
               <form
                 @submit.prevent="handleModalSubmit"
-                class="p-3 sm:p-4 space-y-3 overflow-y-auto modal-scroll"
+                class="modal-body-mobile-safe p-3 sm:p-4 space-y-3 overflow-y-auto modal-scroll"
               >
                 <div>
                   <label class="form-label">
@@ -527,7 +527,7 @@
                   </p>
                 </div>
 
-                <div class="sticky bottom-0 -mx-3 sm:-mx-4 px-3 sm:px-4 py-2.5 flex items-center justify-end gap-2 border-t border-slate-100 bg-white">
+                <div class="modal-footer-mobile-safe sticky bottom-0 -mx-3 sm:-mx-4 px-3 sm:px-4 py-2.5 flex items-center justify-end gap-2 border-t border-slate-100 bg-white">
                   <button
                     type="button"
                     @click="closeModal"
@@ -555,17 +555,136 @@
           </Transition>
         </div>
       </Transition>
+
+      <!-- Delete Confirm Modal -->
+      <Transition name="fade">
+        <div
+          v-if="deleteModal.isOpen"
+          class="modal-overlay-mobile-safe fixed inset-0 bg-slate-900/45 backdrop-blur-sm flex items-end sm:items-center justify-center p-2 sm:p-4 z-[60]"
+          @click.self="closeDeleteModal"
+        >
+          <Transition name="scale">
+            <div
+              class="modal-panel-mobile-safe bg-white rounded-t-2xl sm:rounded-xl shadow-xl max-w-sm w-full border border-slate-100 overflow-hidden"
+              @click.stop
+            >
+              <div class="px-4 py-3 bg-red-50 border-b border-red-100 flex items-center gap-3">
+                <div class="h-10 w-10 rounded-full bg-white text-red-600 flex items-center justify-center border border-red-100 shadow-sm shrink-0">
+                  <i class="fa-solid fa-trash-can text-sm"></i>
+                </div>
+
+                <div class="min-w-0">
+                  <h3 class="text-sm sm:text-base font-extrabold text-slate-800 truncate">
+                    បញ្ជាក់ការលុប
+                  </h3>
+
+                  <p class="text-[11px] sm:text-xs text-red-600 font-bold mt-0.5 truncate">
+                    Delete Confirmation
+                  </p>
+                </div>
+              </div>
+
+              <div class="p-4">
+                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                  តើអ្នកពិតជាចង់លុបគណនី
+                  <span class="font-extrabold text-slate-800">
+                    "{{ deleteModal.username || 'អ្នកប្រើប្រាស់' }}"
+                  </span>
+                  មែនទេ?
+                </p>
+
+                <div class="mt-3 rounded-xl bg-red-50 border border-red-100 px-3 py-2 text-[11px] sm:text-xs text-red-600 font-bold leading-relaxed">
+                  សកម្មភាពនេះមិនអាចត្រឡប់វិញបានទេ។
+                </div>
+              </div>
+
+              <div class="modal-footer-mobile-safe px-4 py-3 bg-slate-50 border-t border-slate-100 flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+                <button
+                  type="button"
+                  @click="closeDeleteModal"
+                  :disabled="Boolean(isDeleting)"
+                  class="w-full sm:w-auto px-3.5 py-1.5 sm:py-2 border border-slate-200 bg-white text-slate-700 text-[11px] sm:text-sm font-bold rounded-lg hover:bg-slate-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                >
+                  បោះបង់
+                </button>
+
+                <button
+                  type="button"
+                  @click="confirmDeleteUser"
+                  :disabled="Boolean(isDeleting)"
+                  class="w-full sm:w-auto px-4 py-1.5 sm:py-2 bg-red-600 text-white text-[11px] sm:text-sm font-bold rounded-lg hover:bg-red-700 active:bg-red-800 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
+                >
+                  <i
+                    v-if="isDeleting"
+                    class="fa-solid fa-circle-notch fa-spin text-[10px] sm:text-xs"
+                  ></i>
+
+                  <i
+                    v-else
+                    class="fa-solid fa-trash-can text-[10px] sm:text-xs"
+                  ></i>
+
+                  {{ isDeleting ? 'កំពុងលុប...' : 'លុប' }}
+                </button>
+              </div>
+            </div>
+          </Transition>
+        </div>
+      </Transition>
     </div>
   </div>
 </template>
 
 <script setup>
-import { computed, ref, reactive, onMounted, watch } from "vue";
+import { computed, ref, reactive, onMounted, onBeforeUnmount, watch } from "vue";
 import { useUsers } from "../hooks/useUsers";
 import { useQuery } from "../hooks/useQuery";
 import { useToast } from "vue-toastification";
 
 const toast = useToast();
+
+
+const originalViewportContent = ref("");
+const viewportMetaWasCreated = ref(false);
+
+const setNoZoomViewport = () => {
+  if (typeof document === "undefined") return;
+
+  let viewportMeta = document.querySelector('meta[name="viewport"]');
+
+  if (!viewportMeta) {
+    viewportMeta = document.createElement("meta");
+    viewportMeta.setAttribute("name", "viewport");
+    document.head.appendChild(viewportMeta);
+    viewportMetaWasCreated.value = true;
+  } else if (!originalViewportContent.value) {
+    viewportMetaWasCreated.value = false;
+    originalViewportContent.value = viewportMeta.getAttribute("content") || "";
+  }
+
+  viewportMeta.setAttribute(
+    "content",
+    "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+  );
+};
+
+const restoreViewport = () => {
+  if (typeof document === "undefined") return;
+
+  const viewportMeta = document.querySelector('meta[name="viewport"]');
+
+  if (!viewportMeta) return;
+
+  if (viewportMetaWasCreated.value) {
+    viewportMeta.remove();
+    return;
+  }
+
+  viewportMeta.setAttribute(
+    "content",
+    originalViewportContent.value || "width=device-width, initial-scale=1"
+  );
+};
 
 const {
   users,
@@ -604,6 +723,12 @@ const modal = reactive({
     role: "user",
     teacher: ""
   }
+});
+
+const deleteModal = reactive({
+  isOpen: false,
+  targetId: null,
+  username: ""
 });
 
 let searchDebounceTimeout = null;
@@ -702,7 +827,13 @@ const syncUserDirectory = async () => {
 };
 
 onMounted(() => {
+  setNoZoomViewport();
   syncUserDirectory();
+});
+
+onBeforeUnmount(() => {
+  restoreViewport();
+  clearTimeout(searchDebounceTimeout);
 });
 
 const debounceSearch = () => {
@@ -824,16 +955,38 @@ const handleModalSubmit = async () => {
   }
 };
 
-const handleDelete = async (userId, username) => {
-  if (!confirm(`តើអ្នកពិតជាចង់លុបគណនី "${username}" មែនទេ? សកម្មភាពនេះមិនអាចត្រឡប់វិញបានទេ។`)) {
+const openDeleteModal = (userData) => {
+  deleteModal.targetId = userData?._id || null;
+  deleteModal.username = userData?.username || "";
+  deleteModal.isOpen = true;
+};
+
+const closeDeleteModal = () => {
+  if (isDeleting.value) return;
+
+  deleteModal.isOpen = false;
+  deleteModal.targetId = null;
+  deleteModal.username = "";
+};
+
+const confirmDeleteUser = async () => {
+  if (!deleteModal.targetId) {
+    toast.error("មិនមានគណនីសម្រាប់លុបទេ");
     return;
   }
+
+  const userId = deleteModal.targetId;
+  const username = deleteModal.username || "អ្នកប្រើប្រាស់";
 
   isDeleting.value = userId;
 
   try {
     await deleteUser(userId);
     toast.success(`បានលុបគណនី "${username}" ដោយជោគជ័យ`);
+
+    deleteModal.isOpen = false;
+    deleteModal.targetId = null;
+    deleteModal.username = "";
 
     if (users.value.length === 1 && pagination.page > 1) {
       pagination.page -= 1;
@@ -926,8 +1079,52 @@ const formatDate = (dateString) => {
   vertical-align: middle;
 }
 
-.font-khmer {
-  font-family: "Battambang", "Siemreap", "Kantumruy Pro", sans-serif;
+
+/* Chrome mobile bottom toolbar fix + no visual input-size changes */
+@media (max-width: 640px) {
+  .users-page-mobile-safe {
+    padding-bottom: calc(2.75rem + env(safe-area-inset-bottom));
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  .users-page-mobile-safe > .max-w-7xl {
+    padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+  }
+
+  .users-mobile-list {
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+  }
+
+  .users-mobile-list > :last-child,
+  .users-pagination-mobile-safe {
+    margin-bottom: calc(1.25rem + env(safe-area-inset-bottom));
+  }
+
+  .modal-overlay-mobile-safe {
+    min-height: 100vh;
+    min-height: 100dvh;
+    align-items: flex-end;
+    padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+  }
+
+  .modal-panel-mobile-safe {
+    max-height: calc(100vh - 0.75rem);
+    max-height: calc(100dvh - 0.75rem);
+  }
+
+  .modal-body-mobile-safe {
+    max-height: calc(100vh - 8.5rem);
+    max-height: calc(100dvh - 8.5rem);
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .modal-footer-mobile-safe {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    padding-bottom: calc(0.65rem + env(safe-area-inset-bottom)) !important;
+  }
 }
 
 .modal-scroll::-webkit-scrollbar {

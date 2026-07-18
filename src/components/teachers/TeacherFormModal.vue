@@ -9,11 +9,11 @@
   >
     <div
       v-if="isOpen"
-      class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-2 sm:p-3"
-      @click.self="$emit('close')"
+      class="teacher-form-modal-overlay-mobile-safe fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-2 sm:p-3"
+      @click.self="handleClose"
     >
       <div
-        class="bg-white rounded-t-2xl sm:rounded-xl shadow-xl w-full max-w-4xl max-h-[94dvh] sm:max-h-[86vh] overflow-hidden border border-slate-100 flex flex-col"
+        class="teacher-form-modal-panel-mobile-safe bg-white rounded-t-2xl sm:rounded-xl shadow-xl w-full max-w-4xl max-h-[94dvh] sm:max-h-[86vh] overflow-hidden border border-slate-100 flex flex-col"
       >
         <!-- Header -->
         <div
@@ -39,7 +39,7 @@
 
           <button
             type="button"
-            @click="$emit('close')"
+            @click="handleClose"
             class="h-7 w-7 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition shrink-0"
           >
             <i class="fa-solid fa-xmark text-sm"></i>
@@ -48,7 +48,7 @@
 
         <form
           @submit.prevent="handleSubmit"
-          class="p-2.5 sm:p-3 space-y-2.5 sm:space-y-3 overflow-y-auto modal-scroll"
+          class="teacher-form-modal-body-mobile-safe p-2.5 sm:p-3 space-y-2.5 sm:space-y-3 overflow-y-auto modal-scroll"
         >
           <!-- Teacher Image -->
           <div class="form-section">
@@ -383,11 +383,11 @@
 
           <!-- Actions -->
           <div
-            class="sticky bottom-0 -mx-2.5 sm:-mx-3 px-2.5 sm:px-3 py-2.5 bg-white border-t border-slate-100 flex justify-end gap-2"
+            class="teacher-form-modal-footer-mobile-safe sticky bottom-0 -mx-2.5 sm:-mx-3 px-2.5 sm:px-3 py-2.5 bg-white border-t border-slate-100 flex justify-end gap-2"
           >
             <button
               type="button"
-              @click="$emit('close')"
+              @click="handleClose"
               class="px-3 py-1.5 text-[11px] sm:text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition"
             >
               បោះបង់
@@ -431,6 +431,54 @@ const props = defineProps({
 });
 
 const emit = defineEmits(["close", "save"]);
+
+
+const originalViewportContent = ref("");
+const viewportMetaWasCreated = ref(false);
+
+const setNoZoomViewport = () => {
+  if (typeof document === "undefined") return;
+
+  let viewportMeta = document.querySelector('meta[name="viewport"]');
+
+  if (!viewportMeta) {
+    viewportMeta = document.createElement("meta");
+    viewportMeta.setAttribute("name", "viewport");
+    document.head.appendChild(viewportMeta);
+    viewportMetaWasCreated.value = true;
+  } else if (!originalViewportContent.value) {
+    viewportMetaWasCreated.value = false;
+    originalViewportContent.value = viewportMeta.getAttribute("content") || "";
+  }
+
+  viewportMeta.setAttribute(
+    "content",
+    "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+  );
+};
+
+const restoreViewport = () => {
+  if (typeof document === "undefined") return;
+
+  const viewportMeta = document.querySelector('meta[name="viewport"]');
+
+  if (!viewportMeta) return;
+
+  if (viewportMetaWasCreated.value) {
+    viewportMeta.remove();
+    return;
+  }
+
+  viewportMeta.setAttribute(
+    "content",
+    originalViewportContent.value || "width=device-width, initial-scale=1"
+  );
+};
+
+const handleClose = () => {
+  restoreViewport();
+  emit("close");
+};
 
 const defaultForm = {
   khmerName: "",
@@ -615,11 +663,13 @@ watch(
   () => props.isOpen,
   (newVal) => {
     if (!newVal) {
+      restoreViewport();
       isSubmitting.value = false;
       clearLocalPreview();
       return;
     }
 
+    setNoZoomViewport();
     clearLocalPreview();
 
     if (props.isEditing && props.teacher) {
@@ -680,11 +730,43 @@ watch(
 );
 
 onBeforeUnmount(() => {
+  restoreViewport();
   clearLocalPreview();
 });
 </script>
 
 <style scoped>
+
+/* Chrome mobile bottom toolbar fix + no visual input-size changes */
+@media (max-width: 640px) {
+  .teacher-form-modal-overlay-mobile-safe {
+    min-height: 100vh;
+    min-height: 100dvh;
+    align-items: flex-end;
+    padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  .teacher-form-modal-panel-mobile-safe {
+    max-height: calc(100vh - 0.75rem);
+    max-height: calc(100dvh - 0.75rem);
+  }
+
+  .teacher-form-modal-body-mobile-safe {
+    max-height: calc(100vh - 8.5rem);
+    max-height: calc(100dvh - 8.5rem);
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .teacher-form-modal-footer-mobile-safe {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    padding-bottom: calc(0.65rem + env(safe-area-inset-bottom)) !important;
+  }
+}
+
 .form-section {
   border: 1px solid #e2e8f0;
   background: #ffffff;

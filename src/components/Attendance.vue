@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-slate-50 p-2 sm:p-3 md:p-4">
+  <div class="attendance-page-mobile-safe bg-slate-50 p-2 sm:p-3 md:p-4">
     <!-- Header -->
     <div class="max-w-7xl mx-auto mb-3 md:mb-4">
       <div
@@ -73,7 +73,7 @@
     <!-- Class Cards -->
     <div v-if="!selectedClass" class="max-w-7xl mx-auto">
       <div
-        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-3"
+        class="attendance-class-list-mobile-safe grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-3"
       >
         <div
           v-for="cls in filteredClasses"
@@ -136,7 +136,7 @@
     <!-- Attendance Panel -->
     <div
       v-else
-      class="bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden max-w-7xl mx-auto"
+      class="attendance-panel-mobile-safe bg-white rounded-xl shadow-sm border border-slate-200 overflow-hidden max-w-7xl mx-auto"
     >
       <!-- Toolbar -->
       <div class="p-2.5 sm:p-3 bg-slate-50 border-b border-slate-200">
@@ -239,7 +239,7 @@
 
       <template v-else>
         <!-- Mobile Cards -->
-        <div class="lg:hidden p-2.5 space-y-2 bg-slate-50">
+        <div class="attendance-mobile-list lg:hidden p-2.5 space-y-2 bg-slate-50">
           <div
             v-for="(record, index) in attendance"
             :key="getRecordStudentId(record) || index"
@@ -256,7 +256,7 @@
                   alt="Student"
                 />
 
-                <span v-else class="text-sm font-extrabold font-khmer">
+                <span v-else class="text-sm font-extrabold">
                   {{ getStudentInitial(record.student) }}
                 </span>
               </div>
@@ -264,7 +264,7 @@
               <div class="min-w-0 flex-1">
                 <div class="flex items-start justify-between gap-2">
                   <div class="min-w-0">
-                    <p class="font-bold text-sm text-slate-800 leading-tight truncate font-khmer">
+                    <p class="font-bold text-sm text-slate-800 leading-tight truncate">
                       {{ record.student?.khmerName || "មិនមានឈ្មោះ" }}
                     </p>
 
@@ -370,13 +370,13 @@
                         alt="Student"
                       />
 
-                      <span v-else class="text-sm font-extrabold font-khmer">
+                      <span v-else class="text-sm font-extrabold">
                         {{ getStudentInitial(record.student) }}
                       </span>
                     </div>
 
                     <div class="min-w-0">
-                      <p class="font-bold text-slate-800 leading-tight truncate font-khmer">
+                      <p class="font-bold text-slate-800 leading-tight truncate">
                         {{ record.student?.khmerName || "មិនមានឈ្មោះ" }}
                       </p>
 
@@ -436,7 +436,7 @@
 
       <!-- Footer -->
       <div
-        class="p-2.5 sm:p-3 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3"
+        class="attendance-footer-mobile-safe p-2.5 sm:p-3 bg-slate-50 border-t border-slate-200 flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3"
       >
         <div
           class="text-[10px] sm:text-[11px] text-slate-500 font-bold flex flex-wrap items-center gap-1.5 sm:gap-2"
@@ -473,7 +473,7 @@
 </template>
 
 <script setup>
-import { ref, onMounted, computed } from "vue";
+import { ref, onMounted, onBeforeUnmount, computed } from "vue";
 import { useAttendance } from "../hooks/useAttendance";
 import { useToast } from "vue-toastification";
 import api from "../config/api";
@@ -482,6 +482,49 @@ const { attendance, mode, loading, getAttendance, saveAttendance } =
   useAttendance();
 
 const toast = useToast();
+
+
+const originalViewportContent = ref("");
+const viewportMetaWasCreated = ref(false);
+
+const setNoZoomViewport = () => {
+  if (typeof document === "undefined") return;
+
+  let viewportMeta = document.querySelector('meta[name="viewport"]');
+
+  if (!viewportMeta) {
+    viewportMeta = document.createElement("meta");
+    viewportMeta.setAttribute("name", "viewport");
+    document.head.appendChild(viewportMeta);
+    viewportMetaWasCreated.value = true;
+  } else if (!originalViewportContent.value) {
+    viewportMetaWasCreated.value = false;
+    originalViewportContent.value = viewportMeta.getAttribute("content") || "";
+  }
+
+  viewportMeta.setAttribute(
+    "content",
+    "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+  );
+};
+
+const restoreViewport = () => {
+  if (typeof document === "undefined") return;
+
+  const viewportMeta = document.querySelector('meta[name="viewport"]');
+
+  if (!viewportMeta) return;
+
+  if (viewportMetaWasCreated.value) {
+    viewportMeta.remove();
+    return;
+  }
+
+  viewportMeta.setAttribute(
+    "content",
+    originalViewportContent.value || "width=device-width, initial-scale=1"
+  );
+};
 
 const classes = ref([]);
 const selectedClass = ref(null);
@@ -824,19 +867,16 @@ const onSave = async () => {
 };
 
 onMounted(() => {
+  setNoZoomViewport();
   fetchClasses();
+});
+
+onBeforeUnmount(() => {
+  restoreViewport();
 });
 </script>
 
 <style scoped>
-table {
-  font-family: "Kantumruy Pro", sans-serif;
-}
-
-.font-khmer {
-  font-family: "Battambang", "Siemreap", "Kantumruy Pro", sans-serif;
-}
-
 .form-label {
   display: block;
   font-size: 0.64rem;
@@ -899,6 +939,31 @@ table {
   padding-left: 2.1rem !important;
   padding-right: 0.75rem !important;
   min-height: 2rem;
+}
+
+
+/* Chrome mobile bottom toolbar fix + no visual input-size changes */
+@media (max-width: 640px) {
+  .attendance-page-mobile-safe {
+    padding-bottom: calc(2.75rem + env(safe-area-inset-bottom));
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  .attendance-page-mobile-safe > .max-w-7xl {
+    padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+  }
+
+  .attendance-class-list-mobile-safe,
+  .attendance-mobile-list {
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+  }
+
+  .attendance-class-list-mobile-safe > :last-child,
+  .attendance-mobile-list > :last-child,
+  .attendance-footer-mobile-safe {
+    margin-bottom: calc(1.25rem + env(safe-area-inset-bottom));
+  }
 }
 
 @media (min-width: 640px) {

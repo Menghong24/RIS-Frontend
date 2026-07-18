@@ -2,7 +2,7 @@
   <!-- Loading Overlay -->
   <div
     v-if="isLoading"
-    class="fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm"
+    class="login-loading-overlay-mobile-safe fixed inset-0 z-50 flex flex-col items-center justify-center bg-white/80 backdrop-blur-sm"
   >
     <div class="h-14 w-14 rounded-xl bg-blue-50 border border-blue-100 flex items-center justify-center shadow-sm">
       <LoaderCircle class="w-8 h-8 text-blue-600 animate-spin" />
@@ -18,7 +18,7 @@
   </div>
 
   <!-- Login Page -->
-  <div class="min-h-screen flex items-center justify-center bg-slate-100 p-4">
+  <div class="login-page-mobile-safe min-h-screen flex items-center justify-center bg-slate-100 p-4">
     <div class="w-full max-w-sm">
       <div class="bg-white rounded-lg shadow-lg border border-slate-200 p-5 md:p-6">
         <!-- Logo -->
@@ -145,7 +145,7 @@
 </template>
 
 <script setup>
-import { computed, onMounted, ref } from "vue";
+import { computed, onBeforeUnmount, onMounted, ref } from "vue";
 import { useRouter } from "vue-router";
 import {
   LoaderCircle,
@@ -173,15 +173,63 @@ const rememberMe = ref(false);
 const usernameError = ref("");
 const passwordError = ref("");
 
+const originalViewportContent = ref("");
+const viewportMetaWasCreated = ref(false);
+
 const currentYear = computed(() => new Date().getFullYear());
 
+const setNoZoomViewport = () => {
+  if (typeof document === "undefined") return;
+
+  let viewportMeta = document.querySelector('meta[name="viewport"]');
+
+  if (!viewportMeta) {
+    viewportMeta = document.createElement("meta");
+    viewportMeta.setAttribute("name", "viewport");
+    document.head.appendChild(viewportMeta);
+    viewportMetaWasCreated.value = true;
+  } else if (!originalViewportContent.value) {
+    viewportMetaWasCreated.value = false;
+    originalViewportContent.value = viewportMeta.getAttribute("content") || "";
+  }
+
+  viewportMeta.setAttribute(
+    "content",
+    "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+  );
+};
+
+const restoreViewport = () => {
+  if (typeof document === "undefined") return;
+
+  const viewportMeta = document.querySelector('meta[name="viewport"]');
+
+  if (!viewportMeta) return;
+
+  if (viewportMetaWasCreated.value) {
+    viewportMeta.remove();
+    return;
+  }
+
+  viewportMeta.setAttribute(
+    "content",
+    originalViewportContent.value || "width=device-width, initial-scale=1"
+  );
+};
+
 onMounted(() => {
+  setNoZoomViewport();
+
   const rememberedUsername = localStorage.getItem("remembered_username");
 
   if (rememberedUsername) {
     username.value = rememberedUsername;
     rememberMe.value = true;
   }
+});
+
+onBeforeUnmount(() => {
+  restoreViewport();
 });
 
 const validateForm = () => {
@@ -285,5 +333,26 @@ const handleLogin = async () => {
   font-size: 0.68rem;
   font-weight: 700;
   color: #dc2626;
+}
+
+/* Chrome mobile bottom toolbar fix + no visual input-size changes */
+@media (max-width: 640px) {
+  .login-page-mobile-safe {
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding-bottom: calc(2.75rem + env(safe-area-inset-bottom));
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  .login-page-mobile-safe > .w-full {
+    padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+  }
+
+  .login-loading-overlay-mobile-safe {
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+  }
 }
 </style>

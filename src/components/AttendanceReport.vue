@@ -195,7 +195,7 @@
                 @click="selectStudent(student)"
                 class="w-full text-left px-3 py-2 text-[11px] hover:bg-emerald-50 transition"
               >
-                <div class="font-bold text-slate-700 truncate font-khmer">
+                <div class="font-bold text-slate-700 truncate">
                   {{ student.khmerName }}
                 </div>
 
@@ -357,7 +357,7 @@
               <div class="min-w-0 flex-1">
                 <div class="flex items-start justify-between gap-2">
                   <div class="min-w-0">
-                    <p class="text-sm font-extrabold text-slate-800 leading-tight truncate font-khmer">
+                    <p class="text-sm font-extrabold text-slate-800 leading-tight truncate ">
                       {{ row.student?.khmerName || "-" }}
                     </p>
 
@@ -490,7 +490,7 @@
                     </div>
 
                     <div class="min-w-0">
-                      <div class="font-bold text-slate-800 leading-tight truncate font-khmer">
+                      <div class="font-bold text-slate-800 leading-tight truncate">
                         {{ row.student?.khmerName || "-" }}
                       </div>
 

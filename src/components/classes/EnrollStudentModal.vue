@@ -28,11 +28,23 @@
         </div>
 
         <button
-          @click="$emit('close')"
-          class="h-7 w-7 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition"
+          @click="closeModal"
+          :disabled="isSubmitting"
+          class="h-7 w-7 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <i class="fa-solid fa-xmark text-xs"></i>
         </button>
+      </div>
+
+      <!-- Loading Line -->
+      <div
+        v-if="isLoading || classesLoading || isSubmitting"
+        class="h-1 bg-slate-100 overflow-hidden shrink-0"
+      >
+        <div
+          class="h-full w-1/2 rounded-full loading-line"
+          :class="mode === 'transfer' ? 'bg-orange-500' : 'bg-blue-600'"
+        ></div>
       </div>
 
       <!-- Student Selection -->
@@ -70,7 +82,7 @@
 
         <!-- List -->
         <div class="overflow-y-auto flex-1 p-3 bg-slate-50">
-          <div v-if="loading" class="flex flex-col items-center justify-center py-8">
+          <div v-if="isLoading" class="flex flex-col items-center justify-center py-8">
             <div class="h-10 w-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
               <i class="fa-solid fa-circle-notch fa-spin text-xl"></i>
             </div>
@@ -97,9 +109,12 @@
                 :key="student._id"
                 @click="toggleSelection(student._id)"
                 class="bg-white p-2.5 rounded-lg border shadow-sm flex items-center justify-between cursor-pointer transition select-none group"
-                :class="selectedIds.includes(student._id)
-                  ? 'border-blue-500 ring-1 ring-blue-500 bg-blue-50'
-                  : 'border-slate-200 hover:border-blue-300'"
+                :class="[
+                  selectedIds.includes(student._id)
+                    ? 'border-blue-500 ring-1 ring-blue-500 bg-blue-50'
+                    : 'border-slate-200 hover:border-blue-300',
+                  isSubmitting ? 'opacity-70 pointer-events-none' : ''
+                ]"
               >
                 <div class="flex items-center gap-2.5 overflow-hidden">
                   <!-- Checkbox -->
@@ -164,7 +179,7 @@
             >
               <button
                 @click="prevPage"
-                :disabled="currentPage === 1"
+                :disabled="currentPage === 1 || isLoading || isSubmitting"
                 class="px-3 py-1.5 text-xs border border-slate-200 rounded-lg hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed transition font-bold text-slate-600"
               >
                 <i class="fa-solid fa-chevron-left mr-1"></i>
@@ -177,7 +192,7 @@
 
               <button
                 @click="nextPage"
-                :disabled="currentPage === totalPages"
+                :disabled="currentPage === totalPages || isLoading || isSubmitting"
                 class="px-3 py-1.5 text-xs border border-slate-200 rounded-lg hover:bg-white disabled:opacity-40 disabled:cursor-not-allowed transition font-bold text-slate-600"
               >
                 បន្ទាប់
@@ -206,11 +221,22 @@
               នាក់ ដើម្បីផ្លាស់ប្ដូរ។
             </p>
 
+            <div
+              v-if="classesLoading"
+              class="mb-3 text-xs font-bold text-orange-600 flex items-center justify-center gap-1"
+            >
+              <i class="fa-solid fa-circle-notch fa-spin text-[10px]"></i>
+              កំពុងទាញយកថ្នាក់...
+            </div>
+
             <select
               v-model="targetClassId"
-              class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-100 focus:border-orange-500 outline-none text-xs text-slate-700 mb-3"
+              :disabled="classesLoading || isSubmitting"
+              class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-100 focus:border-orange-500 outline-none text-xs text-slate-700 mb-3 disabled:bg-slate-50 disabled:text-slate-400 disabled:cursor-not-allowed"
             >
-              <option value="" disabled>ជ្រើសរើសថ្នាក់</option>
+              <option value="" disabled>
+                {{ classesLoading ? 'កំពុងទាញយកថ្នាក់...' : 'ជ្រើសរើសថ្នាក់' }}
+              </option>
               <option
                 v-for="c in availableTargetClasses"
                 :key="c._id"
@@ -222,7 +248,8 @@
 
             <button
               @click="showTargetClassSelection = false"
-              class="text-slate-500 hover:text-slate-700 text-xs font-bold hover:underline transition"
+              :disabled="isSubmitting"
+              class="text-slate-500 hover:text-slate-700 text-xs font-bold hover:underline transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <i class="fa-solid fa-arrow-left mr-1"></i>
               ត្រលប់ក្រោយដើម្បីកែប្រែសិស្ស
@@ -243,8 +270,9 @@
 
         <div class="flex gap-2">
           <button
-            @click="$emit('close')"
-            class="px-3 py-1.5 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition"
+            @click="closeModal"
+            :disabled="isSubmitting"
+            class="px-3 py-1.5 text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
           >
             បិទ
           </button>
@@ -252,7 +280,7 @@
           <button
             v-if="mode === 'enroll'"
             @click="handleBulkEnroll"
-            :disabled="selectedIds.length === 0 || isSubmitting"
+            :disabled="selectedIds.length === 0 || isSubmitting || isLoading"
             class="px-4 py-1.5 text-white text-xs font-bold rounded-lg transition flex items-center gap-2 shadow-sm bg-blue-600 hover:bg-blue-700 disabled:opacity-50 disabled:cursor-not-allowed"
           >
             <i
@@ -263,14 +291,14 @@
               v-else
               class="fa-solid fa-user-plus text-[10px]"
             ></i>
-            បញ្ចូលទាំងអស់
+            {{ isSubmitting ? 'កំពុងបញ្ចូល...' : 'បញ្ចូលទាំងអស់' }}
           </button>
 
           <template v-if="mode === 'transfer'">
             <button
               v-if="!showTargetClassSelection"
               @click="showTargetClassSelection = true"
-              :disabled="selectedIds.length === 0"
+              :disabled="selectedIds.length === 0 || isLoading || classesLoading || isSubmitting"
               class="px-4 py-1.5 text-white text-xs font-bold rounded-lg transition bg-orange-500 hover:bg-orange-600 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               បន្ទាប់
@@ -280,7 +308,7 @@
             <button
               v-else
               @click="handleBulkEnroll"
-              :disabled="!targetClassId || isSubmitting"
+              :disabled="!targetClassId || isSubmitting || classesLoading"
               class="px-4 py-1.5 text-white text-xs font-bold rounded-lg transition flex items-center gap-2 shadow-sm bg-orange-600 hover:bg-orange-700 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <i
@@ -291,7 +319,7 @@
                 v-else
                 class="fa-solid fa-right-left text-[10px]"
               ></i>
-              បញ្ជាក់ការផ្លាស់ប្ដូរ
+              {{ isSubmitting ? 'កំពុងផ្ទេរ...' : 'បញ្ជាក់ការផ្លាស់ប្ដូរ' }}
             </button>
           </template>
         </div>
@@ -319,7 +347,9 @@ const emit = defineEmits(['close', 'refresh'])
 const toast = useToast()
 
 const { data: allStudents, loading } = useQuery('students')
-const { data: allClasses } = useQuery('classes')
+const { data: allClasses, loading: classesLoading } = useQuery('classes')
+
+const isLoading = computed(() => Boolean(loading?.value ?? loading))
 
 const searchQuery = ref('')
 const selectedIds = ref([])
@@ -372,10 +402,12 @@ const paginatedCandidates = computed(() => {
 })
 
 const nextPage = () => {
+  if (isLoading.value || isSubmitting.value) return
   if (currentPage.value < totalPages.value) currentPage.value++
 }
 
 const prevPage = () => {
+  if (isLoading.value || isSubmitting.value) return
   if (currentPage.value > 1) currentPage.value--
 }
 
@@ -384,6 +416,8 @@ watch([searchQuery, () => props.mode], () => {
 })
 
 const toggleSelection = (id) => {
+  if (isSubmitting.value) return
+
   if (selectedIds.value.includes(id)) {
     selectedIds.value = selectedIds.value.filter(selectedId => selectedId !== id)
   } else {
@@ -397,6 +431,8 @@ const isAllSelected = computed(() => {
 })
 
 const toggleSelectAll = () => {
+  if (isSubmitting.value) return
+
   if (isAllSelected.value) {
     selectedIds.value = []
   } else {
@@ -414,8 +450,13 @@ watch(() => props.isOpen, (newVal) => {
   }
 })
 
+const closeModal = () => {
+  if (isSubmitting.value) return
+  emit('close')
+}
+
 const handleBulkEnroll = async () => {
-  if (selectedIds.value.length === 0) return
+  if (selectedIds.value.length === 0 || isLoading.value || isSubmitting.value) return
 
   let endpointClassId = props.currentClassId
 
@@ -451,3 +492,29 @@ const handleBulkEnroll = async () => {
   }
 }
 </script>
+
+<style scoped>
+.loading-line {
+  animation: loadingLine 1s ease-in-out infinite;
+}
+
+@keyframes loadingLine {
+  0% {
+    transform: translateX(-120%);
+  }
+
+  50% {
+    transform: translateX(80%);
+  }
+
+  100% {
+    transform: translateX(240%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .loading-line {
+    animation: none;
+  }
+}
+</style>

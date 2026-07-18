@@ -29,7 +29,7 @@
 
     <!-- Khmer Name + Mobile Details -->
     <td
-      class="p-1.5 sm:p-2 text-slate-800 text-xs sm:text-sm font-bold font-khmer align-top"
+      class="p-1.5 sm:p-2 text-slate-800 text-xs sm:text-sm font-bold "
     >
       <div class="min-w-0">
         <p class="leading-tight truncate">

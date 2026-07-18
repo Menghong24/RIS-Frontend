@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-slate-50 p-3 md:p-4">
+  <div class="teachers-page-mobile-safe bg-slate-50 p-3 md:p-4">
     <div class="max-w-7xl mx-auto space-y-4">
       <!-- Header -->
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-3 md:p-4">
@@ -56,7 +56,7 @@
       <!-- Loading -->
       <div
         v-if="isLoadingTeachers"
-        class="text-center py-12 bg-white rounded-xl border border-slate-200 shadow-sm"
+        class="teachers-empty-mobile-safe text-center py-12 bg-white rounded-xl border border-slate-200 shadow-sm"
       >
         <div class="mx-auto mb-3 h-12 w-12 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
           <i class="fa-solid fa-circle-notch fa-spin text-2xl"></i>
@@ -70,7 +70,7 @@
       <!-- Teacher Cards -->
       <div
         v-else-if="filteredTeachers.length > 0"
-        class="grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3"
+        class="teachers-list-mobile-safe grid grid-cols-1 lg:grid-cols-2 xl:grid-cols-3 2xl:grid-cols-4 gap-3"
       >
         <TeacherCard
           v-for="teacher in filteredTeachers"
@@ -85,7 +85,7 @@
       <!-- Empty State -->
       <div
         v-else
-        class="text-center py-12 bg-white rounded-xl border border-dashed border-slate-300 shadow-sm"
+        class="teachers-empty-mobile-safe text-center py-12 bg-white rounded-xl border border-dashed border-slate-300 shadow-sm"
       >
         <div class="mx-auto mb-3 h-12 w-12 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center">
           <i class="fa-solid fa-user-slash text-2xl"></i>
@@ -357,3 +357,26 @@ const confirmDelete = async () => {
   }
 };
 </script>
+
+
+<style scoped>
+/* Chrome mobile bottom toolbar fix - small screens only, compact spacing */
+@media (max-width: 640px) {
+  .teachers-page-mobile-safe {
+    padding-bottom: calc(2.75rem + env(safe-area-inset-bottom));
+  }
+
+  .teachers-page-mobile-safe > .max-w-7xl {
+    padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+  }
+
+  .teachers-list-mobile-safe {
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+  }
+
+  .teachers-list-mobile-safe > :last-child,
+  .teachers-empty-mobile-safe {
+    margin-bottom: calc(1.25rem + env(safe-area-inset-bottom));
+  }
+}
+</style>

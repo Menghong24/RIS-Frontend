@@ -1,15 +1,15 @@
 <template>
-  <div class="shrink-0">
+  <div class="shrink-0 header-animation-scope">
     <!-- Header -->
     <header
-      class="sticky top-0 z-30 h-16 px-3 md:px-5 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm shrink-0 flex items-center justify-between"
+      class="app-header sticky top-0 z-30 h-16 px-3 md:px-5 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm shrink-0 flex items-center justify-between"
     >
       <!-- Left Side -->
       <div class="flex items-center gap-2 min-w-0">
         <!-- Toggle Sidebar -->
         <button
           @click="$emit('toggle-sidebar')"
-          class="h-10 w-10 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-100 text-slate-600 hover:text-blue-600 transition flex items-center justify-center shadow-sm"
+          class="h-10 w-10 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-100 text-slate-600 hover:text-blue-600 transition-all duration-200 active:scale-95 flex items-center justify-center shadow-sm"
           title="បើក/បិទម៉ឺនុយ"
           type="button"
           aria-label="Toggle sidebar"
@@ -32,7 +32,7 @@
         <!-- Notification Button -->
         <button
           @click="isNoticeModalOpen = true"
-          class="h-10 w-10 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-100 relative transition text-slate-600 hover:text-blue-600 flex items-center justify-center shadow-sm"
+          class="h-10 w-10 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-100 relative transition-all duration-200 active:scale-95 text-slate-600 hover:text-blue-600 flex items-center justify-center shadow-sm"
           title="សេចក្តីជូនដំណឹង"
           type="button"
         >
@@ -40,7 +40,7 @@
 
           <span
             v-if="unreadAnnouncements.length > 0"
-            class="absolute -top-1 -right-1 h-5 min-w-5 px-1 bg-red-500 rounded-full flex items-center justify-center text-white text-[10px] font-extrabold border-2 border-white animate-pulse"
+            class="absolute -top-1 -right-1 h-5 min-w-5 px-1 bg-red-500 rounded-full flex items-center justify-center text-white text-[10px] font-extrabold border-2 border-white notification-badge animate-pulse"
           >
             {{ unreadAnnouncements.length > 9 ? "9+" : unreadAnnouncements.length }}
           </span>
@@ -50,7 +50,7 @@
         <button
           v-if="user"
           @click="isProfileModalOpen = true"
-          class="flex items-center cursor-pointer group pl-2 md:pl-3 border-l border-slate-200 text-left"
+          class="flex items-center cursor-pointer group pl-2 md:pl-3 border-l border-slate-200 text-left transition-all duration-200 active:scale-[0.98]"
           type="button"
         >
           <div
@@ -84,22 +84,25 @@
           </div>
 
           <i
-            class="fa-solid fa-chevron-down text-[10px] text-slate-400 ml-2 hidden sm:block"
+            class="fa-solid fa-chevron-down text-[10px] text-slate-400 ml-2 hidden sm:block transition-transform duration-200 group-hover:translate-y-0.5"
           ></i>
         </button>
       </div>
     </header>
 
     <!-- Notice Modal -->
-    <div
-      v-if="isNoticeModalOpen"
-      class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[80] p-3"
-      @click="isNoticeModalOpen = false"
-    >
+    <Transition name="modal-fade">
       <div
-        class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[85vh] flex flex-col overflow-hidden border border-slate-100"
-        @click.stop
+        v-if="isNoticeModalOpen"
+        class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[80] p-3"
+        @click="isNoticeModalOpen = false"
       >
+        <Transition name="modal-card" appear>
+          <div
+            v-if="isNoticeModalOpen"
+            class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[85vh] flex flex-col overflow-hidden border border-slate-100 modal-panel-animated"
+            @click.stop
+          >
         <!-- Notice Header -->
         <div
           class="px-4 py-3 border-b border-slate-100 flex justify-between items-center bg-slate-50"
@@ -160,12 +163,17 @@
             </p>
           </div>
 
-          <div v-else class="space-y-2">
+          <TransitionGroup
+            v-else
+            name="notice-list"
+            tag="div"
+            class="space-y-2"
+          >
             <div
               v-for="notice in unreadAnnouncements"
               :key="notice._id || notice.id"
               @click="handleNoticeClick(notice)"
-              class="p-3 bg-white rounded-xl border border-blue-100 shadow-sm hover:shadow-md transition group cursor-pointer relative overflow-hidden"
+              class="notice-card p-3 bg-white rounded-xl border border-blue-100 shadow-sm hover:shadow-md transition-all duration-200 active:scale-[0.99] group cursor-pointer relative overflow-hidden"
             >
               <div class="absolute left-0 top-0 bottom-0 w-1 bg-blue-500"></div>
 
@@ -199,7 +207,7 @@
                 </button>
               </div>
             </div>
-          </div>
+          </TransitionGroup>
         </div>
 
         <!-- Notice Footer -->
@@ -225,19 +233,24 @@
             <i class="fa-solid fa-arrow-right ml-1"></i>
           </button>
         </div>
+          </div>
+        </Transition>
       </div>
-    </div>
+    </Transition>
 
     <!-- Profile Modal -->
-    <div
-      v-if="isProfileModalOpen"
-      class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[80] p-3"
-      @click="isProfileModalOpen = false"
-    >
+    <Transition name="modal-fade">
       <div
-        class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden border border-slate-100"
-        @click.stop
+        v-if="isProfileModalOpen"
+        class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[80] p-3"
+        @click="isProfileModalOpen = false"
       >
+        <Transition name="modal-card" appear>
+          <div
+            v-if="isProfileModalOpen"
+            class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden border border-slate-100 modal-panel-animated"
+            @click.stop
+          >
         <!-- Profile Header -->
         <div class="px-4 py-5 bg-blue-50 border-b border-blue-100 text-center relative">
           <button
@@ -249,7 +262,7 @@
             <i class="fa-solid fa-xmark text-sm"></i>
           </button>
 
-          <div class="relative w-20 h-20 mx-auto">
+          <div class="relative w-20 h-20 mx-auto profile-avatar-animated">
             <div
               class="w-20 h-20 rounded-full overflow-hidden ring-4 ring-white shadow-sm bg-blue-100 flex items-center justify-center"
             >
@@ -315,7 +328,7 @@
         <!-- Profile Body -->
         <div class="p-3 space-y-3">
           <!-- User Info -->
-          <div class="rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2">
+          <div class="profile-info-animated rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2">
             <div class="flex items-center gap-2">
               <span
                 class="h-7 w-7 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-xs shrink-0"
@@ -416,12 +429,14 @@
             </div>
           </div>
 
-          <div
-            v-if="profileUploadError"
-            class="rounded-lg bg-red-50 border border-red-100 px-3 py-2 text-xs font-bold text-red-600"
-          >
-            {{ profileUploadError }}
-          </div>
+          <Transition name="soft-fade">
+            <div
+              v-if="profileUploadError"
+              class="rounded-lg bg-red-50 border border-red-100 px-3 py-2 text-xs font-bold text-red-600"
+            >
+              {{ profileUploadError }}
+            </div>
+          </Transition>
 
           <!-- Actions -->
           <button
@@ -444,19 +459,24 @@
             បិទ
           </button>
         </div>
+          </div>
+        </Transition>
       </div>
-    </div>
+    </Transition>
 
     <!-- Logout Confirm Modal -->
-    <div
-      v-if="isLogoutConfirmOpen"
-      class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-[90] p-3"
-      @click="isLogoutConfirmOpen = false"
-    >
+    <Transition name="modal-fade">
       <div
-        class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden border border-slate-100"
-        @click.stop
+        v-if="isLogoutConfirmOpen"
+        class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-[90] p-3"
+        @click="isLogoutConfirmOpen = false"
       >
+        <Transition name="confirm-card" appear>
+          <div
+            v-if="isLogoutConfirmOpen"
+            class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden border border-slate-100"
+            @click.stop
+          >
         <!-- Logout Header -->
         <div class="px-4 py-3 bg-red-50 border-b border-red-100 flex items-center gap-3">
           <div
@@ -513,8 +533,10 @@
             {{ isLoggingOut ? "កំពុងចាកចេញ..." : "ចាកចេញ" }}
           </button>
         </div>
+          </div>
+        </Transition>
       </div>
-    </div>
+    </Transition>
   </div>
 </template>
 
@@ -732,3 +754,166 @@ const handleLogout = async () => {
   }
 };
 </script>
+
+<style scoped>
+.header-animation-scope {
+  font-family: "Khmer OS Battambang", "Battambang", "Noto Sans Khmer", system-ui, sans-serif;
+}
+
+.app-header {
+  animation: headerSlideDown 0.28s ease-out both;
+}
+
+.notification-badge {
+  animation: badgePulse 1.45s ease-in-out infinite;
+}
+
+.notice-card {
+  animation: softRise 0.22s ease-out both;
+}
+
+.profile-avatar-animated {
+  animation: softPop 0.28s ease-out both;
+}
+
+.profile-info-animated {
+  animation: softRise 0.26s ease-out both;
+}
+
+.modal-panel-animated {
+  transform-origin: center;
+}
+
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: opacity 0.22s ease;
+}
+
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+}
+
+.modal-card-enter-active,
+.modal-card-leave-active {
+  transition:
+    opacity 0.24s ease,
+    transform 0.24s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-card-enter-from,
+.modal-card-leave-to {
+  opacity: 0;
+  transform: translateY(14px) scale(0.97);
+}
+
+.confirm-card-enter-active,
+.confirm-card-leave-active {
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.confirm-card-enter-from,
+.confirm-card-leave-to {
+  opacity: 0;
+  transform: translateY(8px) scale(0.95);
+}
+
+.soft-fade-enter-active,
+.soft-fade-leave-active {
+  transition:
+    opacity 0.18s ease,
+    transform 0.18s ease;
+}
+
+.soft-fade-enter-from,
+.soft-fade-leave-to {
+  opacity: 0;
+  transform: translateY(6px);
+}
+
+.notice-list-enter-active,
+.notice-list-leave-active {
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s ease;
+}
+
+.notice-list-enter-from,
+.notice-list-leave-to {
+  opacity: 0;
+  transform: translateY(8px) scale(0.98);
+}
+
+.notice-list-move {
+  transition: transform 0.22s ease;
+}
+
+@keyframes headerSlideDown {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes badgePulse {
+  0%,
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgb(239 68 68 / 0.35);
+  }
+
+  50% {
+    transform: scale(1.08);
+    box-shadow: 0 0 0 6px rgb(239 68 68 / 0);
+  }
+}
+
+@keyframes softRise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes softPop {
+  from {
+    opacity: 0;
+    transform: scale(0.94);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@media (max-width: 640px) {
+  .modal-card-enter-from,
+  .modal-card-leave-to {
+    transform: translateY(24px) scale(0.98);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>

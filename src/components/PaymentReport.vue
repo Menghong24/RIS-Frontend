@@ -220,7 +220,7 @@
                 <div class="min-w-0 flex-1">
                   <div class="flex items-start justify-between gap-2">
                     <div class="min-w-0">
-                      <p class="text-sm font-extrabold text-slate-800 leading-tight truncate font-khmer">
+                      <p class="text-sm font-extrabold text-slate-800 leading-tight truncate ">
                         {{ row.student?.khmerName || "-" }}
                       </p>
 
@@ -357,7 +357,7 @@
                       </div>
 
                       <div class="min-w-0">
-                        <div class="font-extrabold text-slate-800 leading-tight truncate font-khmer">
+                        <div class="font-extrabold text-slate-800 leading-tight truncate">
                           {{ row.student?.khmerName || "-" }}
                         </div>
 

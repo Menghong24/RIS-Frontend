@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-slate-50 p-2 sm:p-3 md:p-4">
+  <div class="gradebook-page-mobile-safe bg-slate-50 p-2 sm:p-3 md:p-4">
     <!-- Header -->
     <div class="max-w-7xl mx-auto mb-3 md:mb-4">
       <div
@@ -78,7 +78,7 @@
       <!-- Class Cards -->
       <div
         v-else
-        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-3"
+        class="gradebook-class-list-mobile-safe grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-3"
       >
         <div
           v-for="cls in filteredClasses"
@@ -144,7 +144,7 @@
     </div>
 
     <!-- Gradebook Panel -->
-    <div v-else class="animate-fade-in-up max-w-7xl mx-auto">
+    <div v-else class="gradebook-panel-mobile-safe animate-fade-in-up max-w-7xl mx-auto">
       <!-- Filters -->
       <div
         class="bg-white p-2.5 sm:p-3 md:p-4 rounded-xl shadow-sm border border-slate-200 mb-3 md:mb-4"
@@ -339,7 +339,7 @@
         </div>
 
         <!-- Mobile Cards -->
-        <div class="lg:hidden bg-slate-50 p-2.5 space-y-2">
+        <div class="gradebook-mobile-list lg:hidden bg-slate-50 p-2.5 space-y-2">
           <div
             v-for="(student, index) in tableData"
             :key="student.student"
@@ -356,7 +356,7 @@
               <div class="min-w-0 flex-1">
                 <div class="flex items-start justify-between gap-2">
                   <div class="min-w-0">
-                    <p class="font-extrabold text-sm text-slate-800 leading-tight truncate font-khmer">
+                    <p class="font-extrabold text-sm text-slate-800 leading-tight truncate ">
                       {{ student.khmerName }}
                     </p>
 
@@ -456,7 +456,7 @@
                     </div>
 
                     <div class="min-w-0">
-                      <p class="font-extrabold text-slate-800 leading-tight truncate font-khmer">
+                      <p class="font-extrabold text-slate-800 leading-tight truncate ">
                         {{ student.khmerName }}
                       </p>
 
@@ -511,7 +511,7 @@
       <!-- No Students -->
       <div
         v-else-if="!loading && hasSearched"
-        class="text-center py-8 bg-white rounded-xl border border-dashed border-slate-300"
+        class="gradebook-empty-mobile-safe text-center py-8 bg-white rounded-xl border border-dashed border-slate-300"
       >
         <div
           class="mx-auto mb-2 h-10 w-10 rounded-xl bg-slate-100 text-slate-400 flex items-center justify-center"
@@ -531,7 +531,7 @@
       <!-- Initial State -->
       <div
         v-else-if="!loading && !hasSearched"
-        class="text-center py-8 bg-white rounded-xl border border-dashed border-slate-300"
+        class="gradebook-empty-mobile-safe text-center py-8 bg-white rounded-xl border border-dashed border-slate-300"
       >
         <div
           class="mx-auto mb-2 h-10 w-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center"
@@ -549,7 +549,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onBeforeUnmount } from "vue";
+import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
 import api from "../config/api";
 import { useQuery } from "../hooks/useQuery";
 import { useToast } from "vue-toastification";
@@ -559,6 +559,49 @@ const { data: subjects } = useQuery("subjects");
 const { data: allStudentsFromQuery } = useQuery("students");
 
 const toast = useToast();
+
+
+const originalViewportContent = ref("");
+const viewportMetaWasCreated = ref(false);
+
+const setNoZoomViewport = () => {
+  if (typeof document === "undefined") return;
+
+  let viewportMeta = document.querySelector('meta[name="viewport"]');
+
+  if (!viewportMeta) {
+    viewportMeta = document.createElement("meta");
+    viewportMeta.setAttribute("name", "viewport");
+    document.head.appendChild(viewportMeta);
+    viewportMetaWasCreated.value = true;
+  } else if (!originalViewportContent.value) {
+    viewportMetaWasCreated.value = false;
+    originalViewportContent.value = viewportMeta.getAttribute("content") || "";
+  }
+
+  viewportMeta.setAttribute(
+    "content",
+    "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+  );
+};
+
+const restoreViewport = () => {
+  if (typeof document === "undefined") return;
+
+  const viewportMeta = document.querySelector('meta[name="viewport"]');
+
+  if (!viewportMeta) return;
+
+  if (viewportMetaWasCreated.value) {
+    viewportMeta.remove();
+    return;
+  }
+
+  viewportMeta.setAttribute(
+    "content",
+    originalViewportContent.value || "width=device-width, initial-scale=1"
+  );
+};
 
 const selectedClass = ref(null);
 const loading = ref(false);
@@ -1104,7 +1147,13 @@ const saveAllScores = async () => {
   }
 };
 
+onMounted(() => {
+  setNoZoomViewport();
+});
+
 onBeforeUnmount(() => {
+  restoreViewport();
+
   if (autoLoadTimer) {
     clearTimeout(autoLoadTimer);
   }
@@ -1249,6 +1298,31 @@ onBeforeUnmount(() => {
 
 .animate-fade-in-up {
   animation: fadeInUp 0.25s ease-out forwards;
+}
+
+
+/* Chrome mobile bottom toolbar fix + no visual input-size changes */
+@media (max-width: 640px) {
+  .gradebook-page-mobile-safe {
+    padding-bottom: calc(2.75rem + env(safe-area-inset-bottom));
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  .gradebook-page-mobile-safe > .max-w-7xl {
+    padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+  }
+
+  .gradebook-class-list-mobile-safe,
+  .gradebook-mobile-list {
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+  }
+
+  .gradebook-class-list-mobile-safe > :last-child,
+  .gradebook-mobile-list > :last-child,
+  .gradebook-empty-mobile-safe {
+    margin-bottom: calc(1.25rem + env(safe-area-inset-bottom));
+  }
 }
 
 @media (min-width: 640px) {

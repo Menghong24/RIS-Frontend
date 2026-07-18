@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-slate-50 p-2 sm:p-3 md:p-4">
+  <div class="classes-page-mobile-safe bg-slate-50 p-2 sm:p-3 md:p-4">
     <div class="max-w-7xl mx-auto space-y-3 md:space-y-4">
       <!-- Header -->
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm px-2.5 py-3 md:px-4">
@@ -52,7 +52,7 @@
       </div>
 
       <!-- Class View -->
-      <div v-if="!selectedClass" class="space-y-3 md:space-y-4">
+      <div v-if="!selectedClass" class="classes-view-mobile-safe space-y-3 md:space-y-4">
         <!-- Class Search -->
         <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-2.5 sm:p-3">
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 sm:gap-3">
@@ -86,7 +86,7 @@
         </div>
 
         <!-- Class Cards -->
-        <div v-else class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-3">
+        <div v-else class="classes-list-mobile-safe grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-3">
           <div
             v-for="cls in filteredClassesList"
             :key="cls._id"
@@ -171,7 +171,7 @@
       </div>
 
       <!-- Student View -->
-      <div v-else class="animate-fade-in-up space-y-3 md:space-y-4">
+      <div v-else class="class-students-view-mobile-safe animate-fade-in-up space-y-3 md:space-y-4">
         <!-- Student Filters -->
         <div class="bg-white p-2.5 sm:p-3 rounded-xl shadow-sm border border-slate-200">
           <div class="grid grid-cols-2 md:grid-cols-[1.5fr_1fr_1fr_auto] gap-2 items-end">
@@ -226,7 +226,7 @@
         </div>
 
         <!-- Mobile Student Cards -->
-        <div class="lg:hidden space-y-2">
+        <div class="class-students-mobile-list lg:hidden space-y-2">
           <div
             v-if="filteredStudents.length === 0"
             class="text-center py-8 bg-white rounded-xl border border-dashed border-slate-300 text-slate-400"
@@ -406,7 +406,7 @@
         <!-- Pagination -->
         <div
           v-if="filteredStudents.length > 0"
-          class="flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-3 bg-white p-2.5 sm:p-3 rounded-xl shadow-sm border border-slate-200"
+          class="class-students-pagination-mobile-safe flex flex-col sm:flex-row justify-between items-center gap-2 sm:gap-3 bg-white p-2.5 sm:p-3 rounded-xl shadow-sm border border-slate-200"
         >
           <div class="flex items-center gap-1.5 sm:gap-2">
             <button
@@ -962,6 +962,25 @@ const confirmDeleteStudent = async () => {
 }
 
 @media (max-width: 640px) {
+  .classes-page-mobile-safe {
+    padding-bottom: calc(2.75rem + env(safe-area-inset-bottom));
+  }
+
+  .classes-page-mobile-safe > .max-w-7xl {
+    padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+  }
+
+  .classes-list-mobile-safe,
+  .class-students-mobile-list {
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+  }
+
+  .classes-list-mobile-safe > :last-child,
+  .class-students-mobile-list > :last-child,
+  .class-students-pagination-mobile-safe {
+    margin-bottom: calc(1.25rem + env(safe-area-inset-bottom));
+  }
+
   .form-label {
     font-size: 0.64rem;
   }

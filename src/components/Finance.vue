@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-slate-50 p-2 sm:p-3 md:p-4 text-slate-800">
+  <div class="payment-page-mobile-safe bg-slate-50 p-2 sm:p-3 md:p-4 text-slate-800">
     <div class="max-w-7xl mx-auto space-y-3 md:space-y-4">
       <!-- Header -->
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm px-2.5 sm:px-3 py-3 md:px-4">
@@ -137,7 +137,7 @@
       <!-- Class Cards -->
       <div
         v-if="currentView === 'classes'"
-        class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-3"
+        class="payment-class-list-mobile-safe grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 xl:grid-cols-5 gap-2.5 sm:gap-3"
       >
         <div
           v-for="c in filteredClassesList"
@@ -210,7 +210,7 @@
 
         <div v-else>
           <!-- Mobile Cards -->
-          <div class="lg:hidden bg-slate-50 p-2.5 space-y-2">
+          <div class="payment-mobile-list lg:hidden bg-slate-50 p-2.5 space-y-2">
             <div
               v-for="row in paginatedList"
               :key="row.uniqueKey"
@@ -227,7 +227,7 @@
                 <div class="min-w-0 flex-1">
                   <div class="flex items-start justify-between gap-2">
                     <div class="min-w-0">
-                      <div class="text-sm font-extrabold text-slate-800 truncate font-khmer">
+                      <div class="text-sm font-extrabold text-slate-800 truncate">
                         {{ row.student?.khmerName || "-" }}
                       </div>
 
@@ -451,7 +451,7 @@
                   <td class="table-td">
                     <div class="flex items-center gap-2">
                       <div class="h-9 w-9 rounded-full bg-blue-50 flex items-center justify-center text-blue-700 font-extrabold border border-blue-100 shadow-sm shrink-0 overflow-hidden">
-                        <span class="font-khmer text-sm">
+                        <span class=" text-sm">
                           {{ getStudentInitial(row.student) }}
                         </span>
                       </div>
@@ -630,7 +630,7 @@
           </div>
 
           <!-- Pagination -->
-          <div class="bg-slate-50 px-2.5 sm:px-4 py-2.5 sm:py-3 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-3">
+          <div class="payment-pagination-mobile-safe bg-slate-50 px-2.5 sm:px-4 py-2.5 sm:py-3 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-3">
             <div class="flex items-center gap-2 text-[11px] sm:text-xs text-slate-600">
               <span>បង្ហាញ</span>
 
@@ -688,13 +688,56 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch } from "vue";
+import { ref, reactive, computed, watch, onMounted, onBeforeUnmount } from "vue";
 import { useQuery } from "../hooks/useQuery";
 import { useCollection } from "../hooks/useCollection";
 import { useToast } from "vue-toastification";
 import DeleteConfirmationModal from "../components/shared/DeleteConfirmationModal.vue";
 
 const toast = useToast();
+
+
+const originalViewportContent = ref("");
+const viewportMetaWasCreated = ref(false);
+
+const setNoZoomViewport = () => {
+  if (typeof document === "undefined") return;
+
+  let viewportMeta = document.querySelector('meta[name="viewport"]');
+
+  if (!viewportMeta) {
+    viewportMeta = document.createElement("meta");
+    viewportMeta.setAttribute("name", "viewport");
+    document.head.appendChild(viewportMeta);
+    viewportMetaWasCreated.value = true;
+  } else if (!originalViewportContent.value) {
+    viewportMetaWasCreated.value = false;
+    originalViewportContent.value = viewportMeta.getAttribute("content") || "";
+  }
+
+  viewportMeta.setAttribute(
+    "content",
+    "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+  );
+};
+
+const restoreViewport = () => {
+  if (typeof document === "undefined") return;
+
+  const viewportMeta = document.querySelector('meta[name="viewport"]');
+
+  if (!viewportMeta) return;
+
+  if (viewportMetaWasCreated.value) {
+    viewportMeta.remove();
+    return;
+  }
+
+  viewportMeta.setAttribute(
+    "content",
+    originalViewportContent.value || "width=device-width, initial-scale=1"
+  );
+};
 
 const paymentsQuery = useQuery("payments");
 const classesQuery = useQuery("classes");
@@ -1328,6 +1371,15 @@ const formatDate = (date) => {
     year: "numeric"
   });
 };
+
+onMounted(() => {
+  setNoZoomViewport();
+});
+
+onBeforeUnmount(() => {
+  restoreViewport();
+});
+
 </script>
 
 <style scoped>
@@ -1453,6 +1505,35 @@ const formatDate = (date) => {
 
 .font-khmer {
   font-family: "Battambang", "Siemreap", "Kantumruy Pro", sans-serif;
+}
+
+
+/* Chrome mobile bottom toolbar fix + no visual input-size changes */
+@media (max-width: 640px) {
+  .payment-page-mobile-safe {
+    padding-bottom: calc(2.75rem + env(safe-area-inset-bottom));
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  .payment-page-mobile-safe > .max-w-7xl {
+    padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+  }
+
+  .payment-class-list-mobile-safe,
+  .payment-mobile-list {
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+  }
+
+  .payment-class-list-mobile-safe > :last-child,
+  .payment-mobile-list > :last-child,
+  .payment-pagination-mobile-safe {
+    margin-bottom: calc(1.25rem + env(safe-area-inset-bottom));
+  }
+
+  .payment-pagination-mobile-safe {
+    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom)) !important;
+  }
 }
 
 @media (min-width: 640px) {

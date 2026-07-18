@@ -1,24 +1,26 @@
 <template>
-  <div class="min-h-screen overflow-hidden bg-slate-100 text-slate-800">
+  <div class="layout-root min-h-screen overflow-hidden bg-slate-100 text-slate-800">
     <!-- Loading user role -->
-    <div
-      v-if="!isUserReady"
-      class="fixed inset-0 z-[100] flex items-center justify-center bg-white"
-    >
-      <div class="text-center">
-        <div
-          class="mx-auto mb-3 h-11 w-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100"
-        >
-          <i class="fa-solid fa-circle-notch fa-spin text-xl"></i>
+    <Transition name="loading-fade" appear>
+      <div
+        v-if="!isUserReady"
+        class="fixed inset-0 z-[100] flex items-center justify-center bg-white"
+      >
+        <div class="text-center loading-card">
+          <div
+            class="mx-auto mb-3 h-11 w-11 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center border border-blue-100 loading-icon"
+          >
+            <i class="fa-solid fa-circle-notch fa-spin text-xl"></i>
+          </div>
+
+          <p class="text-sm font-extrabold text-slate-700">
+            កំពុងផ្ទៀងផ្ទាត់សិទ្ធិអ្នកប្រើប្រាស់...
+          </p>
         </div>
-
-        <p class="text-sm font-extrabold text-slate-700">
-          កំពុងផ្ទៀងផ្ទាត់សិទ្ធិអ្នកប្រើប្រាស់...
-        </p>
       </div>
-    </div>
+    </Transition>
 
-    <template v-else>
+    <template v-if="isUserReady">
       <!-- Mobile Sidebar Overlay -->
       <Transition
         enter-active-class="transition-opacity duration-200 ease-out"
@@ -37,11 +39,11 @@
       </Transition>
 
       <!-- Layout Wrapper -->
-      <div class="flex h-screen overflow-hidden">
+      <div class="layout-shell flex h-screen overflow-hidden">
         <!-- Sidebar -->
         <aside
           :class="[
-            'fixed inset-y-0 left-0 z-50 shrink-0 transform transition-transform duration-300 ease-in-out lg:static lg:z-auto lg:translate-x-0',
+            'sidebar-shell fixed inset-y-0 left-0 z-50 shrink-0 transform transition-transform duration-300 ease-in-out lg:static lg:z-auto lg:translate-x-0',
             isMobileSidebarOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'
           ]"
         >
@@ -55,37 +57,44 @@
         </aside>
 
         <!-- Main -->
-        <div class="flex min-w-0 flex-1 flex-col overflow-hidden">
+        <div class="main-shell flex min-w-0 flex-1 flex-col overflow-hidden">
           <Header
             @toggle-sidebar="toggleSidebar"
             @navigate="handleNavigation"
           />
 
-          <main class="flex-1 overflow-y-auto bg-slate-50 p-3 md:p-4">
-            <component
-              :is="activeComponent"
-              @navigateTo="handleNavigation"
-            />
+          <main class="main-content flex-1 overflow-y-auto bg-slate-50 p-3 md:p-4">
+            <Transition name="page-switch" mode="out-in">
+              <div :key="activeMenu" class="page-switch-wrap">
+                <component
+                  :is="activeComponent"
+                  @navigateTo="handleNavigation"
+                />
+              </div>
+            </Transition>
           </main>
         </div>
       </div>
 
       <!-- Logout Modal -->
-      <div
-        v-if="isLogoutModalOpen"
-        class="fixed inset-0 z-[90] flex items-center justify-center bg-slate-900/45 backdrop-blur-sm p-4"
-        @click.self="isLogoutModalOpen = false"
-      >
+      <Transition name="modal-fade">
         <div
-          class="w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl border border-slate-200"
+          v-if="isLogoutModalOpen"
+          class="fixed inset-0 z-[90] flex items-center justify-center bg-slate-900/45 backdrop-blur-sm p-4"
+          @click.self="isLogoutModalOpen = false"
         >
+          <Transition name="modal-card" appear>
+            <div
+              v-if="isLogoutModalOpen"
+              class="logout-modal-card w-full max-w-md overflow-hidden rounded-2xl bg-white shadow-2xl border border-slate-200"
+            >
           <!-- Modal Header -->
           <div
             class="px-5 py-4 border-b border-slate-100 flex items-center justify-between"
           >
             <div class="flex items-center gap-3">
               <div
-                class="h-11 w-11 rounded-full bg-red-50 text-red-600 flex items-center justify-center"
+                class="logout-icon h-11 w-11 rounded-full bg-red-50 text-red-600 flex items-center justify-center"
               >
                 <LogOut class="h-5 w-5" />
               </div>
@@ -103,7 +112,7 @@
 
             <button
               @click="isLogoutModalOpen = false"
-              class="h-8 w-8 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 inline-flex items-center justify-center transition"
+              class="h-8 w-8 rounded-lg hover:bg-slate-100 text-slate-400 hover:text-slate-700 inline-flex items-center justify-center transition-all duration-200 active:scale-95"
               aria-label="Close"
               type="button"
             >
@@ -114,7 +123,7 @@
           <!-- Modal Body -->
           <div class="px-5 py-5">
             <div
-              class="rounded-xl bg-red-50 border border-red-100 px-4 py-3 text-left"
+              class="logout-warning rounded-xl bg-red-50 border border-red-100 px-4 py-3 text-left"
             >
               <p class="text-sm font-bold text-red-700">
                 ចាកចេញពីប្រព័ន្ធ
@@ -132,7 +141,7 @@
           >
             <button
               @click="isLogoutModalOpen = false"
-              class="w-full sm:w-auto px-4 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-100 text-xs font-extrabold transition"
+              class="w-full sm:w-auto px-4 py-2 rounded-lg border border-slate-200 bg-white text-slate-700 hover:bg-slate-100 text-xs font-extrabold transition-all duration-200 active:scale-95"
               type="button"
             >
               បោះបង់
@@ -140,15 +149,17 @@
 
             <button
               @click="confirmLogout"
-              class="w-full sm:w-auto px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 text-xs font-extrabold shadow-sm transition inline-flex items-center justify-center gap-2"
+              class="w-full sm:w-auto px-4 py-2 rounded-lg bg-red-600 text-white hover:bg-red-700 text-xs font-extrabold shadow-sm transition-all duration-200 active:scale-95 inline-flex items-center justify-center gap-2"
               type="button"
             >
               <LogOut class="h-4 w-4" />
               ចាកចេញ
             </button>
           </div>
+            </div>
+          </Transition>
         </div>
-      </div>
+      </Transition>
     </template>
   </div>
 </template>
@@ -227,7 +238,8 @@ const isMobileSidebarOpen = computed(() => {
 const lockBodyScroll = () => {
   if (typeof document === "undefined") return;
 
-  document.body.style.overflow = isMobileSidebarOpen.value ? "hidden" : "";
+  document.body.style.overflow =
+    isMobileSidebarOpen.value || isLogoutModalOpen.value ? "hidden" : "";
 };
 
 const syncScreenSize = () => {
@@ -291,7 +303,7 @@ onUnmounted(() => {
   }
 });
 
-watch(isMobileSidebarOpen, () => {
+watch([isMobileSidebarOpen, isLogoutModalOpen], () => {
   lockBodyScroll();
 });
 
@@ -322,18 +334,6 @@ const allMenuItems = [
     roles: ["admin", "teacher"]
   },
   {
-    name: "មុខវិជ្ជា",
-    icon: BookCopy,
-    component: Subject,
-    roles: ["admin"]
-  },
-  {
-    name: "កាលវិភាគ",
-    icon: CalendarClock,
-    component: Schedule,
-    roles: ["admin", "teacher"]
-  },
-  {
     name: "វត្តមានសិស្ស",
     icon: CalendarCheck,
     component: Attendance,
@@ -350,12 +350,6 @@ const allMenuItems = [
     icon: Banknote,
     component: Finance,
     roles: ["admin"]
-  },
-  {
-    name: "សេចក្ដីជូនដំណឹង",
-    icon: Megaphone,
-    component: Notices,
-    roles: ["admin", "teacher"]
   },
   {
     name: "របាយការណ៍",
@@ -381,6 +375,24 @@ const allMenuItems = [
         roles: ["admin"]
       }
     ]
+  },
+  {
+    name: "កាលវិភាគ",
+    icon: CalendarClock,
+    component: Schedule,
+    roles: ["admin", "teacher"]
+  },
+  {
+    name: "មុខវិជ្ជា",
+    icon: BookCopy,
+    component: Subject,
+    roles: ["admin"]
+  },
+    {
+    name: "សេចក្ដីជូនដំណឹង",
+    icon: Megaphone,
+    component: Notices,
+    roles: ["admin", "teacher"]
   },
   {
     name: "អ្នកប្រើប្រាស់",
@@ -511,3 +523,172 @@ async function confirmLogout() {
   }
 }
 </script>
+
+<style scoped>
+.layout-root {
+  font-family: "Khmer OS Battambang", "Battambang", "Noto Sans Khmer", system-ui, sans-serif;
+}
+
+.layout-shell {
+  height: 100vh;
+  height: 100dvh;
+}
+
+.main-shell {
+  animation: mainShellIn 0.28s ease-out both;
+}
+
+.main-content {
+  padding-bottom: calc(0.75rem + env(safe-area-inset-bottom));
+  -webkit-overflow-scrolling: touch;
+}
+
+.page-switch-wrap {
+  min-width: 0;
+}
+
+.sidebar-shell {
+  will-change: transform;
+}
+
+.loading-card {
+  animation: loadingCardIn 0.28s ease-out both;
+}
+
+.loading-icon {
+  animation: softPulse 1.6s ease-in-out infinite;
+}
+
+.logout-modal-card {
+  transform-origin: center;
+}
+
+.logout-icon {
+  animation: softPop 0.25s ease-out both;
+}
+
+.logout-warning {
+  animation: softRise 0.24s ease-out both;
+}
+
+.loading-fade-enter-active,
+.loading-fade-leave-active,
+.modal-fade-enter-active,
+.modal-fade-leave-active {
+  transition: opacity 0.22s ease;
+}
+
+.loading-fade-enter-from,
+.loading-fade-leave-to,
+.modal-fade-enter-from,
+.modal-fade-leave-to {
+  opacity: 0;
+}
+
+.modal-card-enter-active,
+.modal-card-leave-active {
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+.modal-card-enter-from,
+.modal-card-leave-to {
+  opacity: 0;
+  transform: translateY(14px) scale(0.97);
+}
+
+.page-switch-enter-active,
+.page-switch-leave-active {
+  transition:
+    opacity 0.2s ease,
+    transform 0.2s ease;
+}
+
+.page-switch-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.page-switch-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
+}
+
+@keyframes mainShellIn {
+  from {
+    opacity: 0;
+  }
+
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes loadingCardIn {
+  from {
+    opacity: 0;
+    transform: translateY(8px) scale(0.98);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}
+
+@keyframes softPulse {
+  0%,
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+
+  50% {
+    transform: scale(1.05);
+    opacity: 0.86;
+  }
+}
+
+@keyframes softPop {
+  from {
+    opacity: 0;
+    transform: scale(0.92);
+  }
+
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+@keyframes softRise {
+  from {
+    opacity: 0;
+    transform: translateY(8px);
+  }
+
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (max-width: 640px) {
+  .modal-card-enter-from,
+  .modal-card-leave-to {
+    transform: translateY(22px) scale(0.98);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    scroll-behavior: auto !important;
+    transition-duration: 0.01ms !important;
+  }
+}
+</style>
