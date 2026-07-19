@@ -51,6 +51,8 @@
             :is-sidebar-open="isSidebarOpen"
             :menu-items="visibleMenuItems"
             :active-menu="activeMenu"
+            :auto-close-parent-menu="autoCloseParentMenu"
+            :auto-close-parent-menu-key="autoCloseParentMenuKey"
             @menu-click="handleNavigation"
             @logout-click="openLogoutModal"
           />
@@ -64,7 +66,7 @@
           />
 
           <main class="main-content flex-1 overflow-y-auto bg-slate-50 p-3 md:p-4">
-            <Transition name="page-switch" mode="out-in">
+            <Transition name="page-fade-slide" mode="out-in" appear>
               <div :key="activeMenu" class="page-switch-wrap">
                 <component
                   :is="activeComponent"
@@ -100,11 +102,11 @@
               </div>
 
               <div class="text-left">
-                <h2 class="text-base font-extrabold text-slate-800">
+                <h2 class="text-base font-extrabold text-slate-800 break-words leading-snug">
                   បញ្ជាក់ការចាកចេញ
                 </h2>
 
-                <p class="text-xs text-slate-500 mt-0.5">
+                <p class="text-xs text-slate-500 mt-0.5 break-words leading-snug">
                   តើអ្នកពិតជាចង់ចាកចេញពីគណនីមែនទេ?
                 </p>
               </div>
@@ -125,11 +127,11 @@
             <div
               class="logout-warning rounded-xl bg-red-50 border border-red-100 px-4 py-3 text-left"
             >
-              <p class="text-sm font-bold text-red-700">
+              <p class="text-sm font-bold text-red-700 break-words leading-snug">
                 ចាកចេញពីប្រព័ន្ធ
               </p>
 
-              <p class="text-xs text-red-600 mt-1 leading-relaxed">
+              <p class="text-xs text-red-600 mt-1 leading-relaxed break-words">
                 បន្ទាប់ពីចាកចេញ អ្នកត្រូវ login ម្តងទៀត ដើម្បីប្រើប្រាស់ប្រព័ន្ធ។
               </p>
             </div>
@@ -216,6 +218,29 @@ const isDesktop = ref(false);
 const isSidebarOpen = ref(false);
 const isLogoutModalOpen = ref(false);
 const activeMenu = ref(localStorage.getItem(STORAGE_KEY) || "គ្រប់គ្រង");
+
+const REPORT_MENU_NAME = "របាយការណ៍";
+const REPORT_CHILD_MENU_NAMES = [
+  "របាយការណ៍វត្តមាន",
+  "របាយការណ៍ពិន្ទុ",
+  "របាយការណ៍បង់ប្រាក់"
+];
+
+const autoCloseParentMenu = ref("");
+const autoCloseParentMenuKey = ref(0);
+
+const isReportMenuName = (menuName) => {
+  return REPORT_MENU_NAME === menuName || REPORT_CHILD_MENU_NAMES.includes(menuName);
+};
+
+const closeReportMenuWhenLeavingReports = (nextMenuName) => {
+  if (isReportMenuName(nextMenuName)) return;
+
+  autoCloseParentMenu.value = REPORT_MENU_NAME;
+  autoCloseParentMenuKey.value += 1;
+};
+
+
 
 const normalizeRole = (role) => {
   return String(role || "").trim().toLowerCase();
@@ -494,11 +519,15 @@ function handleNavigation(name) {
   if (!name) return;
 
   if (!canOpenMenu(name)) {
-    activeMenu.value = visibleLeafMenuItems.value[0]?.name || "គ្រប់គ្រង";
+    const fallbackMenu = visibleLeafMenuItems.value[0]?.name || "គ្រប់គ្រង";
+
+    closeReportMenuWhenLeavingReports(fallbackMenu);
+    activeMenu.value = fallbackMenu;
     closeSidebar();
     return;
   }
 
+  closeReportMenuWhenLeavingReports(name);
   activeMenu.value = name;
   closeSidebar();
 }
@@ -510,6 +539,7 @@ async function confirmLogout() {
   try {
     await logout();
 
+    closeReportMenuWhenLeavingReports("គ្រប់គ្រង");
     activeMenu.value = "គ្រប់គ្រង";
     localStorage.removeItem(STORAGE_KEY);
 
@@ -526,7 +556,20 @@ async function confirmLogout() {
 
 <style scoped>
 .layout-root {
-  font-family: "Khmer OS Battambang", "Battambang", "Noto Sans Khmer", system-ui, sans-serif;
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif;
+  line-height: 1.45;
+}
+
+.layout-root h2,
+.layout-root p,
+.layout-root span,
+.layout-root button {
+  line-height: 1.45;
+}
+
+.layout-root .break-words {
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .layout-shell {
@@ -545,6 +588,23 @@ async function confirmLogout() {
 
 .page-switch-wrap {
   min-width: 0;
+}
+
+.page-fade-slide-enter-active,
+.page-fade-slide-leave-active {
+  transition:
+    opacity 0.22s ease,
+    transform 0.22s ease;
+}
+
+.page-fade-slide-enter-from {
+  opacity: 0;
+  transform: translateY(8px);
+}
+
+.page-fade-slide-leave-to {
+  opacity: 0;
+  transform: translateY(-6px);
 }
 
 .sidebar-shell {
@@ -598,22 +658,6 @@ async function confirmLogout() {
   transform: translateY(14px) scale(0.97);
 }
 
-.page-switch-enter-active,
-.page-switch-leave-active {
-  transition:
-    opacity 0.2s ease,
-    transform 0.2s ease;
-}
-
-.page-switch-enter-from {
-  opacity: 0;
-  transform: translateY(8px);
-}
-
-.page-switch-leave-to {
-  opacity: 0;
-  transform: translateY(-6px);
-}
 
 @keyframes mainShellIn {
   from {

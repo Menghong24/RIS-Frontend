@@ -1,6 +1,6 @@
 <template>
   <div
-    class="group flex items-center gap-3 p-3 bg-white rounded-xl shadow-sm hover:shadow-md border border-slate-200 hover:border-blue-300 transition-all duration-300 cursor-pointer w-full relative overflow-hidden"
+    class="teacher-card-text-safe group flex items-center gap-3 p-3 bg-white rounded-xl shadow-sm hover:shadow-md border border-slate-200 hover:border-blue-300 transition-all duration-300 cursor-pointer w-full relative overflow-hidden"
     @click="$emit('view', teacher)"
   >
     <!-- Avatar -->
@@ -16,7 +16,7 @@
           @error="imageLoadError = true"
         />
 
-        <span v-else class="text-base">
+        <span v-else class="text-base leading-snug">
           {{ teacherInitial }}
         </span>
       </div>
@@ -24,28 +24,28 @@
 
     <!-- Info -->
     <div class="flex-grow min-w-0">
-      <div class="flex items-center gap-2 mb-0.5 min-w-0">
-        <h3 class="text-sm font-extrabold text-slate-800 truncate font-khmer">
+      <div class="flex items-start gap-2 mb-0.5 min-w-0">
+        <h3 class="text-sm font-extrabold text-slate-800 break-words font-khmer leading-snug min-w-0 flex-1">
           {{ teacher.khmerName || "ឈ្មោះគ្រូ" }}
         </h3>
 
         <span
-          class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 whitespace-nowrap"
+          class="inline-flex items-center px-2 py-0.5 rounded-full text-[10px] font-bold bg-blue-50 text-blue-700 border border-blue-200 whitespace-normal leading-snug shrink-0 max-w-[7rem] break-words"
         >
           {{ teacher.skill || "ទូទៅ" }}
         </span>
       </div>
 
-      <p class="text-xs text-slate-500 font-medium truncate">
+      <p class="text-xs text-slate-500 font-medium break-words leading-snug">
         {{ teacher.englishName || "Teacher Name" }}
       </p>
 
-      <p class="text-[11px] text-slate-400 mt-0.5 truncate">
+      <p class="text-[11px] text-slate-400 mt-0.5 break-words leading-snug">
         <i class="fa-solid fa-envelope mr-1"></i>
         {{ teacher.email || "មិនមានអ៊ីមែល" }}
       </p>
 
-      <p class="text-[11px] text-slate-400 mt-0.5 truncate">
+      <p class="text-[11px] text-slate-400 mt-0.5 break-words leading-snug">
         <i class="fa-solid fa-phone mr-1"></i>
         {{ teacher.phone || "មិនមានលេខទូរស័ព្ទ" }}
       </p>
@@ -139,6 +139,25 @@ const teacherImageUrl = computed(() => {
 </script>
 
 <style scoped>
+.teacher-card-text-safe,
+.teacher-card-text-safe p,
+.teacher-card-text-safe span,
+.teacher-card-text-safe h3,
+.teacher-card-text-safe button {
+  line-height: 1.45;
+}
+
+.teacher-card-text-safe {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif;
+}
+
+.teacher-card-text-safe p,
+.teacher-card-text-safe span,
+.teacher-card-text-safe h3 {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 .font-khmer {
   line-height: 1.45;
 }

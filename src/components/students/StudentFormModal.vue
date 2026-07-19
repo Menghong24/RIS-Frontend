@@ -12,19 +12,19 @@
         class="px-2.5 sm:px-3 py-2.5 border-b border-slate-100 bg-slate-50 flex items-start justify-between gap-2 shrink-0"
       >
         <div class="min-w-0">
-          <h2 class="text-sm sm:text-base font-extrabold text-slate-800 flex items-center gap-2">
+          <h2 class="text-sm sm:text-base font-extrabold text-slate-800 flex items-start gap-2 leading-snug">
             <span
               class="h-7 w-7 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-xs shrink-0"
             >
               <i :class="isEditing ? 'fa-solid fa-user-pen' : 'fa-solid fa-user-plus'"></i>
             </span>
 
-            <span class="truncate">
+            <span class="break-words leading-snug">
               {{ isEditing ? "កែប្រែទិន្នន័យសិស្ស" : "បញ្ចូលសិស្សថ្មី" }}
             </span>
           </h2>
 
-          <p class="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 truncate">
+          <p class="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 break-words leading-snug">
             សូមបំពេញព័ត៌មានសិស្ស និងព័ត៌មានអាណាព្យាបាល
           </p>
         </div>
@@ -778,6 +778,64 @@ onBeforeUnmount(() => {
 
 <style scoped>
 
+.student-form-modal-panel-mobile-safe {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif;
+}
+
+.student-form-modal-panel-mobile-safe label,
+.student-form-modal-panel-mobile-safe p,
+.student-form-modal-panel-mobile-safe span,
+.student-form-modal-panel-mobile-safe h2,
+.student-form-modal-panel-mobile-safe h3,
+.student-form-modal-panel-mobile-safe button {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif;
+  line-height: 1.45;
+}
+
+input.form-input,
+select.form-input,
+textarea.form-input,
+.form-input::placeholder {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif !important;
+  font-size: 12px !important;
+  line-height: 1.9 !important;
+  font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+input.form-input,
+select.form-input {
+  min-height: 2.65rem !important;
+  height: 2.65rem !important;
+  padding-top: 0.58rem !important;
+  padding-bottom: 0.58rem !important;
+  overflow: visible !important;
+}
+
+textarea.form-input {
+  min-height: 5rem !important;
+  padding-top: 0.6rem !important;
+  padding-bottom: 0.6rem !important;
+}
+
+
+
+.student-form-modal-panel-mobile-safe,
+.student-form-modal-panel-mobile-safe label,
+.student-form-modal-panel-mobile-safe p,
+.student-form-modal-panel-mobile-safe span,
+.student-form-modal-panel-mobile-safe h2,
+.student-form-modal-panel-mobile-safe h3,
+.student-form-modal-panel-mobile-safe button,
+.student-form-modal-panel-mobile-safe input,
+.student-form-modal-panel-mobile-safe select,
+.student-form-modal-panel-mobile-safe textarea,
+.student-form-modal-panel-mobile-safe option {
+  line-height: 1.45;
+}
+
+
 /* Chrome mobile bottom toolbar fix + no visual input-size changes */
 @media (max-width: 640px) {
   .student-form-modal-overlay-mobile-safe {
@@ -847,23 +905,41 @@ onBeforeUnmount(() => {
   font-weight: 800;
   color: #64748b;
   margin-bottom: 0.2rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
 }
 
 .form-input {
   width: 100%;
   border: 1px solid #e2e8f0;
   border-radius: 0.45rem;
-  padding: 0.36rem 0.52rem;
+  padding: 0.58rem 0.56rem;
   font-size: 0.7rem;
+  line-height: 1.9;
   color: #334155;
   background: #ffffff;
   outline: none;
-  min-height: 1.95rem;
+  min-height: 2.55rem;
+  height: auto;
   transition: all 0.2s ease;
 }
+
+
+.form-input::placeholder {
+  line-height: 1.55;
+}
+
+select.form-input,
+input.form-input,
+textarea.form-input {
+  line-height: 1.55;
+}
+
+textarea.form-input {
+  min-height: 4rem;
+}
+
 
 .form-input:focus {
   border-color: #3b82f6;
@@ -893,9 +969,11 @@ onBeforeUnmount(() => {
   }
 
   .form-input {
-    padding: 0.38rem 0.6rem;
+    padding: 0.62rem 0.62rem;
     font-size: 0.75rem;
-    min-height: 2.05rem;
+    line-height: 1.9;
+    min-height: 2.75rem;
+    height: auto;
   }
 }
 </style>

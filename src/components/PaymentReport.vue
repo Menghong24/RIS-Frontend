@@ -1,21 +1,21 @@
 <template>
-  <div class="bg-slate-50 p-2 sm:p-3 md:p-4 text-slate-800">
+  <div class="payment-report-page-mobile-safe bg-slate-50 p-2 sm:p-3 md:p-4 text-slate-800">
     <div class="max-w-7xl mx-auto space-y-3 md:space-y-4">
       <!-- Header -->
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm px-2.5 sm:px-3 py-3 md:px-4">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2.5 md:gap-3">
           <div class="min-w-0">
-            <h1 class="text-base sm:text-lg md:text-xl font-extrabold text-slate-800 flex items-center gap-2">
+            <h1 class="text-base sm:text-lg md:text-xl font-extrabold text-slate-800 flex items-start gap-2 leading-snug">
               <span class="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-xs sm:text-sm shrink-0">
                 <i class="fa-solid fa-file-invoice-dollar"></i>
               </span>
 
-              <span class="truncate">
+              <span class="break-words leading-snug">
                 របាយការណ៍បង់ប្រាក់សិស្ស
               </span>
             </h1>
 
-            <p class="text-[11px] sm:text-xs text-slate-500 mt-1 truncate">
+            <p class="text-[11px] sm:text-xs text-slate-500 mt-1 break-words leading-snug">
               ត្រួតពិនិត្យការបង់ប្រាក់តាមថ្នាក់ ខែ ស្ថានភាព និងសិស្ស
             </p>
           </div>
@@ -152,11 +152,11 @@
           <!-- Screen Report Header -->
           <div class="px-2.5 sm:px-3 py-2.5 bg-slate-50 border-b border-slate-200 flex flex-col md:flex-row md:items-center md:justify-between gap-2">
             <div class="min-w-0">
-              <h2 class="text-sm font-extrabold text-slate-800 truncate">
+              <h2 class="text-sm font-extrabold text-slate-800 break-words leading-snug">
                 {{ selectedClassName }}
               </h2>
 
-              <p class="text-[10px] sm:text-[11px] text-slate-500 mt-0.5">
+              <p class="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 break-words leading-snug">
                 ខែ {{ selectedMonthLabel }} · {{ selectedStatusLabel }} · សិស្ស {{ reportRows.length }} នាក់
               </p>
             </div>
@@ -220,11 +220,11 @@
                 <div class="min-w-0 flex-1">
                   <div class="flex items-start justify-between gap-2">
                     <div class="min-w-0">
-                      <p class="text-sm font-extrabold text-slate-800 leading-tight truncate ">
+                      <p class="text-sm font-extrabold text-slate-800 leading-snug break-words">
                         {{ row.student?.khmerName || "-" }}
                       </p>
 
-                      <p class="text-[10px] text-slate-500 leading-tight truncate mt-0.5">
+                      <p class="text-[10px] text-slate-500 leading-snug break-words mt-0.5">
                         {{ row.student?.englishName || "-" }}
                       </p>
                     </div>
@@ -357,15 +357,15 @@
                       </div>
 
                       <div class="min-w-0">
-                        <div class="font-extrabold text-slate-800 leading-tight truncate">
+                        <div class="font-extrabold text-slate-800 leading-snug break-words">
                           {{ row.student?.khmerName || "-" }}
                         </div>
 
-                        <div class="text-[10px] text-slate-500 leading-tight truncate">
+                        <div class="text-[10px] text-slate-500 leading-snug break-words">
                           {{ row.student?.englishName || "-" }}
                         </div>
 
-                        <div class="text-[10px] text-slate-400 leading-tight truncate">
+                        <div class="text-[10px] text-slate-400 leading-snug break-words">
                           ID: {{ row.student?.studentId || row.student?.idCode || "-" }}
                         </div>
                       </div>
@@ -685,7 +685,7 @@
 </template>
 
 <script setup>
-import { ref, reactive, computed, watch, nextTick } from "vue";
+import { ref, reactive, computed, watch, nextTick, onMounted, onBeforeUnmount } from "vue";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import ExcelJS from "exceljs";
@@ -729,6 +729,48 @@ const perPage = ref(6);
 const exportingPdf = ref(false);
 const exportingExcel = ref(false);
 const pdfPaperRef = ref(null);
+
+const originalViewportContent = ref("");
+const viewportMetaWasCreated = ref(false);
+
+const setNoZoomViewport = () => {
+  if (typeof document === "undefined") return;
+
+  let viewportMeta = document.querySelector('meta[name="viewport"]');
+
+  if (!viewportMeta) {
+    viewportMeta = document.createElement("meta");
+    viewportMeta.setAttribute("name", "viewport");
+    document.head.appendChild(viewportMeta);
+    viewportMetaWasCreated.value = true;
+  } else if (!originalViewportContent.value) {
+    viewportMetaWasCreated.value = false;
+    originalViewportContent.value = viewportMeta.getAttribute("content") || "";
+  }
+
+  viewportMeta.setAttribute(
+    "content",
+    "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+  );
+};
+
+const restoreViewport = () => {
+  if (typeof document === "undefined") return;
+
+  const viewportMeta = document.querySelector('meta[name="viewport"]');
+
+  if (!viewportMeta) return;
+
+  if (viewportMetaWasCreated.value) {
+    viewportMeta.remove();
+    return;
+  }
+
+  viewportMeta.setAttribute(
+    "content",
+    originalViewportContent.value || "width=device-width, initial-scale=1"
+  );
+};
 
 const normalizeArray = (responseData) => {
   if (Array.isArray(responseData)) return responseData;
@@ -1714,27 +1756,85 @@ const exportExcel = async () => {
     exportingExcel.value = false;
   }
 };
+
+onMounted(() => {
+  setNoZoomViewport();
+});
+
+onBeforeUnmount(() => {
+  restoreViewport();
+});
 </script>
 
 <style scoped>
+
+.payment-report-page-mobile-safe {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif;
+  line-height: 1.45;
+}
+
+.payment-report-page-mobile-safe h1,
+.payment-report-page-mobile-safe h2,
+.payment-report-page-mobile-safe h3,
+.payment-report-page-mobile-safe p,
+.payment-report-page-mobile-safe span,
+.payment-report-page-mobile-safe label,
+.payment-report-page-mobile-safe button,
+.payment-report-page-mobile-safe th,
+.payment-report-page-mobile-safe td {
+  line-height: 1.45;
+}
+
+.payment-report-page-mobile-safe .break-words {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.payment-report-page-mobile-safe input,
+.payment-report-page-mobile-safe select,
+.payment-report-page-mobile-safe textarea,
+.payment-report-page-mobile-safe option,
+.payment-report-page-mobile-safe input::placeholder {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif !important;
+  font-size: 12px !important;
+  line-height: 1.9 !important;
+  font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+.payment-report-page-mobile-safe input,
+.payment-report-page-mobile-safe select {
+  min-height: 2.65rem !important;
+  height: 2.65rem !important;
+  padding-top: 0.58rem !important;
+  padding-bottom: 0.58rem !important;
+  overflow: visible !important;
+}
+
 .form-label {
   display: block;
   font-size: 0.62rem;
   font-weight: 800;
   color: #64748b;
   margin-bottom: 0.2rem;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
 }
 
 .form-input {
   width: 100%;
   border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
-  padding: 0.36rem 0.55rem;
-  font-size: 0.7rem;
+  padding: 0.58rem 0.55rem;
+  font-size: 12px;
+  line-height: 1.9;
   color: #334155;
   background: #ffffff;
   outline: none;
-  min-height: 1.95rem;
+  min-height: 2.65rem;
+  height: auto;
   transition: all 0.2s ease;
 }
 
@@ -1772,7 +1872,7 @@ const exportExcel = async () => {
   font-size: 0.58rem;
   font-weight: 800;
   color: #64748b;
-  line-height: 1;
+  line-height: 1.35;
   white-space: nowrap;
 }
 
@@ -1796,7 +1896,7 @@ const exportExcel = async () => {
 .mobile-money-label {
   font-size: 0.56rem;
   font-weight: 900;
-  line-height: 1;
+  line-height: 1.35;
   white-space: nowrap;
 }
 
@@ -1827,7 +1927,8 @@ const exportExcel = async () => {
 }
 
 .font-khmer {
-  font-family: "Battambang", "Siemreap", "Kantumruy Pro", sans-serif;
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Siemreap", "Kantumruy Pro", sans-serif;
+  line-height: 1.45;
 }
 
 .pdf-paper-wrap {
@@ -2129,4 +2230,31 @@ const exportExcel = async () => {
     font-size: 1rem;
   }
 }
+
+@media (max-width: 640px) {
+  .payment-report-page-mobile-safe {
+    padding-bottom: calc(2.75rem + env(safe-area-inset-bottom));
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  .payment-report-page-mobile-safe > .max-w-7xl {
+    padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+  }
+
+  .payment-report-page-mobile-safe .lg\:hidden {
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+  }
+}
+
+@media (min-width: 640px) {
+  .form-input {
+    padding: 0.62rem 0.6rem;
+    font-size: 12px !important;
+    line-height: 1.9 !important;
+    min-height: 2.65rem !important;
+    height: auto;
+  }
+}
+
 </style>

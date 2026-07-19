@@ -10,11 +10,11 @@
             </div>
 
             <div class="min-w-0">
-              <h1 class="text-base sm:text-lg md:text-xl font-extrabold text-slate-800 leading-tight truncate">
+              <h1 class="text-base sm:text-lg md:text-xl font-extrabold text-slate-800 leading-snug break-words">
                 {{ classFilter ? `កាលវិភាគ - ${selectedClassName}` : "ជ្រើសរើសថ្នាក់" }}
               </h1>
 
-              <p class="text-[11px] sm:text-xs text-slate-500 mt-1 truncate">
+              <p class="text-[11px] sm:text-xs text-slate-500 mt-1 break-words leading-snug">
                 {{
                   classFilter
                     ? "គ្រប់គ្រងម៉ោងសិក្សា មុខវិជ្ជា គ្រូបង្រៀន និងបន្ទប់រៀនតាមថ្ងៃ"
@@ -82,10 +82,10 @@
 
             <div class="grid grid-cols-2 gap-2 md:flex md:items-center w-full md:w-auto">
               <div class="rounded-lg border border-slate-200 bg-slate-50 px-2.5 py-1.5 text-center md:text-left">
-                <p class="text-[10px] font-bold text-slate-400 leading-none">
+                <p class="text-[10px] font-bold text-slate-400 leading-snug">
                   ថ្នាក់សរុប
                 </p>
-                <p class="mt-1 text-xs font-extrabold text-blue-700 leading-none">
+                <p class="mt-1 text-xs font-extrabold text-blue-700 leading-snug">
                   {{ classesList.length }} ថ្នាក់
                 </p>
               </div>
@@ -94,7 +94,7 @@
                 <p class="text-[10px] font-bold text-blue-500 leading-none">
                   លទ្ធផលស្វែងរក
                 </p>
-                <p class="mt-1 text-xs font-extrabold text-blue-700 leading-none">
+                <p class="mt-1 text-xs font-extrabold text-blue-700 leading-snug">
                   {{ filteredClasses.length }} ថ្នាក់
                 </p>
               </div>
@@ -121,21 +121,21 @@
                 {{ getClassInitial(c) }}
               </div>
 
-              <span class="max-w-[120px] inline-flex items-center gap-1 text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-100 px-1.5 py-0.5 rounded-full truncate">
+              <span class="max-w-[120px] inline-flex items-center gap-1 text-[10px] font-bold text-blue-700 bg-blue-50 border border-blue-100 px-1.5 py-0.5 rounded-full break-words leading-snug">
                 <i class="fa-regular fa-clock text-[9px]"></i>
                 {{ c.timeStudy || "-" }}
               </span>
             </div>
 
-            <h3 class="text-xs sm:text-sm font-extrabold text-slate-800 leading-tight truncate group-hover:text-blue-700 transition">
+            <h3 class="text-xs sm:text-sm font-extrabold text-slate-800 leading-snug break-words group-hover:text-blue-700 transition">
               {{ c.className || "មិនមានឈ្មោះថ្នាក់" }}
             </h3>
 
-            <p class="text-[10px] sm:text-[11px] text-slate-500 mt-1 truncate">
+            <p class="text-[10px] sm:text-[11px] text-slate-500 mt-1 break-words leading-snug">
               កម្រិត: {{ c.classGrade || "-" }}
             </p>
 
-            <p class="text-[10px] sm:text-[11px] text-slate-500 mt-1 truncate">
+            <p class="text-[10px] sm:text-[11px] text-slate-500 mt-1 break-words leading-snug">
               គ្រូបន្ទុក: {{ getTeacherName(c.teacher) || c.teacherName || "មិនទាន់មាន" }}
             </p>
 
@@ -240,7 +240,7 @@
             <div class="px-2.5 sm:px-3 py-2 bg-blue-50 border-b border-blue-100 flex items-center justify-between gap-2">
               <h3 class="font-extrabold text-blue-800 text-xs sm:text-sm flex items-center gap-1.5 min-w-0">
                 <i class="fa-solid fa-calendar-day text-[10px]"></i>
-                <span class="truncate">{{ day.label }}</span>
+                <span class="break-words leading-snug">{{ day.label }}</span>
               </h3>
 
               <span class="h-6 min-w-6 px-2 rounded-full bg-white text-blue-600 border border-blue-100 text-[10px] sm:text-[11px] font-extrabold flex items-center justify-center shrink-0">
@@ -274,11 +274,11 @@
                   </span>
                 </div>
 
-                <h4 class="font-extrabold text-slate-800 text-xs sm:text-sm leading-tight truncate pr-16">
+                <h4 class="font-extrabold text-slate-800 text-xs sm:text-sm leading-snug break-words pr-16">
                   {{ getSubjectName(item.subject) }}
                 </h4>
 
-                <p class="text-[11px] sm:text-xs text-slate-500 truncate mt-1 pr-16">
+                <p class="text-[11px] sm:text-xs text-slate-500 break-words leading-snug mt-1 pr-16">
                   <i class="fa-solid fa-chalkboard-user mr-1 text-slate-400"></i>
                   {{ getTeacherName(item.teacher) || "មិនទាន់មានគ្រូ" }}
                 </p>
@@ -341,7 +341,7 @@
             >
               <div class="px-3 sm:px-4 py-2.5 sm:py-3 border-b border-slate-100 flex justify-between items-start gap-2 bg-slate-50 shrink-0">
                 <div class="min-w-0">
-                  <h3 class="text-sm sm:text-base font-extrabold text-slate-800 flex items-center gap-2">
+                  <h3 class="text-sm sm:text-base font-extrabold text-slate-800 flex items-start gap-2 leading-snug">
                     <span class="h-8 w-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-xs shrink-0">
                       <i :class="isEditing ? 'fa-solid fa-pen-to-square' : 'fa-solid fa-plus'"></i>
                     </span>
@@ -351,7 +351,7 @@
                     </span>
                   </h3>
 
-                  <p class="text-[10px] sm:text-xs text-slate-500 mt-0.5 truncate">
+                  <p class="text-[10px] sm:text-xs text-slate-500 mt-0.5 break-words leading-snug">
                     បំពេញព័ត៌មានកាលវិភាគសិក្សា
                   </p>
                 </div>
@@ -509,7 +509,7 @@
                       បញ្ជាក់ការលុប
                     </h3>
 
-                    <p class="text-[11px] text-red-600 font-bold mt-0.5 truncate">
+                    <p class="text-[11px] text-red-600 font-bold mt-0.5 break-words leading-snug">
                       សកម្មភាពនេះមិនអាចត្រឡប់ក្រោយបានទេ
                     </p>
                   </div>
@@ -532,7 +532,7 @@
 
                 <p class="text-sm text-slate-600 leading-7">
                   តើអ្នកពិតជាចង់លុបកាលវិភាគ
-                  <span class="font-extrabold text-slate-900">
+                  <span class="font-extrabold text-slate-900 break-words leading-snug">
                     "{{ getSubjectName(scheduleToDelete?.subject) }}"
                   </span>
                   មែនទេ?
@@ -1039,24 +1039,90 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+
+.schedules-page-mobile-safe,
+.schedule-modal-panel-mobile-safe {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif;
+  line-height: 1.45;
+}
+
+.schedules-page-mobile-safe h1,
+.schedules-page-mobile-safe h3,
+.schedules-page-mobile-safe h4,
+.schedules-page-mobile-safe p,
+.schedules-page-mobile-safe span,
+.schedules-page-mobile-safe label,
+.schedules-page-mobile-safe button,
+.schedule-modal-panel-mobile-safe h3,
+.schedule-modal-panel-mobile-safe p,
+.schedule-modal-panel-mobile-safe span,
+.schedule-modal-panel-mobile-safe label,
+.schedule-modal-panel-mobile-safe button {
+  line-height: 1.45;
+}
+
+.schedules-page-mobile-safe .break-words,
+.schedule-modal-panel-mobile-safe .break-words,
+.form-label,
+.summary-label,
+.summary-value {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.schedules-page-mobile-safe input,
+.schedules-page-mobile-safe select,
+.schedules-page-mobile-safe option,
+.schedules-page-mobile-safe input::placeholder,
+.schedule-modal-panel-mobile-safe input,
+.schedule-modal-panel-mobile-safe select,
+.schedule-modal-panel-mobile-safe option,
+.schedule-modal-panel-mobile-safe input::placeholder,
+.search-input,
+.search-input::placeholder {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif !important;
+  font-size: 12px !important;
+  line-height: 1.9 !important;
+  font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+.schedules-page-mobile-safe input,
+.schedules-page-mobile-safe select,
+.schedule-modal-panel-mobile-safe input,
+.schedule-modal-panel-mobile-safe select,
+.search-input {
+  min-height: 2.65rem !important;
+  height: 2.65rem !important;
+  padding-top: 0.58rem !important;
+  padding-bottom: 0.58rem !important;
+  overflow: visible !important;
+}
+
 .form-label {
   display: block;
   font-size: 0.62rem;
   font-weight: 800;
   color: #64748b;
   margin-bottom: 0.2rem;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
 }
 
 .form-input {
   width: 100%;
   border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
-  padding: 0.36rem 0.55rem;
-  font-size: 0.7rem;
+  padding: 0.58rem 0.55rem;
+  font-size: 12px;
+  line-height: 1.9;
   color: #334155;
   background: #ffffff;
   outline: none;
-  min-height: 1.95rem;
+  min-height: 2.65rem;
+  height: auto;
   transition: all 0.2s ease;
 }
 
@@ -1080,7 +1146,7 @@ onBeforeUnmount(() => {
 .search-input {
   padding-left: 2.15rem !important;
   padding-right: 0.75rem !important;
-  min-height: 2rem;
+  min-height: 2.65rem !important;
 }
 
 .summary-card {
@@ -1096,18 +1162,18 @@ onBeforeUnmount(() => {
   font-size: 0.58rem;
   font-weight: 800;
   color: #64748b;
-  line-height: 1;
-  white-space: nowrap;
+  line-height: 1.45;
+  white-space: normal;
 }
 
 .summary-value {
   margin-top: 0.24rem;
   font-size: 0.82rem;
   font-weight: 900;
-  line-height: 1.15;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.45;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
 }
 
 .modal-scroll::-webkit-scrollbar {
@@ -1178,9 +1244,11 @@ onBeforeUnmount(() => {
   }
 
   .form-input {
-    padding: 0.44rem 0.6rem;
-    font-size: 0.75rem;
-    min-height: 2.2rem;
+    padding: 0.62rem 0.6rem;
+    font-size: 12px !important;
+    line-height: 1.9 !important;
+    min-height: 2.65rem !important;
+    height: auto;
   }
 
   .summary-card {
@@ -1196,7 +1264,7 @@ onBeforeUnmount(() => {
   }
 
   .search-input {
-    min-height: 2.2rem;
+    min-height: 2.65rem !important;
   }
 }
 </style>

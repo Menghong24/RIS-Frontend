@@ -8,11 +8,11 @@
       <LoaderCircle class="w-8 h-8 text-blue-600 animate-spin" />
     </div>
 
-    <p class="mt-3 text-sm font-extrabold text-slate-700">
+    <p class="mt-3 text-sm font-extrabold text-slate-700 break-words leading-snug">
       កំពុងចូលប្រើប្រាស់...
     </p>
 
-    <p class="mt-1 text-xs text-slate-500">
+    <p class="mt-1 text-xs text-slate-500 break-words leading-snug">
       សូមរង់ចាំបន្តិច
     </p>
   </div>
@@ -31,11 +31,11 @@
             />
           </div>
 
-          <h1 class="mt-4 text-xl md:text-2xl font-black text-slate-800">
+          <h1 class="mt-4 text-xl md:text-2xl font-black text-slate-800 break-words leading-snug">
             សូមស្វាគមន៍
           </h1>
 
-          <p class="mt-1.5 text-xs text-slate-500">
+          <p class="mt-1.5 text-xs text-slate-500 break-words leading-snug">
             ចូលប្រើប្រាស់ប្រព័ន្ធគ្រប់គ្រងសាលា RIS
           </p>
         </div>
@@ -104,14 +104,14 @@
 
           <!-- Remember -->
           <div class="flex items-center justify-between gap-3 pt-0.5">
-            <label class="flex items-center gap-2 text-xs text-slate-600 cursor-pointer select-none">
+            <label class="flex items-center gap-2 text-xs text-slate-600 cursor-pointer select-none leading-snug">
               <input
                 v-model="rememberMe"
                 type="checkbox"
-                class="h-3.5 w-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
+                class="h-3.5 w-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 shrink-0"
               />
 
-              <span>ចងចាំឈ្មោះអ្នកប្រើប្រាស់</span>
+              <span class="break-words leading-snug">ចងចាំឈ្មោះអ្នកប្រើប្រាស់</span>
             </label>
           </div>
 
@@ -127,17 +127,17 @@
 
         <!-- Footer -->
         <div class="mt-5 text-center">
-          <p class="text-[11px] font-bold text-slate-500">
+          <p class="text-[11px] font-bold text-slate-500 break-words leading-snug">
             RIS School Management System
           </p>
 
-          <p class="mt-1 text-[10px] text-slate-400">
+          <p class="mt-1 text-[10px] text-slate-400 break-words leading-snug">
             ប្រព័ន្ធគ្រប់គ្រងសាលារៀន
           </p>
         </div>
       </div>
 
-      <p class="mt-4 text-center text-[11px] text-slate-400">
+      <p class="mt-4 text-center text-[11px] text-slate-400 break-words leading-snug">
         © {{ currentYear }} RIS. រក្សាសិទ្ធិគ្រប់យ៉ាង។
       </p>
     </div>
@@ -279,12 +279,39 @@ const handleLogin = async () => {
 </script>
 
 <style scoped>
+.login-page-mobile-safe,
+.login-loading-overlay-mobile-safe {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif;
+  line-height: 1.45;
+}
+
+.login-page-mobile-safe h1,
+.login-page-mobile-safe p,
+.login-page-mobile-safe span,
+.login-page-mobile-safe label,
+.login-page-mobile-safe button,
+.login-loading-overlay-mobile-safe p {
+  line-height: 1.45;
+}
+
+.login-page-mobile-safe .break-words,
+.login-loading-overlay-mobile-safe .break-words,
+.form-label,
+.error-text {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 .form-label {
   display: block;
   margin-bottom: 0.35rem;
   font-size: 0.76rem;
   font-weight: 800;
   color: #334155;
+  line-height: 1.45;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
 }
 
 .input-icon {
@@ -299,16 +326,27 @@ const handleLogin = async () => {
   z-index: 10;
 }
 
+.form-input,
+.form-input::placeholder {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif !important;
+  font-size: 12px !important;
+  line-height: 1.9 !important;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
 .form-input {
   width: 100%;
   border: 1px solid #cbd5e1;
   border-radius: 0.55rem;
   background: #f8fafc;
-  padding: 0.65rem 0.85rem 0.65rem 2.35rem;
-  font-size: 0.82rem;
+  padding: 0.58rem 0.85rem 0.58rem 2.35rem;
   font-weight: 600;
   color: #0f172a;
   outline: none;
+  min-height: 2.65rem;
+  height: 2.65rem;
+  overflow: visible;
   transition: all 0.2s ease;
 }
 
@@ -333,9 +371,10 @@ const handleLogin = async () => {
   font-size: 0.68rem;
   font-weight: 700;
   color: #dc2626;
+  line-height: 1.45;
 }
 
-/* Chrome mobile bottom toolbar fix + no visual input-size changes */
+/* Chrome mobile bottom toolbar fix + Khmer input/text safe */
 @media (max-width: 640px) {
   .login-page-mobile-safe {
     min-height: 100vh;
@@ -353,6 +392,8 @@ const handleLogin = async () => {
     min-height: 100vh;
     min-height: 100dvh;
     padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
 }
 </style>

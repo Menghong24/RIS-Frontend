@@ -5,17 +5,17 @@
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm px-2.5 sm:px-3 py-3 md:px-4">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2.5 sm:gap-3">
           <div class="min-w-0">
-            <h1 class="text-base sm:text-lg md:text-xl font-extrabold text-slate-800 flex items-center gap-2">
+            <h1 class="text-base sm:text-lg md:text-xl font-extrabold text-slate-800 flex items-start gap-2 leading-snug">
               <span class="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-xs sm:text-sm shrink-0">
                 <i class="fa-solid fa-users-gear"></i>
               </span>
 
-              <span class="truncate">
+              <span class="break-words leading-snug">
                 គ្រប់គ្រងអ្នកប្រើប្រាស់
               </span>
             </h1>
 
-            <p class="text-slate-500 text-[11px] sm:text-xs mt-1 truncate">
+            <p class="text-slate-500 text-[11px] sm:text-xs mt-1 break-words leading-snug">
               គ្រប់គ្រងគណនីអ្នកគ្រប់គ្រង គ្រូបង្រៀន និងអ្នកប្រើប្រាស់ក្នុងប្រព័ន្ធ
             </p>
           </div>
@@ -77,7 +77,7 @@
             </select>
           </div>
 
-          <div class="flex items-center gap-2 text-[11px] sm:text-xs text-slate-600">
+          <div class="flex flex-wrap items-center gap-2 text-[11px] sm:text-xs text-slate-600 leading-snug">
             <span>បង្ហាញ</span>
 
             <select
@@ -125,7 +125,7 @@
             មិនមានទិន្នន័យអ្នកប្រើប្រាស់
           </p>
 
-          <p class="text-[11px] sm:text-xs text-slate-400 mt-1">
+          <p class="text-[11px] sm:text-xs text-slate-400 mt-1 break-words leading-snug">
             សូមកែប្រែការស្វែងរក ឬបន្ថែមគណនីអ្នកប្រើប្រាស់ថ្មី
           </p>
         </div>
@@ -146,11 +146,11 @@
                 <div class="min-w-0 flex-1">
                   <div class="flex items-start justify-between gap-2">
                     <div class="min-w-0">
-                      <p class="font-extrabold text-sm text-slate-800 leading-tight truncate">
+                      <p class="font-extrabold text-sm text-slate-800 leading-snug break-words">
                         {{ user.username }}
                       </p>
 
-                      <p class="text-[10px] font-mono text-slate-400 leading-tight truncate mt-0.5">
+                      <p class="text-[10px] font-mono text-slate-400 leading-snug break-words mt-0.5">
                         UID: {{ getShortId(user._id) }}
                       </p>
                     </div>
@@ -170,13 +170,13 @@
                       </p>
 
                       <template v-if="user.role === 'teacher'">
-                        <p class="text-[11px] font-extrabold text-slate-700 truncate">
+                        <p class="text-[11px] font-extrabold text-slate-700 break-words leading-snug">
                           {{ getTeacherDisplayName(user) }}
                         </p>
 
                         <p
                           v-if="user.teacher?._id"
-                          class="text-[10px] font-mono text-slate-400 truncate mt-0.5"
+                          class="text-[10px] font-mono text-slate-400 break-words leading-snug mt-0.5"
                         >
                           TID: {{ getShortId(user.teacher._id) }}
                         </p>
@@ -282,11 +282,11 @@
                       </div>
 
                       <div class="min-w-0">
-                        <p class="font-bold text-slate-800 truncate">
+                        <p class="font-bold text-slate-800 break-words leading-snug">
                           {{ user.username }}
                         </p>
 
-                        <p class="text-[10px] font-mono text-slate-400 mt-0.5 truncate">
+                        <p class="text-[10px] font-mono text-slate-400 mt-0.5 break-words leading-snug">
                           UID: {{ user._id }}
                         </p>
                       </div>
@@ -307,13 +307,13 @@
                       v-if="user.role === 'teacher'"
                       class="min-w-0"
                     >
-                      <p class="font-bold text-slate-700 truncate">
+                      <p class="font-bold text-slate-700 break-words leading-snug">
                         {{ getTeacherDisplayName(user) }}
                       </p>
 
                       <p
                         v-if="user.teacher?._id"
-                        class="text-[10px] font-mono text-slate-400 mt-0.5 truncate"
+                        class="text-[10px] font-mono text-slate-400 mt-0.5 break-words leading-snug"
                       >
                         TID: {{ user.teacher._id }}
                       </p>
@@ -425,8 +425,8 @@
               class="modal-panel-mobile-safe bg-white rounded-t-2xl sm:rounded-xl shadow-xl max-w-md w-full border border-slate-100 overflow-hidden flex flex-col max-h-[94dvh] sm:max-h-[90vh]"
               @click.stop
             >
-              <div class="px-3 sm:px-4 py-2.5 sm:py-3 border-b border-slate-100 flex items-center justify-between bg-slate-50 shrink-0">
-                <h3 class="font-bold text-slate-800 text-sm sm:text-base flex items-center gap-2 min-w-0">
+              <div class="px-3 sm:px-4 py-2.5 sm:py-3 border-b border-slate-100 flex items-start justify-between gap-2 bg-slate-50 shrink-0">
+                <h3 class="font-bold text-slate-800 text-sm sm:text-base flex items-start gap-2 leading-snug min-w-0">
                   <i
                     :class="
                       modal.mode === 'add'
@@ -435,7 +435,7 @@
                     "
                   ></i>
 
-                  <span class="truncate">
+                  <span class="break-words leading-snug">
                     {{ modal.mode === 'add' ? 'បង្កើតគណនីថ្មី' : 'កែប្រែព័ត៌មានគណនី' }}
                   </span>
                 </h3>
@@ -522,7 +522,7 @@
                     </option>
                   </select>
 
-                  <p class="text-[11px] text-slate-400 mt-1">
+                  <p class="text-[11px] text-slate-400 mt-1 break-words leading-snug">
                     គណនី role គ្រូបង្រៀន ត្រូវភ្ជាប់ទៅ Teacher profile ដើម្បីកំណត់សិទ្ធិថ្នាក់។
                   </p>
                 </div>
@@ -568,17 +568,17 @@
               class="modal-panel-mobile-safe bg-white rounded-t-2xl sm:rounded-xl shadow-xl max-w-sm w-full border border-slate-100 overflow-hidden"
               @click.stop
             >
-              <div class="px-4 py-3 bg-red-50 border-b border-red-100 flex items-center gap-3">
+              <div class="px-4 py-3 bg-red-50 border-b border-red-100 flex items-start gap-3">
                 <div class="h-10 w-10 rounded-full bg-white text-red-600 flex items-center justify-center border border-red-100 shadow-sm shrink-0">
                   <i class="fa-solid fa-trash-can text-sm"></i>
                 </div>
 
                 <div class="min-w-0">
-                  <h3 class="text-sm sm:text-base font-extrabold text-slate-800 truncate">
+                  <h3 class="text-sm sm:text-base font-extrabold text-slate-800 break-words leading-snug">
                     បញ្ជាក់ការលុប
                   </h3>
 
-                  <p class="text-[11px] sm:text-xs text-red-600 font-bold mt-0.5 truncate">
+                  <p class="text-[11px] sm:text-xs text-red-600 font-bold mt-0.5 break-words leading-snug">
                     Delete Confirmation
                   </p>
                 </div>
@@ -587,7 +587,7 @@
               <div class="p-4">
                 <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
                   តើអ្នកពិតជាចង់លុបគណនី
-                  <span class="font-extrabold text-slate-800">
+                  <span class="font-extrabold text-slate-800 break-words leading-snug">
                     "{{ deleteModal.username || 'អ្នកប្រើប្រាស់' }}"
                   </span>
                   មែនទេ?
@@ -1020,24 +1020,86 @@ const formatDate = (dateString) => {
 </script>
 
 <style scoped>
+
+.users-page-mobile-safe,
+.modal-panel-mobile-safe {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif;
+  line-height: 1.45;
+}
+
+.users-page-mobile-safe h1,
+.users-page-mobile-safe h3,
+.users-page-mobile-safe p,
+.users-page-mobile-safe span,
+.users-page-mobile-safe label,
+.users-page-mobile-safe button,
+.users-page-mobile-safe th,
+.users-page-mobile-safe td,
+.modal-panel-mobile-safe h3,
+.modal-panel-mobile-safe p,
+.modal-panel-mobile-safe span,
+.modal-panel-mobile-safe label,
+.modal-panel-mobile-safe button {
+  line-height: 1.45;
+}
+
+.users-page-mobile-safe .break-words,
+.modal-panel-mobile-safe .break-words,
+.form-label {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.users-page-mobile-safe input,
+.users-page-mobile-safe select,
+.users-page-mobile-safe option,
+.users-page-mobile-safe input::placeholder,
+.modal-panel-mobile-safe input,
+.modal-panel-mobile-safe select,
+.modal-panel-mobile-safe option,
+.modal-panel-mobile-safe input::placeholder {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif !important;
+  font-size: 12px !important;
+  line-height: 1.9 !important;
+  font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+.users-page-mobile-safe input,
+.users-page-mobile-safe select,
+.modal-panel-mobile-safe input,
+.modal-panel-mobile-safe select {
+  min-height: 2.65rem !important;
+  height: 2.65rem !important;
+  padding-top: 0.58rem !important;
+  padding-bottom: 0.58rem !important;
+  overflow: visible !important;
+}
+
 .form-label {
   display: block;
   font-size: 0.62rem;
   font-weight: 800;
   color: #64748b;
   margin-bottom: 0.2rem;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
 }
 
 .form-input {
   width: 100%;
   border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
-  padding: 0.36rem 0.55rem;
-  font-size: 0.7rem;
+  padding: 0.58rem 0.55rem;
+  font-size: 12px;
+  line-height: 1.9;
   color: #334155;
   background: #ffffff;
   outline: none;
-  min-height: 1.95rem;
+  min-height: 2.65rem;
+  height: auto;
   transition: all 0.2s ease;
 }
 
@@ -1061,6 +1123,7 @@ const formatDate = (dateString) => {
 .search-input {
   padding-left: 2.15rem !important;
   padding-right: 0.75rem !important;
+  min-height: 2.65rem !important;
 }
 
 .table-th {
@@ -1069,7 +1132,9 @@ const formatDate = (dateString) => {
   font-weight: 900;
   color: #475569;
   border: 1px solid #e2e8f0;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .table-td {
@@ -1167,9 +1232,11 @@ const formatDate = (dateString) => {
   }
 
   .form-input {
-    padding: 0.44rem 0.6rem;
-    font-size: 0.75rem;
-    min-height: 2.25rem;
+    padding: 0.62rem 0.6rem;
+    font-size: 12px !important;
+    line-height: 1.9 !important;
+    min-height: 2.65rem !important;
+    height: auto;
   }
 }
 </style>

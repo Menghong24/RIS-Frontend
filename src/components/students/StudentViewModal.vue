@@ -1,17 +1,17 @@
 <template>
   <div
     v-if="isOpen"
-    class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-2 sm:p-3"
+    class="student-view-modal-overlay-mobile-safe fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-2 sm:p-3"
     @click.self="$emit('close')"
   >
     <div
-      class="bg-white rounded-t-2xl sm:rounded-xl shadow-xl w-full max-w-2xl max-h-[92dvh] sm:max-h-[88vh] overflow-hidden border border-slate-100 flex flex-col"
+      class="student-view-modal-panel-mobile-safe bg-white rounded-t-2xl sm:rounded-xl shadow-xl w-full max-w-2xl max-h-[94dvh] sm:max-h-[88vh] overflow-hidden border border-slate-100 flex flex-col"
     >
       <!-- Header -->
       <div
         class="px-2.5 sm:px-3 py-2.5 sm:py-3 border-b border-slate-100 bg-slate-50 flex items-start justify-between gap-2 sm:gap-3 shrink-0"
       >
-        <div class="flex items-center gap-2 sm:gap-3 min-w-0">
+        <div class="flex items-start gap-2 sm:gap-3 min-w-0">
           <div
             class="w-11 h-11 sm:w-14 sm:h-14 rounded-full overflow-hidden ring-2 ring-blue-100 border border-blue-200 shadow-sm bg-blue-50 text-blue-700 flex items-center justify-center font-extrabold shrink-0"
           >
@@ -29,17 +29,17 @@
           </div>
 
           <div class="min-w-0">
-            <h2 class="text-sm sm:text-base font-extrabold text-slate-800 truncate">
+            <h2 class="text-sm sm:text-base font-extrabold text-slate-800 break-words leading-snug">
               {{ student?.khmerName || "មិនមានឈ្មោះ" }}
             </h2>
 
-            <p class="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 truncate">
+            <p class="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 break-words leading-snug">
               {{ student?.englishName || "-" }}
             </p>
 
             <div class="flex flex-wrap items-center gap-1 sm:gap-1.5 mt-1.5">
               <span
-                class="bg-blue-50 text-blue-700 border border-blue-200 px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold leading-none"
+                class="bg-blue-50 text-blue-700 border border-blue-200 px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold leading-snug break-words"
               >
                 <i class="fa-solid fa-id-card mr-0.5 sm:mr-1"></i>
                 {{ student?.studentId || "-" }}
@@ -51,7 +51,7 @@
                     ? 'bg-pink-50 text-pink-700 border-pink-200'
                     : 'bg-blue-50 text-blue-700 border-blue-200'
                 "
-                class="border px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold leading-none"
+                class="border px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold leading-snug break-words"
               >
                 <i class="fa-solid fa-venus-mars mr-0.5 sm:mr-1"></i>
                 {{ student?.gender || "-" }}
@@ -59,7 +59,7 @@
 
               <span
                 :class="statusClass"
-                class="border px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold leading-none"
+                class="border px-1.5 sm:px-2 py-0.5 rounded-full text-[9px] sm:text-[10px] font-bold leading-snug break-words"
               >
                 <i class="fa-solid fa-circle-info mr-0.5 sm:mr-1"></i>
                 {{ statusLabel }}
@@ -77,7 +77,7 @@
       </div>
 
       <!-- Body -->
-      <div class="p-2.5 sm:p-3 space-y-2.5 sm:space-y-3 overflow-y-auto modal-scroll">
+      <div class="student-view-modal-body-mobile-safe p-2.5 sm:p-3 space-y-2.5 sm:space-y-3 overflow-y-auto modal-scroll">
         <!-- Student Details -->
         <div class="section-card">
           <h3 class="section-title">
@@ -90,7 +90,7 @@
           <div class="grid grid-cols-2 lg:grid-cols-3 gap-1.5 sm:gap-2 text-xs">
             <div class="info-box">
               <span class="info-label">ឈ្មោះខ្មែរ</span>
-              <p class="info-value">{{ student?.khmerName || "-" }}</p>
+              <p class="info-value break-words leading-snug">{{ student?.khmerName || "-" }}</p>
             </div>
 
             <div class="info-box">
@@ -211,7 +211,7 @@
       </div>
 
       <!-- Actions -->
-      <div class="px-2.5 sm:px-3 py-2.5 border-t border-slate-100 bg-white flex justify-end shrink-0">
+      <div class="student-view-modal-footer-mobile-safe px-2.5 sm:px-3 py-2.5 border-t border-slate-100 bg-white flex justify-end shrink-0">
         <button
           @click="$emit('close')"
           class="px-3 sm:px-4 py-1.5 text-[11px] sm:text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition flex items-center gap-1.5 sm:gap-2"
@@ -398,6 +398,28 @@ const formatDate = (date) => {
 </script>
 
 <style scoped>
+
+.student-view-modal-panel-mobile-safe {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif;
+  line-height: 1.45;
+}
+
+.student-view-modal-panel-mobile-safe h2,
+.student-view-modal-panel-mobile-safe h3,
+.student-view-modal-panel-mobile-safe p,
+.student-view-modal-panel-mobile-safe span,
+.student-view-modal-panel-mobile-safe button {
+  line-height: 1.45;
+}
+
+.student-view-modal-panel-mobile-safe .break-words,
+.section-title,
+.info-label,
+.info-value {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 .section-card {
   border: 1px solid #e2e8f0;
   background: #ffffff;
@@ -406,13 +428,16 @@ const formatDate = (date) => {
 }
 
 .section-title {
-  font-size: 0.72rem;
+  font-size: 14px;
   font-weight: 900;
   color: #1e293b;
   margin-bottom: 0.45rem;
   display: flex;
-  align-items: center;
+  align-items: flex-start;
   gap: 0.45rem;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .section-icon {
@@ -424,7 +449,7 @@ const formatDate = (date) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.62rem;
+  font-size: 14px;
   flex-shrink: 0;
 }
 
@@ -438,20 +463,22 @@ const formatDate = (date) => {
 
 .info-label {
   display: block;
-  font-size: 0.58rem;
+  font-size: 14px;
   font-weight: 700;
   color: #64748b;
   margin-bottom: 0.1rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.45;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
 }
 
 .info-value {
-  font-size: 0.68rem;
+  font-size: 14px;
   font-weight: 800;
   color: #1e293b;
-  line-height: 1.35;
+  line-height: 1.45;
+  overflow-wrap: anywhere;
   word-break: break-word;
 }
 
@@ -478,11 +505,59 @@ const formatDate = (date) => {
   }
 
   .info-label {
-    font-size: 0.62rem;
+    font-size: 14px;
   }
 
   .info-value {
-    font-size: 0.75rem;
+    font-size: 14px;
   }
 }
+
+@media (max-width: 640px) {
+  .student-view-modal-overlay-mobile-safe {
+    min-height: 100vh;
+    min-height: 100dvh;
+    align-items: flex-end;
+    padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  .student-view-modal-panel-mobile-safe {
+    max-height: calc(100vh - 0.75rem);
+    max-height: calc(100dvh - 0.75rem);
+  }
+
+  .student-view-modal-body-mobile-safe {
+    max-height: calc(100vh - 8.5rem);
+    max-height: calc(100dvh - 8.5rem);
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .student-view-modal-footer-mobile-safe {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    padding-bottom: calc(0.65rem + env(safe-area-inset-bottom)) !important;
+  }
+}
+
+
+.student-view-modal-panel-mobile-safe,
+.student-view-modal-panel-mobile-safe h2,
+.student-view-modal-panel-mobile-safe h3,
+.student-view-modal-panel-mobile-safe p,
+.student-view-modal-panel-mobile-safe span,
+.student-view-modal-panel-mobile-safe button,
+.student-view-modal-panel-mobile-safe .section-title,
+.student-view-modal-panel-mobile-safe .info-label,
+.student-view-modal-panel-mobile-safe .info-value {
+  font-size: 14px !important;
+  line-height: 1.45 !important;
+}
+
+.student-view-modal-panel-mobile-safe .section-icon {
+  font-size: 14px !important;
+}
+
 </style>

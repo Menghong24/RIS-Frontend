@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-slate-50 p-3 md:p-4 animate-fade-in-up">
+  <div class="dashboard-page-mobile-safe bg-slate-50 p-3 md:p-4 animate-fade-in-up">
     <div class="max-w-7xl mx-auto space-y-4">
       <!-- Header -->
       <div
@@ -8,17 +8,17 @@
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-3">
           <div class="min-w-0">
             <h1
-              class="text-lg md:text-xl font-extrabold text-slate-800 flex items-center gap-2"
+              class="text-lg md:text-xl font-extrabold text-slate-800 flex items-start gap-2 leading-snug"
             >
               <span
                 class="h-9 w-9 rounded-xl bg-blue-100 text-blue-700 flex items-center justify-center text-sm shrink-0"
               >
                 <i class="fa-solid fa-gauge-high"></i>
               </span>
-              <span class="truncate">ផ្ទាំងគ្រប់គ្រងសាលា</span>
+              <span class="break-words leading-snug">ផ្ទាំងគ្រប់គ្រងសាលា</span>
             </h1>
 
-            <p class="text-xs text-slate-500 mt-1 leading-relaxed">
+            <p class="text-xs text-slate-500 mt-1 leading-relaxed break-words">
               សង្ខេបចំនួនសិស្ស គ្រូ ថ្នាក់រៀន ចំណូល និងរបាយការណ៍សំខាន់ៗ
             </p>
           </div>
@@ -36,7 +36,7 @@
         >
           <div class="flex items-start justify-between gap-3">
             <div class="min-w-0">
-              <p class="text-[11px] sm:text-xs font-bold text-slate-500 truncate">
+              <p class="text-[11px] sm:text-xs font-bold text-slate-500 break-words leading-snug">
                 {{ stat.title }}
               </p>
 
@@ -53,7 +53,7 @@
                 </span>
               </p>
 
-              <p class="text-[10px] sm:text-[11px] text-slate-400 mt-0.5 truncate">
+              <p class="text-[10px] sm:text-[11px] text-slate-400 mt-0.5 break-words leading-snug">
                 {{ stat.subtitle }}
               </p>
             </div>
@@ -76,16 +76,16 @@
         >
           <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2 mb-3">
             <div class="min-w-0">
-              <h2 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
+              <h2 class="text-sm font-extrabold text-slate-800 flex items-start gap-2 leading-snug">
                 <span
                   class="h-8 w-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xs shrink-0"
                 >
                   <i class="fa-solid fa-chart-column"></i>
                 </span>
-                <span class="truncate">វត្តមានសិស្សប្រចាំសប្តាហ៍</span>
+                <span class="break-words leading-snug">វត្តមានសិស្សប្រចាំសប្តាហ៍</span>
               </h2>
 
-              <p class="text-[11px] text-slate-500 mt-0.5">
+              <p class="text-[11px] text-slate-500 mt-0.5 break-words leading-snug">
                 ភាគរយវត្តមានតាមថ្ងៃ
               </p>
             </div>
@@ -122,16 +122,16 @@
         >
           <div class="flex items-center justify-between gap-2 mb-3">
             <div class="min-w-0">
-              <h2 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
+              <h2 class="text-sm font-extrabold text-slate-800 flex items-start gap-2 leading-snug">
                 <span
                   class="h-8 w-8 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center text-xs shrink-0"
                 >
                   <i class="fa-solid fa-chart-pie"></i>
                 </span>
-                <span class="truncate">សិស្សតាមកម្រិតថ្នាក់</span>
+                <span class="break-words leading-snug">សិស្សតាមកម្រិតថ្នាក់</span>
               </h2>
 
-              <p class="text-[11px] text-slate-500 mt-0.5">
+              <p class="text-[11px] text-slate-500 mt-0.5 break-words leading-snug">
                 ចំនួនសិស្សតាម classGrade
               </p>
             </div>
@@ -159,6 +159,9 @@ import { useAuth } from "../hooks/useAuth";
 import { Chart, registerables } from "chart.js";
 
 Chart.register(...registerables);
+
+const khmerChartFontFamily =
+  '"Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif';
 
 const emit = defineEmits(["navigateTo"]);
 
@@ -570,6 +573,7 @@ function renderStudentDistChart() {
           labels: {
             boxWidth: 10,
             font: {
+              family: khmerChartFontFamily,
               size: 10
             }
           }
@@ -627,6 +631,12 @@ function renderAttendanceChart() {
           display: false
         },
         tooltip: {
+          titleFont: {
+            family: khmerChartFontFamily
+          },
+          bodyFont: {
+            family: khmerChartFontFamily
+          },
           callbacks: {
             label: (context) => {
               const index = context.dataIndex;
@@ -646,6 +656,7 @@ function renderAttendanceChart() {
           ticks: {
             callback: (value) => `${value}%`,
             font: {
+              family: khmerChartFontFamily,
               size: 10
             }
           }
@@ -653,6 +664,7 @@ function renderAttendanceChart() {
         x: {
           ticks: {
             font: {
+              family: khmerChartFontFamily,
               size: 10
             }
           }
@@ -678,6 +690,25 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+
+.dashboard-page-mobile-safe {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif;
+  line-height: 1.45;
+}
+
+.dashboard-page-mobile-safe h1,
+.dashboard-page-mobile-safe h2,
+.dashboard-page-mobile-safe p,
+.dashboard-page-mobile-safe span,
+.dashboard-page-mobile-safe button {
+  line-height: 1.45;
+}
+
+.dashboard-page-mobile-safe .break-words {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 .chart-container {
   position: relative;
   height: 240px;
@@ -712,4 +743,17 @@ onBeforeUnmount(() => {
   opacity: 0;
   animation: fadeInUp 0.45s cubic-bezier(0.16, 1, 0.3, 1) forwards;
 }
+
+@media (max-width: 640px) {
+  .dashboard-page-mobile-safe {
+    padding-bottom: calc(2.75rem + env(safe-area-inset-bottom));
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  .dashboard-page-mobile-safe > .max-w-7xl {
+    padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+  }
+}
+
 </style>

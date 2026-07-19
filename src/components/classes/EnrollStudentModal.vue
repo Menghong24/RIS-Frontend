@@ -1,15 +1,15 @@
 <template>
   <div
     v-if="isOpen"
-    class="fixed inset-0 z-50 flex items-center justify-center bg-slate-900/40 backdrop-blur-sm p-3"
+    class="enroll-student-modal-overlay-mobile-safe fixed inset-0 z-50 flex items-end sm:items-center justify-center bg-slate-900/40 backdrop-blur-sm p-2 sm:p-3"
   >
     <div
-      class="bg-white rounded-xl shadow-xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[86vh] border border-slate-100"
+      class="enroll-student-modal-panel-mobile-safe bg-white rounded-t-2xl sm:rounded-xl shadow-xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[94dvh] sm:max-h-[86vh] border border-slate-100"
     >
       <!-- Header -->
-      <div class="px-3 py-2.5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-        <div>
-          <h2 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
+      <div class="px-3 py-2.5 border-b border-slate-100 flex justify-between items-start gap-2 bg-slate-50">
+        <div class="min-w-0">
+          <h2 class="text-sm font-extrabold text-slate-800 flex items-start gap-2 leading-snug">
             <span
               class="h-6 w-6 rounded-lg flex items-center justify-center text-[10px]"
               :class="mode === 'transfer'
@@ -19,10 +19,10 @@
               <i :class="mode === 'transfer' ? 'fa-solid fa-right-left' : 'fa-solid fa-user-plus'"></i>
             </span>
 
-            {{ mode === 'transfer' ? 'ផ្លាស់ប្ដូរសិស្សទៅថ្នាក់ផ្សេង' : 'បញ្ចូលសិស្សថ្មី' }}
+            <span class="break-words leading-snug">{{ mode === 'transfer' ? 'ផ្លាស់ប្ដូរសិស្សទៅថ្នាក់ផ្សេង' : 'បញ្ចូលសិស្សថ្មី' }}</span>
           </h2>
 
-          <p class="text-[10px] text-slate-500 mt-0.5">
+          <p class="text-[10px] text-slate-500 mt-0.5 break-words leading-snug">
             {{ mode === 'transfer' ? 'ជ្រើសរើសសិស្សសម្រាប់ផ្ទេរទៅថ្នាក់ផ្សេង' : 'ជ្រើសរើសសិស្សដែលមិនទាន់មានថ្នាក់' }}
           </p>
         </div>
@@ -58,7 +58,7 @@
               v-model="searchQuery"
               type="text"
               placeholder="ស្វែងរកសិស្សតាមឈ្មោះ ឬ អត្តលេខ..."
-              class="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-xs text-slate-700 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition"
+              class="enroll-form-input w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-xs text-slate-700 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition"
             />
           </div>
 
@@ -81,7 +81,7 @@
         </div>
 
         <!-- List -->
-        <div class="overflow-y-auto flex-1 p-3 bg-slate-50">
+        <div class="enroll-student-modal-body-mobile-safe overflow-y-auto flex-1 p-3 bg-slate-50 modal-scroll">
           <div v-if="isLoading" class="flex flex-col items-center justify-center py-8">
             <div class="h-10 w-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
               <i class="fa-solid fa-circle-notch fa-spin text-xl"></i>
@@ -108,7 +108,7 @@
                 v-for="student in paginatedCandidates"
                 :key="student._id"
                 @click="toggleSelection(student._id)"
-                class="bg-white p-2.5 rounded-lg border shadow-sm flex items-center justify-between cursor-pointer transition select-none group"
+                class="candidate-card-text-safe bg-white p-2.5 rounded-lg border shadow-sm flex items-center justify-between cursor-pointer transition select-none group"
                 :class="[
                   selectedIds.includes(student._id)
                     ? 'border-blue-500 ring-1 ring-blue-500 bg-blue-50'
@@ -116,7 +116,7 @@
                   isSubmitting ? 'opacity-70 pointer-events-none' : ''
                 ]"
               >
-                <div class="flex items-center gap-2.5 overflow-hidden">
+                <div class="flex items-center gap-2.5 min-w-0">
                   <!-- Checkbox -->
                   <div
                     class="flex-shrink-0 w-5 h-5 rounded-md border flex items-center justify-center transition"
@@ -146,16 +146,16 @@
 
                   <!-- Info -->
                   <div class="min-w-0">
-                    <h4 class="font-extrabold text-slate-800 truncate text-xs">
+                    <h4 class="font-extrabold text-slate-800 break-words leading-snug text-xs">
                       {{ student.khmerName || 'មិនមានឈ្មោះ' }}
                     </h4>
 
-                    <div class="text-[11px] text-slate-500 flex gap-1 items-center mt-0.5">
+                    <div class="text-[11px] text-slate-500 flex flex-wrap gap-1 items-center mt-0.5 leading-snug">
                       <span class="font-mono">{{ student.studentId || '-' }}</span>
 
                       <span
                         v-if="mode === 'transfer'"
-                        class="text-orange-600 font-bold truncate"
+                        class="text-orange-600 font-bold break-words leading-snug"
                       >
                         | កំពុងរៀនទីនេះ
                       </span>
@@ -232,7 +232,7 @@
             <select
               v-model="targetClassId"
               :disabled="classesLoading || isSubmitting"
-              class="w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-100 focus:border-orange-500 outline-none text-xs text-slate-700 mb-3 disabled:bg-slate-50 disabled:text-slate-400 disabled:cursor-not-allowed"
+              class="enroll-form-input w-full px-3 py-2 border border-slate-200 rounded-lg focus:ring-2 focus:ring-orange-100 focus:border-orange-500 outline-none text-xs text-slate-700 mb-3 disabled:bg-slate-50 disabled:text-slate-400 disabled:cursor-not-allowed"
             >
               <option value="" disabled>
                 {{ classesLoading ? 'កំពុងទាញយកថ្នាក់...' : 'ជ្រើសរើសថ្នាក់' }}
@@ -259,7 +259,7 @@
       </template>
 
       <!-- Footer -->
-      <div class="px-3 py-2.5 bg-white border-t border-slate-100 flex justify-between items-center shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.03)]">
+      <div class="enroll-student-modal-footer-mobile-safe px-3 py-2.5 bg-white border-t border-slate-100 flex justify-between items-center shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.03)]">
         <div class="text-xs font-bold text-slate-600">
           <span v-if="!showTargetClassSelection">
             បានជ្រើសរើស:
@@ -329,7 +329,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch } from 'vue'
+import { ref, computed, watch, onBeforeUnmount } from 'vue'
 import { useQuery } from '../../hooks/useQuery.js'
 import api from '../../config/api.js'
 import { useToast } from "vue-toastification"
@@ -345,6 +345,49 @@ const props = defineProps({
 
 const emit = defineEmits(['close', 'refresh'])
 const toast = useToast()
+
+const originalViewportContent = ref('')
+const viewportMetaWasCreated = ref(false)
+
+const setNoZoomViewport = () => {
+  if (typeof document === 'undefined') return
+
+  let viewportMeta = document.querySelector('meta[name="viewport"]')
+
+  if (!viewportMeta) {
+    viewportMeta = document.createElement('meta')
+    viewportMeta.setAttribute('name', 'viewport')
+    document.head.appendChild(viewportMeta)
+    viewportMetaWasCreated.value = true
+  } else if (!originalViewportContent.value) {
+    viewportMetaWasCreated.value = false
+    originalViewportContent.value = viewportMeta.getAttribute('content') || ''
+  }
+
+  viewportMeta.setAttribute(
+    'content',
+    'width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover'
+  )
+}
+
+const restoreViewport = () => {
+  if (typeof document === 'undefined') return
+
+  const viewportMeta = document.querySelector('meta[name="viewport"]')
+
+  if (!viewportMeta) return
+
+  if (viewportMetaWasCreated.value) {
+    viewportMeta.remove()
+    return
+  }
+
+  viewportMeta.setAttribute(
+    'content',
+    originalViewportContent.value || 'width=device-width, initial-scale=1'
+  )
+}
+
 
 const { data: allStudents, loading } = useQuery('students')
 const { data: allClasses, loading: classesLoading } = useQuery('classes')
@@ -442,16 +485,21 @@ const toggleSelectAll = () => {
 
 watch(() => props.isOpen, (newVal) => {
   if (!newVal) {
+    restoreViewport()
     selectedIds.value = []
     searchQuery.value = ''
     currentPage.value = 1
     showTargetClassSelection.value = false
     targetClassId.value = ''
+    return
   }
+
+  setNoZoomViewport()
 })
 
 const closeModal = () => {
   if (isSubmitting.value) return
+  restoreViewport()
   emit('close')
 }
 
@@ -483,6 +531,7 @@ const handleBulkEnroll = async () => {
     )
 
     emit('refresh')
+    restoreViewport()
     emit('close')
   } catch (error) {
     console.error("Bulk action error:", error)
@@ -491,9 +540,94 @@ const handleBulkEnroll = async () => {
     isSubmitting.value = false
   }
 }
+
+onBeforeUnmount(() => {
+  restoreViewport()
+})
 </script>
 
 <style scoped>
+
+.enroll-student-modal-panel-mobile-safe {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif;
+}
+
+.enroll-student-modal-panel-mobile-safe h2,
+.enroll-student-modal-panel-mobile-safe h3,
+.enroll-student-modal-panel-mobile-safe p,
+.enroll-student-modal-panel-mobile-safe span,
+.enroll-student-modal-panel-mobile-safe button {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif;
+  line-height: 1.45;
+}
+
+.enroll-student-modal-panel-mobile-safe .break-words,
+.candidate-card-text-safe {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.enroll-form-input,
+.enroll-form-input::placeholder {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif !important;
+  font-size: 12px !important;
+  line-height: 1.9 !important;
+  font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+input.enroll-form-input,
+select.enroll-form-input {
+  min-height: 2.65rem !important;
+  height: 2.65rem !important;
+  padding-top: 0.58rem !important;
+  padding-bottom: 0.58rem !important;
+  overflow: visible !important;
+}
+
+.modal-scroll::-webkit-scrollbar {
+  width: 4px;
+}
+
+.modal-scroll::-webkit-scrollbar-thumb {
+  background: #cbd5e1;
+  border-radius: 999px;
+}
+
+.modal-scroll::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+@media (max-width: 640px) {
+  .enroll-student-modal-overlay-mobile-safe {
+    min-height: 100vh;
+    min-height: 100dvh;
+    align-items: flex-end;
+    padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  .enroll-student-modal-panel-mobile-safe {
+    max-height: calc(100vh - 0.75rem);
+    max-height: calc(100dvh - 0.75rem);
+  }
+
+  .enroll-student-modal-body-mobile-safe {
+    max-height: calc(100vh - 8.5rem);
+    max-height: calc(100dvh - 8.5rem);
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .enroll-student-modal-footer-mobile-safe {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    padding-bottom: calc(0.65rem + env(safe-area-inset-bottom)) !important;
+  }
+}
+
 .loading-line {
   animation: loadingLine 1s ease-in-out infinite;
 }

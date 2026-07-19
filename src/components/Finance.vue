@@ -5,17 +5,17 @@
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm px-2.5 sm:px-3 py-3 md:px-4">
         <div class="flex flex-col md:flex-row justify-between items-start md:items-center gap-2.5 md:gap-3">
           <div class="min-w-0">
-            <h1 class="text-base sm:text-lg md:text-xl font-extrabold text-slate-800 flex items-center gap-2">
+            <h1 class="text-base sm:text-lg md:text-xl font-extrabold text-slate-800 flex items-start gap-2 leading-snug">
               <span class="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-xs sm:text-sm shrink-0">
                 <i class="fa-solid fa-money-bill-wave"></i>
               </span>
 
-              <span class="truncate">
+              <span class="break-words leading-snug">
                 ការគ្រប់គ្រងការបង់ប្រាក់
               </span>
             </h1>
 
-            <p class="text-[11px] sm:text-xs text-slate-500 mt-1 truncate">
+            <p class="text-[11px] sm:text-xs text-slate-500 mt-1 break-words leading-snug">
               <span v-if="currentView === 'classes'">
                 សូមជ្រើសរើសថ្នាក់រៀនដើម្បីគ្រប់គ្រងការបង់ប្រាក់
               </span>
@@ -123,11 +123,11 @@
 
           <!-- Total -->
           <div class="col-span-2 lg:col-span-1 bg-blue-50 border border-blue-100 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg flex flex-col justify-center shadow-sm min-h-[2.15rem] sm:min-h-[2.45rem]">
-            <div class="text-[10px] text-blue-600 font-bold leading-none mb-1">
+            <div class="text-[10px] text-blue-600 font-bold leading-snug mb-1">
               លុយប្រមូលបានសរុប
             </div>
 
-            <div class="text-sm sm:text-base font-extrabold text-blue-700 leading-none">
+            <div class="text-sm sm:text-base font-extrabold text-blue-700 leading-snug">
               ៛{{ formatMoney(totalCollectedThisMonth) }}
             </div>
           </div>
@@ -152,12 +152,12 @@
               <i class="fa-solid fa-school text-xs sm:text-sm"></i>
             </div>
 
-            <span class="px-1.5 sm:px-2 py-0.5 text-[10px] font-bold bg-slate-100 text-slate-600 rounded-full truncate max-w-[90px]">
+            <span class="px-1.5 sm:px-2 py-0.5 text-[10px] font-bold bg-slate-100 text-slate-600 rounded-full break-words leading-snug max-w-[90px]">
               {{ c.classGrade || "N/A" }}
             </span>
           </div>
 
-          <h3 class="text-xs sm:text-sm font-extrabold text-slate-800 mb-1 group-hover:text-blue-600 transition-colors truncate">
+          <h3 class="text-xs sm:text-sm font-extrabold text-slate-800 mb-1 group-hover:text-blue-600 transition-colors break-words leading-snug">
             {{ c.className }}
           </h3>
 
@@ -166,7 +166,7 @@
               <i class="fa-solid fa-chalkboard-user"></i>
             </span>
 
-            <span class="font-medium text-slate-700 truncate">
+            <span class="font-medium text-slate-700 break-words leading-snug">
               {{ c.teacher?.khmerName || c.teacher?.englishName || c.teacherName || "មិនទាន់មាន" }}
             </span>
           </div>
@@ -227,11 +227,11 @@
                 <div class="min-w-0 flex-1">
                   <div class="flex items-start justify-between gap-2">
                     <div class="min-w-0">
-                      <div class="text-sm font-extrabold text-slate-800 truncate">
+                      <div class="text-sm font-extrabold text-slate-800 break-words leading-snug">
                         {{ row.student?.khmerName || "-" }}
                       </div>
 
-                      <div class="text-[10px] text-slate-500 truncate">
+                      <div class="text-[10px] text-slate-500 break-words leading-snug">
                         {{ row.student?.englishName || "-" }}
                       </div>
                     </div>
@@ -271,7 +271,7 @@
                     class="date-input mobile-input"
                   />
 
-                  <div class="text-[10px] text-slate-400 mt-1 truncate">
+                  <div class="text-[10px] text-slate-400 mt-1 break-words leading-snug">
                     ចូលរៀន: {{ formatDate(row.student?.joinDate) }}
                   </div>
                 </div>
@@ -457,15 +457,15 @@
                       </div>
 
                       <div class="min-w-0">
-                        <div class="text-sm font-bold text-slate-800 truncate font-khmer">
+                        <div class="text-sm font-bold text-slate-800 break-words leading-snug font-khmer">
                           {{ row.student?.khmerName || "-" }}
                         </div>
 
-                        <div class="text-[11px] text-slate-500 truncate">
+                        <div class="text-[11px] text-slate-500 break-words leading-snug">
                           {{ row.student?.englishName || "-" }}
                         </div>
 
-                        <div class="text-[10px] text-purple-600 font-medium mt-0.5 truncate">
+                        <div class="text-[10px] text-purple-600 font-medium mt-0.5 break-words leading-snug">
                           <i class="fa-solid fa-phone mr-1"></i>
                           ម្តាយ: {{ row.student?.family?.motherNumber || "គ្មានទិន្នន័យ" }}
                         </div>
@@ -1383,24 +1383,73 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+
+.payment-page-mobile-safe {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif;
+  line-height: 1.45;
+}
+
+.payment-page-mobile-safe h1,
+.payment-page-mobile-safe h3,
+.payment-page-mobile-safe p,
+.payment-page-mobile-safe span,
+.payment-page-mobile-safe label,
+.payment-page-mobile-safe button,
+.payment-page-mobile-safe th,
+.payment-page-mobile-safe td {
+  line-height: 1.45;
+}
+
+.payment-page-mobile-safe .break-words {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.payment-page-mobile-safe input,
+.payment-page-mobile-safe select,
+.payment-page-mobile-safe textarea,
+.payment-page-mobile-safe option,
+.payment-page-mobile-safe input::placeholder {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif !important;
+  font-size: 12px !important;
+  line-height: 1.9 !important;
+  font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+.payment-page-mobile-safe input,
+.payment-page-mobile-safe select {
+  min-height: 2.65rem !important;
+  height: 2.65rem !important;
+  padding-top: 0.58rem !important;
+  padding-bottom: 0.58rem !important;
+  overflow: visible !important;
+}
+
 .form-label {
   display: block;
   font-size: 0.62rem;
   font-weight: 800;
   color: #64748b;
   margin-bottom: 0.2rem;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
 }
 
 .form-input {
   width: 100%;
   border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
-  padding: 0.36rem 0.55rem;
-  font-size: 0.7rem;
+  padding: 0.58rem 0.55rem;
+  font-size: 12px;
+  line-height: 1.9;
   color: #334155;
   background: #ffffff;
   outline: none;
-  min-height: 1.95rem;
+  min-height: 2.65rem;
+  height: auto;
   transition: all 0.2s ease;
 }
 
@@ -1444,17 +1493,21 @@ onBeforeUnmount(() => {
 .remark-input,
 .date-input {
   width: 100%;
-  padding: 0.36rem 0.5rem;
+  padding: 0.58rem 0.5rem;
   border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
-  font-size: 0.7rem;
+  font-size: 12px;
+  line-height: 1.9;
   outline: none;
+  min-height: 2.65rem;
+  height: auto;
   transition: all 0.2s ease;
   background: #ffffff;
 }
 
 .mobile-input {
-  min-height: 1.95rem;
+  min-height: 2.65rem !important;
+  height: 2.65rem !important;
 }
 
 .mobile-label {
@@ -1463,6 +1516,10 @@ onBeforeUnmount(() => {
   font-weight: 800;
   color: #64748b;
   margin-bottom: 0.15rem;
+  line-height: 1.45;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
 }
 
 .money-input {
@@ -1486,10 +1543,13 @@ onBeforeUnmount(() => {
 
 .additional-input {
   width: 100%;
-  padding: 0.36rem 0.5rem;
+  padding: 0.58rem 0.5rem;
   border: 1px solid #fed7aa;
   border-radius: 0.5rem;
-  font-size: 0.7rem;
+  font-size: 12px;
+  line-height: 1.9;
+  min-height: 2.65rem;
+  height: auto;
   outline: none;
   background: #fff7ed;
   color: #9a3412;
@@ -1504,7 +1564,8 @@ onBeforeUnmount(() => {
 }
 
 .font-khmer {
-  font-family: "Battambang", "Siemreap", "Kantumruy Pro", sans-serif;
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Siemreap", "Kantumruy Pro", sans-serif;
+  line-height: 1.45;
 }
 
 
@@ -1542,17 +1603,21 @@ onBeforeUnmount(() => {
   }
 
   .form-input {
-    padding: 0.44rem 0.6rem;
-    font-size: 0.75rem;
-    min-height: 2.45rem;
+    padding: 0.62rem 0.6rem;
+    font-size: 12px !important;
+    line-height: 1.9 !important;
+    min-height: 2.65rem !important;
+    height: auto;
   }
 
   .money-input,
   .remark-input,
   .date-input,
   .additional-input {
-    padding: 0.38rem 0.5rem;
-    font-size: 0.72rem;
+    padding: 0.62rem 0.5rem;
+    font-size: 12px !important;
+    line-height: 1.9 !important;
+    min-height: 2.65rem !important;
   }
 }
 </style>

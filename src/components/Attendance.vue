@@ -7,7 +7,7 @@
       >
         <div class="min-w-0">
           <h1
-            class="text-base sm:text-lg md:text-xl font-extrabold text-slate-800 flex items-center gap-2"
+            class="text-base sm:text-lg md:text-xl font-extrabold text-slate-800 flex items-start gap-2 leading-snug"
           >
             <span
               class="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs sm:text-sm shrink-0"
@@ -15,20 +15,20 @@
               <i class="fa-solid fa-clipboard-check"></i>
             </span>
 
-            <span class="truncate">
+            <span class="break-words leading-snug">
               គ្រប់គ្រងវត្តមានសិស្ស
             </span>
           </h1>
 
           <p
-            class="text-slate-500 text-[11px] sm:text-xs mt-1 truncate"
+            class="text-slate-500 text-[11px] sm:text-xs mt-1 break-words leading-snug"
             v-if="!selectedClass"
           >
             សូមជ្រើសរើសថ្នាក់ដើម្បីកត់ត្រាវត្តមាន
           </p>
 
           <p
-            class="text-slate-500 text-[11px] sm:text-xs mt-1 truncate"
+            class="text-slate-500 text-[11px] sm:text-xs mt-1 break-words leading-snug"
             v-else
           >
             ថ្នាក់រៀន៖
@@ -95,11 +95,11 @@
             </span>
           </div>
 
-          <h3 class="font-extrabold text-xs sm:text-sm text-slate-800 leading-tight truncate">
+          <h3 class="font-extrabold text-xs sm:text-sm text-slate-800 leading-snug break-words">
             {{ cls.className }}
           </h3>
 
-          <p class="text-slate-500 text-[10px] sm:text-[11px] mt-1 truncate">
+          <p class="text-slate-500 text-[10px] sm:text-[11px] mt-1 break-words leading-snug">
             គ្រូបន្ទុក៖ {{ cls.teacherName || getTeacherName(cls.teacher) }}
           </p>
 
@@ -264,11 +264,11 @@
               <div class="min-w-0 flex-1">
                 <div class="flex items-start justify-between gap-2">
                   <div class="min-w-0">
-                    <p class="font-bold text-sm text-slate-800 leading-tight truncate">
+                    <p class="font-bold text-sm text-slate-800 leading-snug break-words">
                       {{ record.student?.khmerName || "មិនមានឈ្មោះ" }}
                     </p>
 
-                    <p class="text-[10px] text-slate-400 font-mono leading-tight truncate mt-0.5">
+                    <p class="text-[10px] text-slate-400 font-mono leading-snug break-words mt-0.5">
                       {{ index + 1 }}.
                       {{ record.student?.studentId || "-" }}
                       •
@@ -305,7 +305,7 @@
                   v-model="record.remark"
                   @input="markAttendanceChanged"
                   placeholder="សម្គាល់..."
-                  class="mt-2 w-full px-2 py-1.5 text-[11px] border border-slate-200 rounded-lg focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none bg-white transition"
+                  class="attendance-input-safe mt-2 w-full px-2 py-1.5 text-[11px] border border-slate-200 rounded-lg focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none bg-white transition"
                 />
               </div>
             </div>
@@ -376,11 +376,11 @@
                     </div>
 
                     <div class="min-w-0">
-                      <p class="font-bold text-slate-800 leading-tight truncate">
+                      <p class="font-bold text-slate-800 leading-snug break-words">
                         {{ record.student?.khmerName || "មិនមានឈ្មោះ" }}
                       </p>
 
-                      <p class="text-[10px] text-slate-400 font-mono leading-tight truncate">
+                      <p class="text-[10px] text-slate-400 font-mono leading-snug break-words">
                         {{ record.student?.studentId || "-" }} -
                         {{ record.student?.gender || "-" }}
                       </p>
@@ -413,7 +413,7 @@
                     v-model="record.remark"
                     @input="markAttendanceChanged"
                     placeholder="សម្គាល់..."
-                    class="w-full px-2 py-1.5 text-xs border border-slate-200 rounded-md focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none bg-white transition"
+                    class="attendance-input-safe w-full px-2 py-1.5 text-xs border border-slate-200 rounded-md focus:border-emerald-500 focus:ring-2 focus:ring-emerald-100 outline-none bg-white transition"
                   />
                 </td>
               </tr>
@@ -877,6 +877,55 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+
+.attendance-page-mobile-safe {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif;
+  line-height: 1.45;
+}
+
+.attendance-page-mobile-safe h1,
+.attendance-page-mobile-safe h3,
+.attendance-page-mobile-safe p,
+.attendance-page-mobile-safe span,
+.attendance-page-mobile-safe label,
+.attendance-page-mobile-safe button,
+.attendance-page-mobile-safe th,
+.attendance-page-mobile-safe td {
+  line-height: 1.45;
+}
+
+.attendance-page-mobile-safe .break-words {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.attendance-page-mobile-safe input,
+.attendance-page-mobile-safe select,
+.attendance-page-mobile-safe textarea,
+.attendance-page-mobile-safe option,
+.attendance-page-mobile-safe input::placeholder {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif !important;
+  font-size: 12px !important;
+  line-height: 1.9 !important;
+  font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+.attendance-page-mobile-safe input,
+.attendance-page-mobile-safe select {
+  min-height: 2.65rem !important;
+  height: 2.65rem !important;
+  padding-top: 0.58rem !important;
+  padding-bottom: 0.58rem !important;
+  overflow: visible !important;
+}
+
+.attendance-input-safe {
+  min-height: 2.65rem !important;
+  height: 2.65rem !important;
+}
+
 .form-label {
   display: block;
   font-size: 0.64rem;
@@ -889,12 +938,14 @@ onBeforeUnmount(() => {
   width: 100%;
   border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
-  padding: 0.38rem 0.55rem;
-  font-size: 0.7rem;
+  padding: 0.58rem 0.55rem;
+  font-size: 12px;
+  line-height: 1.9;
   color: #334155;
   background: #ffffff;
   outline: none;
-  min-height: 1.95rem;
+  min-height: 2.65rem;
+  height: auto;
   transition: all 0.2s ease;
 }
 
@@ -913,7 +964,7 @@ onBeforeUnmount(() => {
 .summary-label {
   font-size: 0.58rem;
   font-weight: 800;
-  line-height: 1;
+  line-height: 1.35;
   white-space: nowrap;
 }
 
@@ -921,7 +972,7 @@ onBeforeUnmount(() => {
   margin-top: 0.2rem;
   font-size: 0.82rem;
   font-weight: 900;
-  line-height: 1;
+  line-height: 1.25;
 }
 
 .search-icon {
@@ -972,9 +1023,11 @@ onBeforeUnmount(() => {
   }
 
   .form-input {
-    padding: 0.5rem 0.65rem;
-    font-size: 0.75rem;
-    min-height: 2.25rem;
+    padding: 0.62rem 0.65rem;
+    font-size: 12px !important;
+    line-height: 1.9 !important;
+    min-height: 2.65rem !important;
+    height: auto;
   }
 
   .summary-box {
@@ -990,7 +1043,7 @@ onBeforeUnmount(() => {
   }
 
   .search-input {
-    min-height: 2.25rem;
+    min-height: 2.65rem !important;
   }
 }
 </style>

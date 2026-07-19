@@ -20,19 +20,19 @@
           class="px-2.5 sm:px-3 py-2.5 border-b border-slate-100 bg-slate-50 flex items-start justify-between gap-2 shrink-0"
         >
           <div class="min-w-0">
-            <h1 class="text-sm sm:text-base font-extrabold text-slate-800 flex items-center gap-2">
+            <h1 class="text-sm sm:text-base font-extrabold text-slate-800 flex items-start gap-2 leading-snug">
               <span
                 class="h-7 w-7 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-xs shrink-0"
               >
                 <i :class="isEditing ? 'fa-solid fa-user-pen' : 'fa-solid fa-user-plus'"></i>
               </span>
 
-              <span class="truncate">
+              <span class="break-words leading-snug">
                 {{ isEditing ? "កែប្រែព័ត៌មានគ្រូ" : "បញ្ចូលគ្រូបង្រៀនថ្មី" }}
               </span>
             </h1>
 
-            <p class="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 truncate">
+            <p class="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 break-words leading-snug">
               បំពេញព័ត៌មានគ្រូបង្រៀន
             </p>
           </div>
@@ -737,6 +737,56 @@ onBeforeUnmount(() => {
 
 <style scoped>
 
+.teacher-form-modal-panel-mobile-safe {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif;
+}
+
+.teacher-form-modal-panel-mobile-safe label,
+.teacher-form-modal-panel-mobile-safe p,
+.teacher-form-modal-panel-mobile-safe span,
+.teacher-form-modal-panel-mobile-safe h1,
+.teacher-form-modal-panel-mobile-safe h3,
+.teacher-form-modal-panel-mobile-safe button {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif;
+  line-height: 1.45;
+}
+
+.teacher-form-modal-panel-mobile-safe .break-words,
+.section-title,
+.form-label {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+input.form-input,
+select.form-input,
+textarea.form-input,
+.form-input::placeholder {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif !important;
+  font-size: 12px !important;
+  line-height: 1.9 !important;
+  font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+input.form-input,
+select.form-input {
+  min-height: 2.65rem !important;
+  height: 2.65rem !important;
+  padding-top: 0.58rem !important;
+  padding-bottom: 0.58rem !important;
+  overflow: visible !important;
+}
+
+textarea.form-input {
+  min-height: 4.75rem !important;
+  padding-top: 0.6rem !important;
+  padding-bottom: 0.6rem !important;
+  line-height: 1.9 !important;
+}
+
+
 /* Chrome mobile bottom toolbar fix + no visual input-size changes */
 @media (max-width: 640px) {
   .teacher-form-modal-overlay-mobile-safe {
@@ -806,9 +856,9 @@ onBeforeUnmount(() => {
   font-weight: 800;
   color: #64748b;
   margin-bottom: 0.2rem;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
 }
 
 .form-input {

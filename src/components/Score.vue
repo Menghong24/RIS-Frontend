@@ -7,7 +7,7 @@
       >
         <div class="min-w-0">
           <h2
-            class="text-base sm:text-lg md:text-xl font-extrabold text-slate-800 flex items-center gap-2"
+            class="text-base sm:text-lg md:text-xl font-extrabold text-slate-800 flex items-start gap-2 leading-snug"
           >
             <span
               class="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-xs sm:text-sm shrink-0"
@@ -15,7 +15,7 @@
               <i class="fa-solid fa-book-open-reader"></i>
             </span>
 
-            <span class="truncate">
+            <span class="break-words leading-snug">
               {{
                 selectedClass
                   ? `${selectedClass.className} - បញ្ចូលពិន្ទុ`
@@ -24,7 +24,7 @@
             </span>
           </h2>
 
-          <p class="text-[11px] sm:text-xs text-slate-500 mt-1 truncate">
+          <p class="text-[11px] sm:text-xs text-slate-500 mt-1 break-words leading-snug">
             {{
               selectedClass
                 ? "គ្រប់គ្រងពិន្ទុសិស្សតាមមុខវិជ្ជា និងខែ"
@@ -98,17 +98,17 @@
             </div>
 
             <span
-              class="px-1.5 sm:px-2 py-0.5 text-[10px] font-bold bg-slate-100 text-slate-600 rounded-full truncate max-w-[110px]"
+              class="px-1.5 sm:px-2 py-0.5 text-[10px] font-bold bg-slate-100 text-slate-600 rounded-full break-words leading-snug max-w-[110px]"
             >
               {{ cls.timeStudy || "General" }}
             </span>
           </div>
 
-          <h3 class="text-xs sm:text-sm font-extrabold text-slate-800 leading-tight truncate">
+          <h3 class="text-xs sm:text-sm font-extrabold text-slate-800 leading-snug break-words">
             {{ cls.className }}
           </h3>
 
-          <p class="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 truncate">
+          <p class="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 break-words leading-snug">
             កម្រិត: {{ cls.classGrade || "N/A" }}
           </p>
 
@@ -303,7 +303,7 @@
 
             <span class="hidden sm:inline text-slate-300">|</span>
 
-            <span class="font-bold text-slate-500 truncate">
+            <span class="font-bold text-slate-500 break-words leading-snug">
               {{ selectedSubjectName }}
             </span>
 
@@ -356,11 +356,11 @@
               <div class="min-w-0 flex-1">
                 <div class="flex items-start justify-between gap-2">
                   <div class="min-w-0">
-                    <p class="font-extrabold text-sm text-slate-800 leading-tight truncate ">
+                    <p class="font-extrabold text-sm text-slate-800 leading-snug break-words">
                       {{ student.khmerName }}
                     </p>
 
-                    <p class="text-[10px] text-slate-400 leading-tight font-mono truncate mt-0.5">
+                    <p class="text-[10px] text-slate-400 leading-snug font-mono break-words mt-0.5">
                       {{ index + 1 }}. {{ student.idCode }}
                     </p>
                   </div>
@@ -456,11 +456,11 @@
                     </div>
 
                     <div class="min-w-0">
-                      <p class="font-extrabold text-slate-800 leading-tight truncate ">
+                      <p class="font-extrabold text-slate-800 leading-snug break-words">
                         {{ student.khmerName }}
                       </p>
 
-                      <p class="text-[10px] text-slate-400 leading-tight font-mono truncate">
+                      <p class="text-[10px] text-slate-400 leading-snug font-mono break-words">
                         {{ student.idCode }}
                       </p>
                     </div>
@@ -628,11 +628,26 @@ const months = [
   { value: "December", label: "ធ្នូ" }
 ];
 
+const getCurrentAcademicYear = () => {
+  const currentYear = new Date().getFullYear();
+  return `${currentYear}-${currentYear + 1}`;
+};
+
+const getCurrentMonthValue = () => {
+  const currentMonthIndex = new Date().getMonth();
+  return months[currentMonthIndex]?.value || "January";
+};
+
+const setCurrentYearAndMonth = () => {
+  filters.value.year = getCurrentAcademicYear();
+  filters.value.month = getCurrentMonthValue();
+};
+
 const filters = ref({
   class: "",
   subject: "",
-  year: "2025-2026",
-  month: "January",
+  year: getCurrentAcademicYear(),
+  month: getCurrentMonthValue(),
   semester: "Semester 1",
   examType: "monthly"
 });
@@ -882,6 +897,7 @@ watch(selectedClass, (newClass) => {
 
   if (newClass) {
     filters.value.class = newClass._id;
+    setCurrentYearAndMonth();
   } else {
     filters.value.class = "";
     filters.value.subject = "";
@@ -1161,6 +1177,56 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+
+.gradebook-page-mobile-safe {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif;
+  line-height: 1.45;
+}
+
+.gradebook-page-mobile-safe h2,
+.gradebook-page-mobile-safe h3,
+.gradebook-page-mobile-safe p,
+.gradebook-page-mobile-safe span,
+.gradebook-page-mobile-safe label,
+.gradebook-page-mobile-safe button,
+.gradebook-page-mobile-safe th,
+.gradebook-page-mobile-safe td {
+  line-height: 1.45;
+}
+
+.gradebook-page-mobile-safe .break-words {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.gradebook-page-mobile-safe input,
+.gradebook-page-mobile-safe select,
+.gradebook-page-mobile-safe textarea,
+.gradebook-page-mobile-safe option,
+.gradebook-page-mobile-safe input::placeholder {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif !important;
+  font-size: 12px !important;
+  line-height: 1.9 !important;
+  font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+.gradebook-page-mobile-safe input,
+.gradebook-page-mobile-safe select {
+  min-height: 2.65rem !important;
+  height: 2.65rem !important;
+  padding-top: 0.58rem !important;
+  padding-bottom: 0.58rem !important;
+  overflow: visible !important;
+}
+
+.gradebook-page-mobile-safe .score-input,
+.gradebook-page-mobile-safe .remark-input {
+  min-height: 2.65rem !important;
+  height: 2.65rem !important;
+}
+
 .form-label {
   display: block;
   font-size: 0.62rem;
@@ -1173,12 +1239,14 @@ onBeforeUnmount(() => {
   width: 100%;
   border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
-  padding: 0.36rem 0.55rem;
-  font-size: 0.7rem;
+  padding: 0.58rem 0.55rem;
+  font-size: 12px;
+  line-height: 1.9;
   color: #334155;
   background: #ffffff;
   outline: none;
-  min-height: 1.95rem;
+  min-height: 2.65rem;
+  height: auto;
   transition: all 0.2s ease;
 }
 
@@ -1216,7 +1284,7 @@ onBeforeUnmount(() => {
 .summary-label {
   font-size: 0.58rem;
   font-weight: 800;
-  line-height: 1;
+  line-height: 1.35;
   white-space: nowrap;
 }
 
@@ -1231,10 +1299,10 @@ onBeforeUnmount(() => {
   margin-top: 0.22rem;
   font-size: 0.72rem;
   font-weight: 900;
-  line-height: 1.2;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.45;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
 }
 
 .table-th {
@@ -1263,17 +1331,19 @@ onBeforeUnmount(() => {
 .remark-input {
   border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
-  padding: 0.36rem 0.5rem;
-  font-size: 0.7rem;
+  padding: 0.58rem 0.5rem;
+  font-size: 12px;
+  line-height: 1.9;
   outline: none;
   background: #ffffff;
+  min-height: 2.65rem;
+  height: auto;
   transition: all 0.2s ease;
 }
 
 .score-input {
   text-align: center;
   font-weight: 800;
-  font-family: monospace;
 }
 
 .score-input:focus,
@@ -1289,7 +1359,8 @@ onBeforeUnmount(() => {
 }
 
 .font-khmer {
-  font-family: "Battambang", "Siemreap", "Kantumruy Pro", sans-serif;
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Siemreap", "Kantumruy Pro", sans-serif;
+  line-height: 1.45;
 }
 
 .animate-fade-in {
@@ -1331,9 +1402,11 @@ onBeforeUnmount(() => {
   }
 
   .form-input {
-    padding: 0.44rem 0.6rem;
-    font-size: 0.75rem;
-    min-height: 2.2rem;
+    padding: 0.62rem 0.6rem;
+    font-size: 12px !important;
+    line-height: 1.9 !important;
+    min-height: 2.65rem !important;
+    height: auto;
   }
 
   .summary-card {
@@ -1354,8 +1427,10 @@ onBeforeUnmount(() => {
 
   .score-input,
   .remark-input {
-    padding: 0.4rem 0.55rem;
-    font-size: 0.72rem;
+    padding: 0.62rem 0.55rem;
+    font-size: 12px !important;
+    line-height: 1.9 !important;
+    min-height: 2.65rem !important;
   }
 }
 

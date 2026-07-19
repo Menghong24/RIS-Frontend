@@ -5,17 +5,17 @@
       <div class="bg-white p-2.5 sm:p-3 md:p-4 rounded-xl border border-slate-200 shadow-sm">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-2.5 sm:gap-3">
           <div class="min-w-0">
-            <h1 class="text-base sm:text-lg md:text-xl font-extrabold text-slate-800 flex items-center gap-2">
+            <h1 class="text-base sm:text-lg md:text-xl font-extrabold text-slate-800 flex items-start gap-2 leading-snug">
               <span class="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-xs sm:text-sm shrink-0">
                 <i class="fa-solid fa-bullhorn"></i>
               </span>
 
-              <span class="truncate">
+              <span class="break-words leading-snug">
                 គ្រប់គ្រងសេចក្តីជូនដំណឹង
               </span>
             </h1>
 
-            <p class="text-[11px] sm:text-xs text-slate-500 mt-1 truncate">
+            <p class="text-[11px] sm:text-xs text-slate-500 mt-1 break-words leading-snug">
               {{
                 isAdmin
                   ? "បង្កើត កែប្រែ លុប និងផ្សាយសេចក្តីជូនដំណឹងសម្រាប់សិស្ស ឬថ្នាក់រៀន"
@@ -50,7 +50,7 @@
       >
         <i class="fa-solid fa-circle-info mt-0.5"></i>
 
-        <span>
+        <span class="break-words leading-snug">
           គណនីនេះអាចមើលសេចក្តីជូនដំណឹងបានប៉ុណ្ណោះ។ ការបង្កើត កែប្រែ លុប ឬផ្សាយដំណឹង អនុញ្ញាតសម្រាប់ admin ប៉ុណ្ណោះ។
         </span>
       </div>
@@ -64,14 +64,14 @@
               ខែដែលកំពុងបង្ហាញ
             </p>
 
-            <h2 class="text-sm sm:text-base font-extrabold text-slate-800 mt-0.5 flex items-center gap-1.5">
+            <h2 class="text-sm sm:text-base font-extrabold text-slate-800 mt-0.5 flex items-start gap-1.5 leading-snug">
               <i class="fa-solid fa-calendar-days text-blue-600 text-xs sm:text-sm"></i>
-              <span class="truncate">
+              <span class="break-words leading-snug">
                 {{ selectedMonthLabel }}
               </span>
             </h2>
 
-            <p class="text-[10px] sm:text-[11px] text-slate-500 mt-0.5">
+            <p class="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 break-words leading-snug">
               បង្ហាញសេចក្តីជូនដំណឹងក្នុងខែដែលបានជ្រើសរើសប៉ុណ្ណោះ
             </p>
           </div>
@@ -164,11 +164,11 @@
                 </span>
               </div>
 
-              <h3 class="text-sm sm:text-base font-extrabold text-slate-800 mt-2 sm:mt-3 leading-tight">
+              <h3 class="text-sm sm:text-base font-extrabold text-slate-800 mt-2 sm:mt-3 leading-snug break-words">
                 {{ item.title || "-" }}
               </h3>
 
-              <p class="text-xs sm:text-sm text-slate-600 mt-1 whitespace-pre-wrap leading-relaxed">
+              <p class="text-xs sm:text-sm text-slate-600 mt-1 whitespace-pre-wrap leading-relaxed break-words">
                 {{ item.content || "-" }}
               </p>
             </div>
@@ -179,7 +179,7 @@
                 {{ formatDate(item.postDate || item.createdAt) }}
               </p>
 
-              <p v-if="item.postedBy" class="mt-1">
+              <p v-if="item.postedBy" class="mt-1 break-words leading-snug">
                 <i class="fa-solid fa-user-pen mr-1"></i>
                 ដោយ៖ {{ getPostedByName(item.postedBy) }}
               </p>
@@ -223,7 +223,7 @@
             មិនមានសេចក្តីជូនដំណឹង
           </p>
 
-          <p class="text-[11px] sm:text-xs text-slate-400 mt-1">
+          <p class="text-[11px] sm:text-xs text-slate-400 mt-1 break-words leading-snug">
             {{
               isAdmin
                 ? `មិនមានសេចក្តីជូនដំណឹងក្នុង ${selectedMonthLabel}។ សូមបន្ថែមសេចក្តីជូនដំណឹងថ្មី`
@@ -262,7 +262,7 @@
             >
               <div class="px-3 sm:px-4 py-2.5 sm:py-3 border-b border-slate-100 flex justify-between items-start gap-2 bg-slate-50 shrink-0">
                 <div class="min-w-0">
-                  <h3 class="text-sm sm:text-base font-bold text-slate-800 flex items-center gap-2">
+                  <h3 class="text-sm sm:text-base font-bold text-slate-800 flex items-start gap-2 leading-snug">
                     <i
                       :class="
                         isEditing
@@ -271,12 +271,12 @@
                       "
                     ></i>
 
-                    <span class="truncate">
+                    <span class="break-words leading-snug">
                       {{ isEditing ? "កែប្រែសេចក្តីជូនដំណឹង" : "បង្កើតសេចក្តីជូនដំណឹងថ្មី" }}
                     </span>
                   </h3>
 
-                  <p class="text-[10px] sm:text-xs text-slate-500 mt-0.5 truncate">
+                  <p class="text-[10px] sm:text-xs text-slate-500 mt-0.5 break-words leading-snug">
                     បំពេញព័ត៌មានសេចក្តីជូនដំណឹងខាងក្រោម
                   </p>
                 </div>
@@ -464,14 +464,14 @@
               v-if="showDeleteModal && isAdmin"
               class="announcement-modal-panel-mobile-safe bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden border border-slate-100"
             >
-              <div class="px-4 py-3 border-b border-slate-100 flex justify-between items-center bg-slate-50">
+              <div class="px-4 py-3 border-b border-slate-100 flex justify-between items-start gap-2 bg-slate-50">
                 <div class="min-w-0">
-                  <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                  <h3 class="text-base font-bold text-slate-900 flex items-start gap-2 leading-snug">
                     <i class="fa-solid fa-triangle-exclamation text-red-600"></i>
                     បញ្ជាក់ការលុប
                   </h3>
 
-                  <p class="text-xs text-slate-500 mt-0.5">
+                  <p class="text-xs text-slate-500 mt-0.5 break-words leading-snug">
                     សូមពិនិត្យមុនពេលបន្តលុបសេចក្តីជូនដំណឹង
                   </p>
                 </div>
@@ -493,7 +493,7 @@
 
                 <p class="text-sm text-slate-600 leading-7">
                   តើអ្នកពិតជាចង់លុបសេចក្តីជូនដំណឹង
-                  <span class="font-extrabold text-slate-900">
+                  <span class="font-extrabold text-slate-900 break-words leading-snug">
                     "{{ announcementToDelete?.title || 'នេះ' }}"
                   </span>
                   មែនទេ?
@@ -1005,24 +1005,96 @@ onBeforeUnmount(() => {
 </script>
 
 <style scoped>
+
+.announcements-page-mobile-safe,
+.announcement-modal-panel-mobile-safe {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif;
+  line-height: 1.45;
+}
+
+.announcements-page-mobile-safe h1,
+.announcements-page-mobile-safe h2,
+.announcements-page-mobile-safe h3,
+.announcements-page-mobile-safe p,
+.announcements-page-mobile-safe span,
+.announcements-page-mobile-safe label,
+.announcements-page-mobile-safe button,
+.announcement-modal-panel-mobile-safe h3,
+.announcement-modal-panel-mobile-safe p,
+.announcement-modal-panel-mobile-safe span,
+.announcement-modal-panel-mobile-safe label,
+.announcement-modal-panel-mobile-safe button {
+  line-height: 1.45;
+}
+
+.announcements-page-mobile-safe .break-words,
+.announcement-modal-panel-mobile-safe .break-words,
+.form-label {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.announcements-page-mobile-safe input,
+.announcements-page-mobile-safe select,
+.announcements-page-mobile-safe textarea,
+.announcements-page-mobile-safe option,
+.announcements-page-mobile-safe input::placeholder,
+.announcements-page-mobile-safe textarea::placeholder,
+.announcement-modal-panel-mobile-safe input,
+.announcement-modal-panel-mobile-safe select,
+.announcement-modal-panel-mobile-safe textarea,
+.announcement-modal-panel-mobile-safe option,
+.announcement-modal-panel-mobile-safe input::placeholder,
+.announcement-modal-panel-mobile-safe textarea::placeholder {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif !important;
+  font-size: 12px !important;
+  line-height: 1.9 !important;
+  font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+.announcements-page-mobile-safe input,
+.announcements-page-mobile-safe select,
+.announcement-modal-panel-mobile-safe input,
+.announcement-modal-panel-mobile-safe select {
+  min-height: 2.65rem !important;
+  height: 2.65rem !important;
+  padding-top: 0.58rem !important;
+  padding-bottom: 0.58rem !important;
+  overflow: visible !important;
+}
+
+.announcements-page-mobile-safe textarea,
+.announcement-modal-panel-mobile-safe textarea {
+  min-height: 6.5rem !important;
+  padding-top: 0.6rem !important;
+  padding-bottom: 0.6rem !important;
+}
+
 .form-label {
   display: block;
   font-size: 0.62rem;
   font-weight: 800;
   color: #64748b;
   margin-bottom: 0.2rem;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
 }
 
 .form-input {
   width: 100%;
   border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
-  padding: 0.36rem 0.55rem;
-  font-size: 0.7rem;
+  padding: 0.58rem 0.55rem;
+  font-size: 12px;
+  line-height: 1.9;
   color: #334155;
   background: #ffffff;
   outline: none;
-  min-height: 1.95rem;
+  min-height: 2.65rem;
+  height: auto;
   transition: all 0.2s ease;
 }
 
@@ -1099,9 +1171,11 @@ onBeforeUnmount(() => {
   }
 
   .form-input {
-    padding: 0.44rem 0.6rem;
-    font-size: 0.75rem;
-    min-height: 2.25rem;
+    padding: 0.62rem 0.6rem;
+    font-size: 12px !important;
+    line-height: 1.9 !important;
+    min-height: 2.65rem !important;
+    height: auto;
   }
 }
 </style>

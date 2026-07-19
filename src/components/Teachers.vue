@@ -4,15 +4,15 @@
       <!-- Header -->
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-3 md:p-4">
         <div class="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-3">
-          <div>
-            <h1 class="text-xl font-extrabold text-slate-800 flex items-center gap-2">
+          <div class="min-w-0">
+            <h1 class="text-xl font-extrabold text-slate-800 flex items-start gap-2 leading-snug">
               <span class="h-8 w-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-sm">
                 <i class="fa-solid fa-chalkboard-user"></i>
               </span>
               គ្រូបង្រៀនទាំងអស់
             </h1>
 
-            <p class="text-xs text-slate-500 mt-1">
+            <p class="text-xs text-slate-500 mt-1 break-words leading-snug">
               គ្រប់គ្រងព័ត៌មានគ្រូបង្រៀន បន្ថែម កែប្រែ មើលព័ត៌មានលម្អិត និងលុប
             </p>
           </div>
@@ -36,7 +36,7 @@
               v-model="searchQuery"
               type="text"
               placeholder="ស្វែងរកតាមឈ្មោះគ្រូ លេខទូរស័ព្ទ ឬជំនាញ..."
-              class="w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-xs text-slate-700 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition"
+              class="teacher-search-input w-full pl-9 pr-3 py-2 border border-slate-200 rounded-lg text-xs text-slate-700 focus:ring-2 focus:ring-blue-100 focus:border-blue-500 outline-none transition"
             />
           </div>
 
@@ -132,7 +132,7 @@
 </template>
 
 <script setup>
-import { ref, computed } from "vue";
+import { ref, computed, onMounted, onBeforeUnmount } from "vue";
 import { useToast } from "vue-toastification";
 
 import { useQuery } from "../hooks/useQuery";
@@ -144,6 +144,48 @@ import TeacherViewModal from "./teachers/TeacherViewModal.vue";
 import DeleteConfirmationModal from "./shared/DeleteConfirmationModal.vue";
 
 const toast = useToast();
+
+const originalViewportContent = ref("");
+const viewportMetaWasCreated = ref(false);
+
+const setNoZoomViewport = () => {
+  if (typeof document === "undefined") return;
+
+  let viewportMeta = document.querySelector('meta[name="viewport"]');
+
+  if (!viewportMeta) {
+    viewportMeta = document.createElement("meta");
+    viewportMeta.setAttribute("name", "viewport");
+    document.head.appendChild(viewportMeta);
+    viewportMetaWasCreated.value = true;
+  } else if (!originalViewportContent.value) {
+    viewportMetaWasCreated.value = false;
+    originalViewportContent.value = viewportMeta.getAttribute("content") || "";
+  }
+
+  viewportMeta.setAttribute(
+    "content",
+    "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+  );
+};
+
+const restoreViewport = () => {
+  if (typeof document === "undefined") return;
+
+  const viewportMeta = document.querySelector('meta[name="viewport"]');
+
+  if (!viewportMeta) return;
+
+  if (viewportMetaWasCreated.value) {
+    viewportMeta.remove();
+    return;
+  }
+
+  viewportMeta.setAttribute(
+    "content",
+    originalViewportContent.value || "width=device-width, initial-scale=1"
+  );
+};
 
 const {
   data: teachers,
@@ -356,14 +398,60 @@ const confirmDelete = async () => {
     isDeleting.value = false;
   }
 };
+
+onMounted(() => {
+  setNoZoomViewport();
+});
+
+onBeforeUnmount(() => {
+  restoreViewport();
+});
 </script>
 
 
 <style scoped>
+
+.teachers-page-mobile-safe {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif;
+  line-height: 1.45;
+}
+
+.teachers-page-mobile-safe h1,
+.teachers-page-mobile-safe p,
+.teachers-page-mobile-safe span,
+.teachers-page-mobile-safe button {
+  line-height: 1.45;
+}
+
+.teachers-page-mobile-safe .break-words {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.teacher-search-input,
+.teacher-search-input::placeholder {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif !important;
+  font-size: 12px !important;
+  line-height: 1.9 !important;
+  font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+.teacher-search-input {
+  min-height: 2.65rem !important;
+  height: 2.65rem !important;
+  padding-top: 0.58rem !important;
+  padding-bottom: 0.58rem !important;
+  overflow: visible !important;
+}
+
 /* Chrome mobile bottom toolbar fix - small screens only, compact spacing */
 @media (max-width: 640px) {
   .teachers-page-mobile-safe {
     padding-bottom: calc(2.75rem + env(safe-area-inset-bottom));
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
   }
 
   .teachers-page-mobile-safe > .max-w-7xl {

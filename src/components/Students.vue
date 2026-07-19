@@ -5,11 +5,11 @@
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm p-2.5 sm:p-3 md:p-4">
         <div class="flex flex-col xl:flex-row justify-between items-start xl:items-center gap-2.5 sm:gap-3">
           <div class="min-w-0">
-            <h1 class="text-base sm:text-lg md:text-xl font-extrabold text-slate-800 flex items-center gap-2">
+            <h1 class="text-base sm:text-lg md:text-xl font-extrabold text-slate-800 flex items-start gap-2 leading-snug">
               <span class="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-xs sm:text-sm shrink-0">
                 <i class="fa-solid fa-user-graduate"></i>
               </span>
-              <span class="truncate">
+              <span class="break-words leading-snug">
                 បញ្ជីឈ្មោះសិស្សទាំងអស់
               </span>
             </h1>
@@ -112,13 +112,13 @@
               <div class="min-w-0 flex-1">
                 <div class="flex items-start justify-between gap-2">
                   <div class="min-w-0">
-                    <p class="text-sm font-extrabold text-slate-800 leading-tight truncate">
+                    <p class="text-sm font-extrabold text-slate-800 leading-snug break-words">
                       {{ student.khmerName || "-" }}
                     </p>
 
                     <p
                       v-if="student.englishName"
-                      class="text-[10px] text-slate-400 truncate mt-0.5"
+                      class="text-[10px] text-slate-400 break-words leading-snug mt-0.5"
                     >
                       {{ student.englishName }}
                     </p>
@@ -146,7 +146,7 @@
                 </div>
 
                 <div class="mt-1.5 flex flex-wrap items-center gap-1">
-                  <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200 px-1.5 py-0.5 text-[10px] font-bold leading-none">
+                  <span class="inline-flex items-center gap-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200 px-1.5 py-0.5 text-[10px] font-bold leading-snug">
                     <i class="fa-solid fa-id-card text-[9px] text-slate-400"></i>
                     {{ student.studentId || "-" }}
                   </span>
@@ -157,7 +157,7 @@
                         ? 'bg-pink-50 text-pink-700 border-pink-200'
                         : 'bg-blue-50 text-blue-700 border-blue-200'
                     "
-                    class="inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[10px] font-bold leading-none"
+                    class="inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 text-[10px] font-bold leading-snug"
                   >
                     <i class="fa-solid fa-user text-[9px]"></i>
                     {{ student.gender || "-" }}
@@ -165,7 +165,7 @@
 
                   <span
                     v-if="getStudentClassName(student)"
-                    class="inline-flex items-center gap-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200 px-1.5 py-0.5 text-[10px] font-bold leading-none"
+                    class="inline-flex items-center gap-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200 px-1.5 py-0.5 text-[10px] font-bold leading-snug"
                   >
                     <i class="fa-solid fa-school text-[9px]"></i>
                     {{ getStudentClassName(student) }}
@@ -173,7 +173,7 @@
 
                   <span
                     v-if="getStudentClassGrade(student)"
-                    class="inline-flex items-center rounded-full bg-slate-100 text-slate-700 border border-slate-200 px-1.5 py-0.5 text-[10px] font-bold leading-none"
+                    class="inline-flex items-center rounded-full bg-slate-100 text-slate-700 border border-slate-200 px-1.5 py-0.5 text-[10px] font-bold leading-snug"
                   >
                     {{ getStudentClassGrade(student) }}
                   </span>
@@ -182,21 +182,21 @@
                 <div class="mt-1.5 grid grid-cols-1 min-[390px]:grid-cols-2 gap-x-2 gap-y-0.5 text-[10px] text-slate-500">
                   <div class="flex items-center gap-1 min-w-0">
                     <i class="fa-solid fa-cake-candles text-[9px] text-slate-400 w-3 shrink-0"></i>
-                    <span class="truncate">
+                    <span class="break-words leading-snug">
                       កំណើត៖ {{ formatDate(student.birthDate || student.dob) }}
                     </span>
                   </div>
 
                   <div class="flex items-center gap-1 min-w-0">
                     <i class="fa-solid fa-calendar-plus text-[9px] text-slate-400 w-3 shrink-0"></i>
-                    <span class="truncate">
+                    <span class="break-words leading-snug">
                       ចូលរៀន៖ {{ formatDate(student.joinDate) }}
                     </span>
                   </div>
 
                   <div class="flex items-center gap-1 min-w-0">
                     <i class="fa-solid fa-flag text-[9px] text-slate-400 w-3 shrink-0"></i>
-                    <span class="truncate">
+                    <span class="break-words leading-snug">
                       សញ្ជាតិ៖ {{ student.nationality?.student || "ខ្មែរ" }}
                     </span>
                   </div>
@@ -222,21 +222,21 @@
 
       <!-- Desktop Table -->
       <div class="hidden lg:block overflow-x-auto rounded-xl shadow-sm border border-slate-200 bg-white w-full">
-        <table class="w-full text-left border-collapse text-xs min-w-[1050px]">
+        <table class="students-table-safe w-full text-left border-collapse text-xs min-w-[1180px]">
           <thead>
             <tr class="bg-slate-100 text-slate-700 border-b border-slate-200">
-              <th class="p-2 font-bold w-16">រូបថត</th>
-              <th class="p-2 font-bold hidden lg:table-cell">អត្តលេខ</th>
-              <th class="p-2 font-bold">ឈ្មោះខ្មែរ</th>
-              <th class="p-2 font-bold hidden lg:table-cell">ឈ្មោះអង់គ្លេស</th>
-              <th class="p-2 font-bold hidden lg:table-cell">ភេទ</th>
-              <th class="p-2 font-bold hidden lg:table-cell">ថ្ងៃខែឆ្នាំកំណើត</th>
-              <th class="p-2 font-bold hidden lg:table-cell">សញ្ជាតិ</th>
-              <th class="p-2 font-bold hidden lg:table-cell">ថ្ងៃចូលរៀន</th>
-              <th class="p-2 font-bold hidden lg:table-cell">បន្ទប់</th>
-              <th class="p-2 font-bold hidden lg:table-cell">កម្រិត</th>
-              <th class="p-2 text-right font-bold">កែប្រែ</th>
-              <th class="p-2 text-right font-bold pr-4">លុប</th>
+              <th class="students-table-head p-2 font-bold w-16">រូបថត</th>
+              <th class="students-table-head p-2 font-bold hidden lg:table-cell">អត្តលេខ</th>
+              <th class="students-table-head p-2 font-bold">ឈ្មោះខ្មែរ</th>
+              <th class="students-table-head p-2 font-bold hidden lg:table-cell">ឈ្មោះអង់គ្លេស</th>
+              <th class="students-table-head p-2 font-bold hidden lg:table-cell">ភេទ</th>
+              <th class="students-table-head p-2 font-bold hidden lg:table-cell">ថ្ងៃខែឆ្នាំកំណើត</th>
+              <th class="students-table-head p-2 font-bold hidden lg:table-cell">សញ្ជាតិ</th>
+              <th class="students-table-head p-2 font-bold hidden lg:table-cell">ថ្ងៃចូលរៀន</th>
+              <th class="students-table-head p-2 font-bold hidden lg:table-cell">បន្ទប់</th>
+              <th class="students-table-head p-2 font-bold hidden lg:table-cell">កម្រិត</th>
+              <th class="students-table-head p-2 text-right font-bold">កែប្រែ</th>
+              <th class="students-table-head p-2 text-right font-bold pr-4">លុប</th>
             </tr>
           </thead>
 
@@ -684,6 +684,32 @@ const confirmDelete = async () => {
 </script>
 
 <style scoped>
+
+.students-page-mobile-safe {
+  line-height: 1.5;
+}
+
+.students-page-mobile-safe button,
+.students-page-mobile-safe input,
+.students-page-mobile-safe select,
+.students-page-mobile-safe option,
+.students-page-mobile-safe p,
+.students-page-mobile-safe span,
+.students-page-mobile-safe th,
+.students-page-mobile-safe td {
+  line-height: 1.45;
+}
+
+.students-table-safe th,
+.students-table-safe td {
+  vertical-align: middle;
+}
+
+.students-table-head {
+  white-space: nowrap;
+  line-height: 1.45;
+}
+
 
 /* Chrome mobile bottom toolbar fix - small screens only, compact spacing */
 @media (max-width: 640px) {

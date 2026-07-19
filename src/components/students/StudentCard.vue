@@ -1,6 +1,6 @@
 <template>
   <tr
-    class="border-b border-slate-100 hover:bg-blue-50/40 transition-colors cursor-pointer group"
+    class="student-card-row border-b border-slate-100 hover:bg-blue-50/40 transition-colors cursor-pointer group"
     @click="$emit('view', student)"
   >
     <!-- Photo -->
@@ -29,10 +29,10 @@
 
     <!-- Khmer Name + Mobile Details -->
     <td
-      class="p-1.5 sm:p-2 text-slate-800 text-xs sm:text-sm font-bold "
+      class="p-1.5 sm:p-2 text-slate-800 text-xs sm:text-sm font-bold"
     >
       <div class="min-w-0">
-        <p class="leading-tight truncate">
+        <p class="leading-snug break-words">
           {{ student.khmerName || "-" }}
         </p>
 
@@ -42,7 +42,7 @@
         >
           <div class="flex flex-wrap items-center gap-1">
             <span
-              class="inline-flex items-center gap-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200 px-1.5 py-0.5 font-bold leading-none"
+              class="inline-flex items-center gap-1 rounded-full bg-slate-100 text-slate-600 border border-slate-200 px-1.5 py-0.5 font-bold leading-snug"
             >
               <i class="fa-solid fa-id-card text-[9px] text-slate-400"></i>
               {{ student.studentId || "-" }}
@@ -54,7 +54,7 @@
                   ? 'text-pink-700 bg-pink-50 border-pink-200'
                   : 'text-blue-700 bg-blue-50 border-blue-200'
               "
-              class="inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 font-bold leading-none"
+              class="inline-flex items-center gap-1 rounded-full border px-1.5 py-0.5 font-bold leading-snug"
             >
               <i class="fa-solid fa-user text-[9px]"></i>
               {{ student.gender || "-" }}
@@ -62,7 +62,7 @@
 
             <span
               v-if="studentClassName"
-              class="inline-flex items-center gap-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200 px-1.5 py-0.5 font-bold leading-none"
+              class="inline-flex items-center gap-1 rounded-full bg-blue-50 text-blue-700 border border-blue-200 px-1.5 py-0.5 font-bold leading-snug"
             >
               <i class="fa-solid fa-school text-[9px]"></i>
               {{ studentClassName }}
@@ -70,7 +70,7 @@
 
             <span
               v-if="studentClassGrade"
-              class="inline-flex items-center gap-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200 px-1.5 py-0.5 font-bold leading-none"
+              class="inline-flex items-center gap-1 rounded-full bg-slate-100 text-slate-700 border border-slate-200 px-1.5 py-0.5 font-bold leading-snug"
             >
               {{ studentClassGrade }}
             </span>
@@ -81,7 +81,7 @@
             class="flex items-center gap-1 text-slate-500 min-w-0"
           >
             <i class="fa-solid fa-language text-[9px] text-slate-400 w-3 shrink-0"></i>
-            <span class="truncate">
+            <span class="break-words leading-snug">
               {{ student.englishName }}
             </span>
           </div>
@@ -91,28 +91,28 @@
           >
             <div class="flex items-center gap-1 min-w-0">
               <i class="fa-solid fa-cake-candles text-[9px] text-slate-400 w-3 shrink-0"></i>
-              <span class="truncate">
+              <span class="break-words leading-snug">
                 កំណើត៖ {{ formatDate(student.birthDate) }}
               </span>
             </div>
 
             <div class="flex items-center gap-1 min-w-0">
               <i class="fa-solid fa-calendar-plus text-[9px] text-slate-400 w-3 shrink-0"></i>
-              <span class="truncate">
+              <span class="break-words leading-snug">
                 ចូលរៀន៖ {{ formatDate(student.joinDate) }}
               </span>
             </div>
 
             <div class="flex items-center gap-1 min-w-0">
               <i class="fa-solid fa-flag text-[9px] text-slate-400 w-3 shrink-0"></i>
-              <span class="truncate">
+              <span class="break-words leading-snug">
                 សញ្ជាតិ៖ {{ student.nationality?.student || "ខ្មែរ" }}
               </span>
             </div>
           </div>
 
           <!-- Mobile Actions: near student data -->
-          <div class="flex items-center gap-1.5 pt-1">
+          <div class="flex items-center gap-1.5 pt-2">
             <button
               @click.stop="$emit('edit', student)"
               class="inline-flex items-center gap-1 px-2 py-1 bg-blue-50 text-blue-600 hover:text-blue-700 hover:bg-blue-100 rounded-lg border border-blue-100 transition text-[10px] font-extrabold"
@@ -321,6 +321,24 @@ const formatDate = (date) => {
 </script>
 
 <style scoped>
+
+.student-card-row,
+.student-card-row td,
+.student-card-row p,
+.student-card-row span,
+.student-card-row button {
+  line-height: 1.45;
+}
+
+.student-card-row td {
+  vertical-align: middle;
+}
+
+.student-card-row .break-words {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
 .font-khmer {
   font-family: "Battambang", "Siemreap", sans-serif;
 }

@@ -1,5 +1,5 @@
 <template>
-  <div class="bg-slate-50 p-2 sm:p-3 md:p-4 print:bg-white print:p-0">
+  <div class="attendance-report-page-mobile-safe bg-slate-50 p-2 sm:p-3 md:p-4 print:bg-white print:p-0">
     <!-- Header -->
     <div
       class="mb-3 md:mb-4 flex flex-col md:flex-row md:items-center md:justify-between gap-2.5 md:gap-3 print:hidden max-w-7xl mx-auto"
@@ -10,7 +10,7 @@
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2.5 md:gap-3">
           <div class="min-w-0">
             <h1
-              class="text-base sm:text-lg md:text-xl font-extrabold text-slate-800 flex items-center gap-2"
+              class="text-base sm:text-lg md:text-xl font-extrabold text-slate-800 flex items-start gap-2 leading-snug"
             >
               <span
                 class="h-7 w-7 sm:h-8 sm:w-8 rounded-lg bg-emerald-100 text-emerald-700 flex items-center justify-center text-xs sm:text-sm shrink-0"
@@ -18,12 +18,12 @@
                 <i class="fa-solid fa-clipboard-check"></i>
               </span>
 
-              <span class="truncate">
+              <span class="break-words leading-snug">
                 របាយការណ៍វត្តមានសិស្ស
               </span>
             </h1>
 
-            <p class="text-slate-500 text-[11px] sm:text-xs mt-1 truncate">
+            <p class="text-slate-500 text-[11px] sm:text-xs mt-1 break-words leading-snug">
               ពិនិត្យមើល និងទាញយករបាយការណ៍វត្តមានសរុប
             </p>
           </div>
@@ -195,11 +195,11 @@
                 @click="selectStudent(student)"
                 class="w-full text-left px-3 py-2 text-[11px] hover:bg-emerald-50 transition"
               >
-                <div class="font-bold text-slate-700 truncate">
+                <div class="font-bold text-slate-700 break-words leading-snug">
                   {{ student.khmerName }}
                 </div>
 
-                <div class="text-[10px] text-slate-400 truncate">
+                <div class="text-[10px] text-slate-400 break-words leading-snug">
                   {{ student.englishName }} · {{ student.studentId }}
                   <span v-if="isAllClassesSelected"> · {{ getStudentClassName(student) }}</span>
                 </div>
@@ -276,11 +276,11 @@
           class="px-2.5 sm:px-3 py-2.5 bg-slate-50 border-b border-slate-200 flex flex-col md:flex-row md:items-center md:justify-between gap-2"
         >
           <div class="min-w-0">
-            <h2 class="text-sm sm:text-base font-extrabold text-slate-800 truncate">
+            <h2 class="text-sm sm:text-base font-extrabold text-slate-800 break-words leading-snug">
               {{ getSelectedClassName }}
             </h2>
 
-            <p class="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 truncate">
+            <p class="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 break-words leading-snug">
               {{ selectedPeriodLabel }} · {{ selectedStudentLabel }} · សិស្ស {{ reportData.length }} នាក់
             </p>
           </div>
@@ -357,11 +357,11 @@
               <div class="min-w-0 flex-1">
                 <div class="flex items-start justify-between gap-2">
                   <div class="min-w-0">
-                    <p class="text-sm font-extrabold text-slate-800 leading-tight truncate ">
+                    <p class="text-sm font-extrabold text-slate-800 leading-snug break-words">
                       {{ row.student?.khmerName || "-" }}
                     </p>
 
-                    <p class="text-[10px] text-slate-500 leading-tight truncate mt-0.5">
+                    <p class="text-[10px] text-slate-500 leading-snug break-words mt-0.5">
                       {{ row.student?.englishName || "-" }}
                     </p>
                   </div>
@@ -490,11 +490,11 @@
                     </div>
 
                     <div class="min-w-0">
-                      <div class="font-bold text-slate-800 leading-tight truncate">
+                      <div class="font-bold text-slate-800 leading-snug break-words">
                         {{ row.student?.khmerName || "-" }}
                       </div>
 
-                      <div class="text-[10px] text-slate-400 uppercase font-mono leading-tight truncate">
+                      <div class="text-[10px] text-slate-400 uppercase font-mono leading-snug break-words">
                         {{ row.student?.englishName || "-" }}
                       </div>
                     </div>
@@ -590,15 +590,65 @@ const showStudentDropdown = ref(false);
 const studentSearchBox = ref(null);
 const paperComponentRef = ref(null);
 
+const originalViewportContent = ref("");
+const viewportMetaWasCreated = ref(false);
+
+const setNoZoomViewport = () => {
+  if (typeof document === "undefined") return;
+
+  let viewportMeta = document.querySelector('meta[name="viewport"]');
+
+  if (!viewportMeta) {
+    viewportMeta = document.createElement("meta");
+    viewportMeta.setAttribute("name", "viewport");
+    document.head.appendChild(viewportMeta);
+    viewportMetaWasCreated.value = true;
+  } else if (!originalViewportContent.value) {
+    viewportMetaWasCreated.value = false;
+    originalViewportContent.value = viewportMeta.getAttribute("content") || "";
+  }
+
+  viewportMeta.setAttribute(
+    "content",
+    "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+  );
+};
+
+const restoreViewport = () => {
+  if (typeof document === "undefined") return;
+
+  const viewportMeta = document.querySelector('meta[name="viewport"]');
+
+  if (!viewportMeta) return;
+
+  if (viewportMetaWasCreated.value) {
+    viewportMeta.remove();
+    return;
+  }
+
+  viewportMeta.setAttribute(
+    "content",
+    originalViewportContent.value || "width=device-width, initial-scale=1"
+  );
+};
+
+
+const getCurrentYear = () => {
+  return new Date().getFullYear().toString();
+};
+
+const getCurrentMonth = () => {
+  return new Date().getMonth() + 1;
+};
 
 const filters = ref({
   classId: "",
-  year: new Date().getFullYear().toString(),
-  month: "",
+  year: getCurrentYear(),
+  month: getCurrentMonth(),
   studentId: ""
 });
 
-const startYear = 2026;
+const startYear = Math.min(2026, new Date().getFullYear());
 const endYear = new Date().getFullYear() + 5;
 
 const yearOptions = Array.from(
@@ -1823,16 +1873,63 @@ const handleClickOutside = (event) => {
 };
 
 onMounted(() => {
+  setNoZoomViewport();
   fetchClasses();
   document.addEventListener("click", handleClickOutside);
 });
 
 onBeforeUnmount(() => {
+  restoreViewport();
   document.removeEventListener("click", handleClickOutside);
 });
 </script>
 
 <style scoped>
+
+.attendance-report-page-mobile-safe {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif;
+  line-height: 1.45;
+}
+
+.attendance-report-page-mobile-safe h1,
+.attendance-report-page-mobile-safe h2,
+.attendance-report-page-mobile-safe h3,
+.attendance-report-page-mobile-safe p,
+.attendance-report-page-mobile-safe span,
+.attendance-report-page-mobile-safe label,
+.attendance-report-page-mobile-safe button,
+.attendance-report-page-mobile-safe th,
+.attendance-report-page-mobile-safe td {
+  line-height: 1.45;
+}
+
+.attendance-report-page-mobile-safe .break-words {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.attendance-report-page-mobile-safe input,
+.attendance-report-page-mobile-safe select,
+.attendance-report-page-mobile-safe textarea,
+.attendance-report-page-mobile-safe option,
+.attendance-report-page-mobile-safe input::placeholder {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif !important;
+  font-size: 12px !important;
+  line-height: 1.9 !important;
+  font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+.attendance-report-page-mobile-safe input,
+.attendance-report-page-mobile-safe select {
+  min-height: 2.65rem !important;
+  height: 2.65rem !important;
+  padding-top: 0.58rem !important;
+  padding-bottom: 0.58rem !important;
+  overflow: visible !important;
+}
+
 .print-paper-wrap {
   display: none;
 }
@@ -1849,12 +1946,14 @@ onBeforeUnmount(() => {
   width: 100%;
   border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
-  padding: 0.36rem 0.55rem;
-  font-size: 0.7rem;
+  padding: 0.58rem 0.6rem;
+  font-size: 12px;
+  line-height: 1.9;
   color: #334155;
   background: #ffffff;
   outline: none;
-  min-height: 1.95rem;
+  min-height: 2.65rem;
+  height: auto;
   transition: all 0.2s ease;
 }
 
@@ -1984,6 +2083,23 @@ onBeforeUnmount(() => {
     font-size: 1rem;
   }
 }
+
+@media (max-width: 640px) {
+  .attendance-report-page-mobile-safe {
+    padding-bottom: calc(2.75rem + env(safe-area-inset-bottom));
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  .attendance-report-page-mobile-safe > .max-w-7xl {
+    padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+  }
+
+  .attendance-report-page-mobile-safe .lg\:hidden {
+    padding-bottom: calc(1rem + env(safe-area-inset-bottom));
+  }
+}
+
 </style>
 
 <style>

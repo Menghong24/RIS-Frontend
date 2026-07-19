@@ -2,45 +2,45 @@
   <div class="shrink-0 header-animation-scope">
     <!-- Header -->
     <header
-      class="app-header sticky top-0 z-30 h-16 px-3 md:px-5 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm shrink-0 flex items-center justify-between"
+      class="app-header sticky top-0 z-30 h-[4.5rem] px-4 md:px-6 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm shrink-0 flex items-center justify-between"
     >
       <!-- Left Side -->
-      <div class="flex items-center gap-2 min-w-0">
+      <div class="flex items-center gap-3 min-w-0">
         <!-- Toggle Sidebar -->
         <button
           @click="$emit('toggle-sidebar')"
-          class="h-10 w-10 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-100 text-slate-600 hover:text-blue-600 transition-all duration-200 active:scale-95 flex items-center justify-center shadow-sm"
+          class="h-11 w-11 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-100 text-slate-600 hover:text-blue-600 transition-all duration-200 active:scale-95 flex items-center justify-center shadow-sm"
           title="បើក/បិទម៉ឺនុយ"
           type="button"
           aria-label="Toggle sidebar"
         >
-          <i class="fa-solid fa-bars text-base"></i>
+          <i class="fa-solid fa-bars text-lg"></i>
         </button>
 
         <div class="hidden sm:block min-w-0">
-          <h2 class="text-sm md:text-base font-extrabold text-slate-800 truncate">
+          <h2 class="text-base md:text-lg font-extrabold text-slate-800 break-words leading-snug">
             RIS School Management
           </h2>
-          <p class="text-[11px] text-slate-400 font-bold truncate">
+          <p class="text-xs text-slate-400 font-bold break-words leading-snug">
             ប្រព័ន្ធគ្រប់គ្រងសាលារៀន
           </p>
         </div>
       </div>
 
       <!-- Right Side -->
-      <div class="flex items-center gap-2 md:gap-3">
+      <div class="flex items-center gap-2.5 md:gap-4">
         <!-- Notification Button -->
         <button
           @click="isNoticeModalOpen = true"
-          class="h-10 w-10 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-100 relative transition-all duration-200 active:scale-95 text-slate-600 hover:text-blue-600 flex items-center justify-center shadow-sm"
+          class="h-11 w-11 rounded-xl bg-slate-50 hover:bg-blue-50 border border-slate-200 hover:border-blue-100 relative transition-all duration-200 active:scale-95 text-slate-600 hover:text-blue-600 flex items-center justify-center shadow-sm"
           title="សេចក្តីជូនដំណឹង"
           type="button"
         >
-          <i class="fa-solid fa-bell text-base"></i>
+          <i class="fa-solid fa-bell text-lg"></i>
 
           <span
             v-if="unreadAnnouncements.length > 0"
-            class="absolute -top-1 -right-1 h-5 min-w-5 px-1 bg-red-500 rounded-full flex items-center justify-center text-white text-[10px] font-extrabold border-2 border-white notification-badge animate-pulse"
+            class="absolute -top-1 -right-1 h-5 min-w-5 px-1.5 bg-red-500 rounded-full flex items-center justify-center text-white text-[10px] font-extrabold border-2 border-white notification-badge animate-pulse"
           >
             {{ unreadAnnouncements.length > 9 ? "9+" : unreadAnnouncements.length }}
           </span>
@@ -50,11 +50,11 @@
         <button
           v-if="user"
           @click="isProfileModalOpen = true"
-          class="flex items-center cursor-pointer group pl-2 md:pl-3 border-l border-slate-200 text-left transition-all duration-200 active:scale-[0.98]"
+          class="flex items-center cursor-pointer group pl-2.5 md:pl-4 border-l border-slate-200 text-left transition-all duration-200 active:scale-[0.98]"
           type="button"
         >
           <div
-            class="w-10 h-10 rounded-full overflow-hidden ring-2 ring-blue-50 group-hover:ring-blue-200 transition-all shadow-sm bg-blue-100 flex items-center justify-center shrink-0"
+            class="w-11 h-11 rounded-full overflow-hidden ring-2 ring-blue-50 group-hover:ring-blue-200 transition-all shadow-sm bg-blue-100 flex items-center justify-center shrink-0"
           >
             <img
               v-if="profileImageUrl"
@@ -65,7 +65,7 @@
 
             <span
               v-else
-              class="text-sm font-extrabold text-blue-700"
+              class="text-base font-extrabold text-blue-700"
             >
               {{ userInitial }}
             </span>
@@ -73,12 +73,12 @@
 
           <div class="ml-3 select-none hidden sm:block min-w-0">
             <span
-              class="font-extrabold text-sm capitalize text-slate-800 leading-none block truncate max-w-[150px] md:max-w-[220px]"
+              class="font-extrabold text-base capitalize text-slate-800 leading-snug block break-words max-w-[160px] md:max-w-[240px]"
             >
               {{ user?.username }}
             </span>
 
-            <p class="text-[11px] text-slate-500 font-bold mt-0.5 truncate">
+            <p class="text-xs text-slate-500 font-bold mt-0.5 break-words leading-snug">
               {{ formattedRole }}
             </p>
           </div>
@@ -94,39 +94,39 @@
     <Transition name="modal-fade">
       <div
         v-if="isNoticeModalOpen"
-        class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[80] p-3"
+        class="header-modal-overlay-mobile-safe fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[80] p-3 sm:p-4"
         @click="isNoticeModalOpen = false"
       >
         <Transition name="modal-card" appear>
           <div
             v-if="isNoticeModalOpen"
-            class="bg-white rounded-2xl shadow-2xl w-full max-w-md max-h-[85vh] flex flex-col overflow-hidden border border-slate-100 modal-panel-animated"
+            class="header-modal-panel-mobile-safe bg-white rounded-2xl shadow-2xl w-full max-w-lg max-h-[88dvh] sm:max-h-[86vh] flex flex-col overflow-hidden border border-slate-100 modal-panel-animated"
             @click.stop
           >
         <!-- Notice Header -->
         <div
-          class="px-4 py-3 border-b border-slate-100 flex justify-between items-center bg-slate-50"
+          class="px-4 sm:px-5 py-3.5 sm:py-4 border-b border-slate-100 flex justify-between items-start bg-slate-50 gap-3"
         >
-          <div class="flex items-center gap-2 min-w-0">
+          <div class="flex items-center gap-3 min-w-0">
             <div
-              class="h-9 w-9 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center shrink-0"
+              class="h-10 w-10 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center shrink-0"
             >
               <i class="fa-solid fa-bell text-sm"></i>
             </div>
 
             <div class="min-w-0">
-              <h3 class="font-extrabold text-sm text-slate-800 truncate">
+              <h3 class="font-extrabold text-base text-slate-800 break-words leading-snug">
                 សេចក្តីជូនដំណឹង
               </h3>
 
-              <p class="text-[10px] text-slate-500 truncate">
+              <p class="text-xs text-slate-500 break-words leading-snug">
                 ព័ត៌មានថ្មីៗសម្រាប់អ្នក
               </p>
             </div>
 
             <span
               v-if="unreadAnnouncements.length > 0"
-              class="bg-red-50 text-red-600 border border-red-100 text-[10px] font-extrabold px-2 py-0.5 rounded-full shrink-0"
+              class="bg-red-50 text-red-600 border border-red-100 text-[11px] font-extrabold px-2.5 py-1 rounded-full shrink-0 leading-snug"
             >
               {{ unreadAnnouncements.length }} ថ្មី
             </span>
@@ -134,7 +134,7 @@
 
           <button
             @click="isNoticeModalOpen = false"
-            class="h-8 w-8 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition shrink-0"
+            class="h-9 w-9 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-slate-100 transition shrink-0"
             type="button"
             aria-label="Close notices"
           >
@@ -143,10 +143,10 @@
         </div>
 
         <!-- Notice List -->
-        <div class="overflow-y-auto flex-1 p-3 bg-slate-50">
+        <div class="header-modal-body-mobile-safe overflow-y-auto flex-1 p-3 sm:p-4 bg-slate-50">
           <div
             v-if="unreadAnnouncements.length === 0"
-            class="flex flex-col items-center justify-center py-12 text-center bg-white rounded-xl border border-dashed border-slate-300"
+            class="flex flex-col items-center justify-center py-12 sm:py-14 text-center bg-white rounded-xl border border-dashed border-slate-300 px-3"
           >
             <div
               class="w-14 h-14 bg-green-50 text-green-500 rounded-xl flex items-center justify-center mb-3"
@@ -154,11 +154,11 @@
               <i class="fa-solid fa-circle-check text-2xl"></i>
             </div>
 
-            <p class="text-slate-600 font-extrabold text-sm">
+            <p class="text-slate-600 font-extrabold text-base break-words leading-snug">
               មិនមានសេចក្តីជូនដំណឹងថ្មីទេ
             </p>
 
-            <p class="text-slate-400 text-xs mt-1">
+            <p class="text-slate-400 text-sm mt-1 break-words leading-snug">
               អ្នកបានអានអស់ហើយ!
             </p>
           </div>
@@ -173,24 +173,24 @@
               v-for="notice in unreadAnnouncements"
               :key="notice._id || notice.id"
               @click="handleNoticeClick(notice)"
-              class="notice-card p-3 bg-white rounded-xl border border-blue-100 shadow-sm hover:shadow-md transition-all duration-200 active:scale-[0.99] group cursor-pointer relative overflow-hidden"
+              class="notice-card p-3.5 sm:p-4 bg-white rounded-xl border border-blue-100 shadow-sm hover:shadow-md transition-all duration-200 active:scale-[0.99] group cursor-pointer relative overflow-hidden"
             >
               <div class="absolute left-0 top-0 bottom-0 w-1 bg-blue-500"></div>
 
               <div class="flex justify-between items-start gap-3 pl-2">
                 <div class="min-w-0">
                   <h4
-                    class="font-extrabold text-sm text-slate-800 group-hover:text-blue-600 transition pr-6 truncate"
+                    class="font-extrabold text-base text-slate-800 group-hover:text-blue-600 transition pr-6 break-words leading-snug"
                   >
                     {{ notice.title || "គ្មានចំណងជើង" }}
                   </h4>
 
-                  <p class="text-xs text-slate-500 leading-relaxed line-clamp-2 mt-1">
+                  <p class="text-sm text-slate-500 leading-relaxed line-clamp-2 mt-1 break-words">
                     {{ notice.content || notice.description || "មិនមានព័ត៌មានបន្ថែម។" }}
                   </p>
 
                   <span
-                    class="inline-flex mt-2 text-[10px] font-bold text-slate-400 bg-slate-50 px-2 py-1 rounded-md"
+                    class="inline-flex mt-2 text-[11px] font-bold text-slate-400 bg-slate-50 px-2.5 py-1 rounded-md leading-snug"
                   >
                     <i class="fa-regular fa-clock mr-1"></i>
                     {{ formatDate(notice.createdAt || notice.date) }}
@@ -199,7 +199,7 @@
 
                 <button
                   @click.stop="clearNotice(notice._id || notice.id)"
-                  class="h-7 w-7 rounded-lg text-slate-400 hover:text-green-600 bg-slate-50 hover:bg-green-50 transition flex items-center justify-center shrink-0"
+                  class="h-8 w-8 rounded-lg text-slate-400 hover:text-green-600 bg-slate-50 hover:bg-green-50 transition flex items-center justify-center shrink-0"
                   title="Mark as read"
                   type="button"
                 >
@@ -213,11 +213,11 @@
         <!-- Notice Footer -->
         <div
           v-if="unreadAnnouncements.length > 0"
-          class="p-3 border-t border-slate-100 bg-white flex justify-between items-center"
+          class="header-modal-footer-mobile-safe p-3 sm:p-4 border-t border-slate-100 bg-white flex justify-between items-center gap-3"
         >
           <button
             @click="clearAllNotices"
-            class="text-xs font-extrabold text-slate-500 hover:text-slate-800 transition"
+            class="text-sm font-extrabold text-slate-500 hover:text-slate-800 transition leading-snug"
             type="button"
           >
             <i class="fa-solid fa-check-double mr-1"></i>
@@ -226,7 +226,7 @@
 
           <button
             @click="handleNoticeClick"
-            class="text-xs font-extrabold text-blue-600 hover:text-blue-800 transition"
+            class="text-sm font-extrabold text-blue-600 hover:text-blue-800 transition leading-snug"
             type="button"
           >
             មើលទាំងអស់
@@ -242,17 +242,17 @@
     <Transition name="modal-fade">
       <div
         v-if="isProfileModalOpen"
-        class="fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[80] p-3"
+        class="header-modal-overlay-mobile-safe fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[80] p-3 sm:p-4"
         @click="isProfileModalOpen = false"
       >
         <Transition name="modal-card" appear>
           <div
             v-if="isProfileModalOpen"
-            class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden border border-slate-100 modal-panel-animated"
+            class="header-modal-panel-mobile-safe bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-100 modal-panel-animated"
             @click.stop
           >
         <!-- Profile Header -->
-        <div class="px-4 py-5 bg-blue-50 border-b border-blue-100 text-center relative">
+        <div class="px-5 py-6 bg-blue-50 border-b border-blue-100 text-center relative">
           <button
             @click="isProfileModalOpen = false"
             class="absolute top-3 right-3 h-8 w-8 rounded-lg text-slate-400 hover:text-slate-700 hover:bg-white transition"
@@ -262,9 +262,9 @@
             <i class="fa-solid fa-xmark text-sm"></i>
           </button>
 
-          <div class="relative w-20 h-20 mx-auto profile-avatar-animated">
+          <div class="relative w-24 h-24 mx-auto profile-avatar-animated">
             <div
-              class="w-20 h-20 rounded-full overflow-hidden ring-4 ring-white shadow-sm bg-blue-100 flex items-center justify-center"
+              class="w-24 h-24 rounded-full overflow-hidden ring-4 ring-white shadow-sm bg-blue-100 flex items-center justify-center"
             >
               <img
                 v-if="profileImageUrl"
@@ -275,14 +275,14 @@
 
               <span
                 v-else
-                class="text-2xl font-extrabold text-blue-700"
+                class="text-3xl font-extrabold text-blue-700"
               >
                 {{ userInitial }}
               </span>
             </div>
 
             <label
-              class="absolute -right-1 -bottom-1 h-8 w-8 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-md border-2 border-white cursor-pointer hover:bg-blue-700 transition"
+              class="absolute -right-1 -bottom-1 h-9 w-9 rounded-full bg-blue-600 text-white flex items-center justify-center shadow-md border-2 border-white cursor-pointer hover:bg-blue-700 transition"
               title="ប្ដូររូប Profile"
             >
               <i
@@ -305,11 +305,11 @@
             </label>
           </div>
 
-          <h3 class="mt-3 text-base font-extrabold text-slate-800 capitalize">
+          <h3 class="mt-3 text-lg font-extrabold text-slate-800 capitalize break-words leading-snug">
             {{ user?.username || "User" }}
           </h3>
 
-          <p class="text-xs font-bold text-blue-600 mt-0.5">
+          <p class="text-sm font-bold text-blue-600 mt-0.5 break-words leading-snug">
             {{ formattedRole }}
           </p>
 
@@ -318,7 +318,7 @@
             type="button"
             @click="handleRemoveProfileImage"
             :disabled="isUploadingProfile"
-            class="mt-3 px-3 py-1.5 rounded-lg bg-white border border-red-100 text-red-600 hover:bg-red-50 text-xs font-bold transition disabled:opacity-50"
+            class="mt-3 px-4 py-2 rounded-lg bg-white border border-red-100 text-red-600 hover:bg-red-50 text-sm font-bold transition disabled:opacity-50"
           >
             <i class="fa-solid fa-trash-can mr-1"></i>
             លុបរូប Profile
@@ -326,22 +326,22 @@
         </div>
 
         <!-- Profile Body -->
-        <div class="p-3 space-y-3">
+        <div class="p-4 space-y-3.5">
           <!-- User Info -->
-          <div class="profile-info-animated rounded-xl border border-slate-200 bg-slate-50 p-3 space-y-2">
+          <div class="profile-info-animated rounded-xl border border-slate-200 bg-slate-50 p-4 space-y-3">
             <div class="flex items-center gap-2">
               <span
-                class="h-7 w-7 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-xs shrink-0"
+                class="h-8 w-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-sm shrink-0"
               >
                 <i class="fa-solid fa-user"></i>
               </span>
 
               <div class="min-w-0">
-                <p class="text-[11px] font-bold text-slate-500">
+                <p class="text-xs font-bold text-slate-500 break-words leading-snug">
                   ឈ្មោះអ្នកប្រើប្រាស់
                 </p>
 
-                <p class="text-xs font-extrabold text-slate-800 truncate">
+                <p class="text-sm font-extrabold text-slate-800 break-words leading-snug">
                   {{ user?.username || "មិនមានទិន្នន័យ" }}
                 </p>
               </div>
@@ -349,17 +349,17 @@
 
             <div class="flex items-center gap-2">
               <span
-                class="h-7 w-7 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-xs shrink-0"
+                class="h-8 w-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-sm shrink-0"
               >
                 <i class="fa-solid fa-user-shield"></i>
               </span>
 
               <div class="min-w-0">
-                <p class="text-[11px] font-bold text-slate-500">
+                <p class="text-xs font-bold text-slate-500 break-words leading-snug">
                   តួនាទី
                 </p>
 
-                <p class="text-xs font-extrabold text-slate-800 truncate">
+                <p class="text-sm font-extrabold text-slate-800 break-words leading-snug">
                   {{ formattedRole }}
                 </p>
               </div>
@@ -370,17 +370,17 @@
               class="flex items-center gap-2"
             >
               <span
-                class="h-7 w-7 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-xs shrink-0"
+                class="h-8 w-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-sm shrink-0"
               >
                 <i class="fa-solid fa-envelope"></i>
               </span>
 
               <div class="min-w-0">
-                <p class="text-[11px] font-bold text-slate-500">
+                <p class="text-xs font-bold text-slate-500 break-words leading-snug">
                   អ៊ីមែល
                 </p>
 
-                <p class="text-xs font-extrabold text-slate-800 truncate">
+                <p class="text-sm font-extrabold text-slate-800 break-words leading-snug">
                   {{ user.email }}
                 </p>
               </div>
@@ -391,17 +391,17 @@
               class="flex items-center gap-2"
             >
               <span
-                class="h-7 w-7 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-xs shrink-0"
+                class="h-8 w-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-sm shrink-0"
               >
                 <i class="fa-solid fa-phone"></i>
               </span>
 
               <div class="min-w-0">
-                <p class="text-[11px] font-bold text-slate-500">
+                <p class="text-xs font-bold text-slate-500 break-words leading-snug">
                   លេខទូរស័ព្ទ
                 </p>
 
-                <p class="text-xs font-extrabold text-slate-800 truncate">
+                <p class="text-sm font-extrabold text-slate-800 break-words leading-snug">
                   {{ user.phone }}
                 </p>
               </div>
@@ -412,17 +412,17 @@
               class="flex items-center gap-2"
             >
               <span
-                class="h-7 w-7 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-xs shrink-0"
+                class="h-8 w-8 rounded-lg bg-blue-100 text-blue-600 flex items-center justify-center text-sm shrink-0"
               >
                 <i class="fa-solid fa-id-card"></i>
               </span>
 
               <div class="min-w-0">
-                <p class="text-[11px] font-bold text-slate-500">
+                <p class="text-xs font-bold text-slate-500 break-words leading-snug">
                   User ID
                 </p>
 
-                <p class="text-[11px] font-bold text-slate-700 truncate">
+                <p class="text-xs font-bold text-slate-700 break-words leading-snug">
                   {{ user?._id || user?.id }}
                 </p>
               </div>
@@ -432,7 +432,7 @@
           <Transition name="soft-fade">
             <div
               v-if="profileUploadError"
-              class="rounded-lg bg-red-50 border border-red-100 px-3 py-2 text-xs font-bold text-red-600"
+              class="rounded-lg bg-red-50 border border-red-100 px-3 py-2 text-sm font-bold text-red-600 break-words leading-snug"
             >
               {{ profileUploadError }}
             </div>
@@ -442,7 +442,7 @@
           <button
             type="button"
             @click="isLogoutConfirmOpen = true"
-            class="w-full px-3 py-2 rounded-lg text-xs font-bold text-red-600 hover:bg-red-50 transition flex items-center gap-2"
+            class="w-full px-4 py-2.5 rounded-lg text-sm font-bold text-red-600 hover:bg-red-50 transition flex items-center gap-2"
           >
             <i class="fa-solid fa-right-from-bracket w-4"></i>
             ចាកចេញ
@@ -450,10 +450,10 @@
         </div>
 
         <!-- Profile Footer -->
-        <div class="px-3 py-3 bg-slate-50 border-t border-slate-100 flex justify-end">
+        <div class="px-4 py-4 bg-slate-50 border-t border-slate-100 flex justify-end">
           <button
             @click="isProfileModalOpen = false"
-            class="px-3 py-1.5 text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-100 transition"
+            class="px-4 py-2 text-sm font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-100 transition"
             type="button"
           >
             បិទ
@@ -468,46 +468,46 @@
     <Transition name="modal-fade">
       <div
         v-if="isLogoutConfirmOpen"
-        class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-[90] p-3"
+        class="header-modal-overlay-mobile-safe fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-[90] p-3 sm:p-4"
         @click="isLogoutConfirmOpen = false"
       >
         <Transition name="confirm-card" appear>
           <div
             v-if="isLogoutConfirmOpen"
-            class="bg-white rounded-2xl shadow-2xl w-full max-w-sm overflow-hidden border border-slate-100"
+            class="header-modal-panel-mobile-safe bg-white rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-100"
             @click.stop
           >
         <!-- Logout Header -->
-        <div class="px-4 py-3 bg-red-50 border-b border-red-100 flex items-center gap-3">
+        <div class="px-5 py-4 bg-red-50 border-b border-red-100 flex items-start gap-3">
           <div
-            class="h-10 w-10 rounded-full bg-white text-red-600 flex items-center justify-center shadow-sm border border-red-100 shrink-0"
+            class="h-11 w-11 rounded-full bg-white text-red-600 flex items-center justify-center shadow-sm border border-red-100 shrink-0"
           >
             <i class="fa-solid fa-right-from-bracket text-base"></i>
           </div>
 
           <div class="min-w-0">
-            <h3 class="text-sm font-extrabold text-slate-800 truncate">
+            <h3 class="text-base font-extrabold text-slate-800 break-words leading-snug">
               បញ្ជាក់ការចាកចេញ
             </h3>
 
-            <p class="text-[11px] text-red-600 font-bold mt-0.5 truncate">
+            <p class="text-xs text-red-600 font-bold mt-0.5 break-words leading-snug">
               Logout Confirmation
             </p>
           </div>
         </div>
 
         <!-- Logout Body -->
-        <div class="p-4">
-          <p class="text-xs text-slate-600 leading-relaxed">
+        <div class="p-5">
+          <p class="text-sm text-slate-600 leading-relaxed break-words">
             តើអ្នកពិតជាចង់ចាកចេញពីប្រព័ន្ធមែនទេ?
           </p>
         </div>
 
         <!-- Logout Actions -->
-        <div class="px-4 py-3 bg-slate-50 border-t border-slate-100 flex justify-end gap-2">
+        <div class="px-5 py-4 bg-slate-50 border-t border-slate-100 flex justify-end gap-2.5">
           <button
             @click="isLogoutConfirmOpen = false"
-            class="px-3.5 py-1.5 text-xs font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-100 transition"
+            class="px-4 py-2 text-sm font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-100 transition"
             :disabled="isLoggingOut"
             type="button"
           >
@@ -516,7 +516,7 @@
 
           <button
             @click="handleLogout"
-            class="px-3.5 py-1.5 text-xs font-bold text-white bg-red-600 rounded-lg hover:bg-red-700 transition shadow-sm flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
+            class="px-4 py-2 text-sm font-bold text-white bg-red-600 rounded-lg hover:bg-red-700 transition shadow-sm flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
             :disabled="isLoggingOut"
             type="button"
           >
@@ -757,7 +757,27 @@ const handleLogout = async () => {
 
 <style scoped>
 .header-animation-scope {
-  font-family: "Khmer OS Battambang", "Battambang", "Noto Sans Khmer", system-ui, sans-serif;
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif;
+  line-height: 1.45;
+}
+
+.header-animation-scope h2,
+.header-animation-scope h3,
+.header-animation-scope h4,
+.header-animation-scope p,
+.header-animation-scope span,
+.header-animation-scope button {
+  line-height: 1.45;
+}
+
+.header-animation-scope .break-words,
+.header-modal-panel-mobile-safe h3,
+.header-modal-panel-mobile-safe h4,
+.header-modal-panel-mobile-safe p,
+.header-modal-panel-mobile-safe span,
+.header-modal-panel-mobile-safe button {
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .app-header {
@@ -916,4 +936,43 @@ const handleLogout = async () => {
     transition-duration: 0.01ms !important;
   }
 }
+
+.header-modal-body-mobile-safe {
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 640px) {
+  .app-header {
+    height: 4.25rem;
+    padding-left: 0.875rem;
+    padding-right: 0.875rem;
+  }
+
+  .header-modal-overlay-mobile-safe {
+    align-items: flex-end;
+    min-height: 100vh;
+    min-height: 100dvh;
+    padding-bottom: calc(0.65rem + env(safe-area-inset-bottom));
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  .header-modal-panel-mobile-safe {
+    max-height: calc(100vh - 1rem);
+    max-height: calc(100dvh - 1rem);
+  }
+
+  .header-modal-body-mobile-safe {
+    max-height: calc(100vh - 8.75rem);
+    max-height: calc(100dvh - 8.75rem);
+  }
+
+  .header-modal-footer-mobile-safe {
+    position: sticky;
+    bottom: 0;
+    z-index: 5;
+    padding-bottom: calc(0.9rem + env(safe-area-inset-bottom)) !important;
+  }
+}
+
 </style>

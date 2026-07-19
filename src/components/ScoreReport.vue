@@ -1,21 +1,21 @@
 <template>
-  <div class="bg-slate-50 p-2 md:p-3">
+  <div class="score-report-page-mobile-safe bg-slate-50 p-2 md:p-3">
     <div class="max-w-7xl mx-auto space-y-2.5">
       <!-- Header -->
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm px-3 py-2.5">
         <div class="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-2">
           <div class="min-w-0">
-            <h2 class="text-base md:text-lg font-extrabold text-slate-800 flex items-center gap-2">
+            <h2 class="text-base md:text-lg font-extrabold text-slate-800 flex items-start gap-2 leading-snug">
               <span class="h-7 w-7 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-xs">
                 <i class="fa-solid fa-file-lines"></i>
               </span>
 
-              <span class="truncate">
+              <span class="break-words leading-snug">
                 របាយការណ៍ពិន្ទុសិស្ស
               </span>
             </h2>
 
-            <p class="text-[11px] text-slate-500 mt-0.5">
+            <p class="text-[11px] text-slate-500 mt-0.5 break-words leading-snug">
               ជ្រើសរើសមុខវិជ្ជាច្រើន ដើម្បីបង្ហាញពិន្ទុ និងចំណាត់ថ្នាក់
             </p>
           </div>
@@ -137,7 +137,7 @@
                   ជ្រើសរើសមុខវិជ្ជា
                 </p>
 
-                <p class="text-[10px] text-slate-500 truncate">
+                <p class="text-[10px] text-slate-500 break-words leading-snug">
                   បានជ្រើសរើស {{ selectedSubjects.length }} មុខវិជ្ជា
                 </p>
               </div>
@@ -180,7 +180,7 @@
                 class="h-3.5 w-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 shrink-0"
               />
 
-              <span class="text-[11px] font-bold text-slate-700 truncate">
+              <span class="text-[11px] font-bold text-slate-700 break-words leading-snug min-w-0">
                 {{ subject.subjectName }}
               </span>
             </label>
@@ -196,7 +196,7 @@
         <div class="px-3 py-2.5 border-b border-slate-200 bg-slate-50">
           <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2">
             <div class="min-w-0">
-              <h3 class="text-sm font-extrabold text-slate-800 truncate">
+              <h3 class="text-sm font-extrabold text-slate-800 break-words leading-snug">
                 {{ selectedClassName }}
               </h3>
 
@@ -213,7 +213,7 @@
 
                 <span class="text-slate-300">|</span>
 
-                <p class="text-[11px] text-blue-600 font-bold truncate max-w-[500px]">
+                <p class="text-[11px] text-blue-600 font-bold break-words leading-snug max-w-[500px]">
                   {{ selectedSubjectNames }}
                 </p>
               </div>
@@ -320,7 +320,7 @@
                   {{ student.originalNo }}
                 </td>
 
-                <td class="table-td font-bold text-slate-800">
+                <td class="table-td font-bold text-slate-800 break-words leading-snug">
                   {{ student.khmerName || "-" }}
                 </td>
 
@@ -348,7 +348,7 @@
                   {{ student.rankDisplay }}
                 </td>
 
-                <td class="table-td text-slate-500">
+                <td class="table-td text-slate-500 break-words leading-snug">
                   {{ getStudentRemarks(student) }}
                 </td>
               </tr>
@@ -548,7 +548,7 @@
 </template>
 
 <script setup>
-import { ref, computed, nextTick } from "vue";
+import { ref, computed, nextTick, onMounted, onBeforeUnmount } from "vue";
 import jsPDF from "jspdf";
 import html2canvas from "html2canvas";
 import ExcelJS from "exceljs";
@@ -566,6 +566,48 @@ const exportingPdf = ref(false);
 const exportingExcel = ref(false);
 const pdfPaperRef = ref(null);
 
+const originalViewportContent = ref("");
+const viewportMetaWasCreated = ref(false);
+
+const setNoZoomViewport = () => {
+  if (typeof document === "undefined") return;
+
+  let viewportMeta = document.querySelector('meta[name="viewport"]');
+
+  if (!viewportMeta) {
+    viewportMeta = document.createElement("meta");
+    viewportMeta.setAttribute("name", "viewport");
+    document.head.appendChild(viewportMeta);
+    viewportMetaWasCreated.value = true;
+  } else if (!originalViewportContent.value) {
+    viewportMetaWasCreated.value = false;
+    originalViewportContent.value = viewportMeta.getAttribute("content") || "";
+  }
+
+  viewportMeta.setAttribute(
+    "content",
+    "width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no, viewport-fit=cover"
+  );
+};
+
+const restoreViewport = () => {
+  if (typeof document === "undefined") return;
+
+  const viewportMeta = document.querySelector('meta[name="viewport"]');
+
+  if (!viewportMeta) return;
+
+  if (viewportMetaWasCreated.value) {
+    viewportMeta.remove();
+    return;
+  }
+
+  viewportMeta.setAttribute(
+    "content",
+    originalViewportContent.value || "width=device-width, initial-scale=1"
+  );
+};
+
 const months = [
   { value: "January", label: "មករា" },
   { value: "February", label: "កុម្ភៈ" },
@@ -581,11 +623,21 @@ const months = [
   { value: "December", label: "ធ្នូ" }
 ];
 
+const getCurrentAcademicYear = () => {
+  const currentYear = new Date().getFullYear();
+  return `${currentYear}-${currentYear + 1}`;
+};
+
+const getCurrentMonthValue = () => {
+  const currentMonthIndex = new Date().getMonth();
+  return months[currentMonthIndex]?.value || "January";
+};
+
 const filters = ref({
   classId: "",
   subjectIds: [],
-  academicYear: "2025-2026",
-  month: "January"
+  academicYear: getCurrentAcademicYear(),
+  month: getCurrentMonthValue()
 });
 
 const khmerDigitMap = {
@@ -1435,27 +1487,84 @@ const exportExcel = async () => {
     exportingExcel.value = false;
   }
 };
+
+onMounted(() => {
+  setNoZoomViewport();
+});
+
+onBeforeUnmount(() => {
+  restoreViewport();
+});
 </script>
 
 <style scoped>
+
+.score-report-page-mobile-safe {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif;
+  line-height: 1.45;
+}
+
+.score-report-page-mobile-safe h2,
+.score-report-page-mobile-safe h3,
+.score-report-page-mobile-safe p,
+.score-report-page-mobile-safe span,
+.score-report-page-mobile-safe label,
+.score-report-page-mobile-safe button,
+.score-report-page-mobile-safe th,
+.score-report-page-mobile-safe td {
+  line-height: 1.45;
+}
+
+.score-report-page-mobile-safe .break-words {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.score-report-page-mobile-safe input,
+.score-report-page-mobile-safe select,
+.score-report-page-mobile-safe textarea,
+.score-report-page-mobile-safe option,
+.score-report-page-mobile-safe input::placeholder {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif !important;
+  font-size: 12px !important;
+  line-height: 1.9 !important;
+  font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+.score-report-page-mobile-safe input,
+.score-report-page-mobile-safe select {
+  min-height: 2.65rem !important;
+  height: 2.65rem !important;
+  padding-top: 0.58rem !important;
+  padding-bottom: 0.58rem !important;
+  overflow: visible !important;
+}
+
 .form-label {
   display: block;
   font-size: 0.62rem;
   font-weight: 800;
   color: #64748b;
   margin-bottom: 0.16rem;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
 }
 
 .form-input {
   width: 100%;
   border: 1px solid #e2e8f0;
   border-radius: 0.45rem;
-  padding: 0.36rem 0.52rem;
-  font-size: 0.68rem;
+  padding: 0.58rem 0.52rem;
+  font-size: 12px;
+  line-height: 1.9;
   color: #334155;
   background: #ffffff;
   outline: none;
-  min-height: 1.9rem;
+  min-height: 2.65rem;
+  height: auto;
   transition: all 0.2s ease;
 }
 
@@ -1471,7 +1580,9 @@ const exportExcel = async () => {
   font-weight: 900;
   color: #475569;
   border: 1px solid #e2e8f0;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .table-td {
@@ -1590,7 +1701,7 @@ const exportExcel = async () => {
 .formal-table td {
   border: 1px solid #555555;
   height: 28px;
-  line-height: 1.2;
+  line-height: 1.32;
   padding: 0 3px;
   text-align: center;
   vertical-align: middle;
@@ -1698,4 +1809,31 @@ const exportExcel = async () => {
 .bold {
   font-weight: 900;
 }
+
+@media (max-width: 640px) {
+  .score-report-page-mobile-safe {
+    padding-bottom: calc(2.75rem + env(safe-area-inset-bottom));
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  .score-report-page-mobile-safe > .max-w-7xl {
+    padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
+  }
+
+  .score-report-page-mobile-safe .report-table-wrap {
+    margin-bottom: calc(1.25rem + env(safe-area-inset-bottom));
+  }
+}
+
+@media (min-width: 640px) {
+  .form-input {
+    padding: 0.62rem 0.6rem;
+    font-size: 12px !important;
+    line-height: 1.9 !important;
+    min-height: 2.65rem !important;
+    height: auto;
+  }
+}
+
 </style>

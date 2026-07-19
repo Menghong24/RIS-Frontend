@@ -11,15 +11,15 @@
           class="class-form-modal-panel-mobile-safe bg-white rounded-xl shadow-xl w-full max-w-xl overflow-hidden flex flex-col max-h-[86vh] border border-slate-100"
         >
           <!-- Header -->
-          <div class="px-3 py-2.5 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-            <div>
-              <h2 class="text-sm font-extrabold text-slate-800 flex items-center gap-2">
+          <div class="px-3 py-2.5 border-b border-slate-100 flex justify-between items-start gap-2 bg-slate-50">
+            <div class="min-w-0">
+              <h2 class="text-sm font-extrabold text-slate-800 flex items-start gap-2 leading-snug">
                 <span class="h-6 w-6 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-[10px]">
                   <i :class="isEditing ? 'fa-solid fa-pen-to-square' : 'fa-solid fa-plus'"></i>
                 </span>
-                {{ isEditing ? 'កែប្រែព័ត៌មានថ្នាក់' : 'បង្កើតថ្នាក់ថ្មី' }}
+                <span class="break-words leading-snug">{{ isEditing ? 'កែប្រែព័ត៌មានថ្នាក់' : 'បង្កើតថ្នាក់ថ្មី' }}</span>
               </h2>
-              <p class="text-[10px] text-slate-500 mt-0.5">
+              <p class="text-[10px] text-slate-500 mt-0.5 break-words leading-snug">
                 បំពេញព័ត៌មានថ្នាក់រៀនខាងក្រោម
               </p>
             </div>
@@ -306,12 +306,17 @@ const restoreViewport = () => {
   )
 }
 
+const getCurrentAcademicYear = () => {
+  const currentYear = new Date().getFullYear()
+  return `${currentYear}-${currentYear + 1}`
+}
+
 const initialForm = {
   classNumber: '',
   className: '',
   classGrade: '',
   typeOfClass: '',
-  yearOnStudy: '',
+  yearOnStudy: getCurrentAcademicYear(),
   timeStudy: '',
   teacher: '',
   status: 'active'
@@ -339,7 +344,7 @@ watch(() => props.isOpen, async (isOpen) => {
         ? (typeof props.classData.teacher === 'object' ? props.classData.teacher._id : props.classData.teacher)
         : ''
     } else {
-      Object.assign(form, initialForm)
+      Object.assign(form, { ...initialForm, yearOnStudy: getCurrentAcademicYear() })
     }
 
     await nextTick()
@@ -381,6 +386,49 @@ onUnmounted(() => {
 
 <style scoped>
 
+.class-form-modal-panel-mobile-safe {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif;
+  line-height: 1.45;
+}
+
+.class-form-modal-panel-mobile-safe h2,
+.class-form-modal-panel-mobile-safe h3,
+.class-form-modal-panel-mobile-safe p,
+.class-form-modal-panel-mobile-safe span,
+.class-form-modal-panel-mobile-safe label,
+.class-form-modal-panel-mobile-safe button {
+  line-height: 1.45;
+}
+
+.class-form-modal-panel-mobile-safe .break-words,
+.form-label {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.class-form-modal-panel-mobile-safe input,
+.class-form-modal-panel-mobile-safe select,
+.class-form-modal-panel-mobile-safe textarea,
+.class-form-modal-panel-mobile-safe option,
+.class-form-modal-panel-mobile-safe input::placeholder {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif !important;
+  font-size: 12px !important;
+  line-height: 1.9 !important;
+  font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+.class-form-modal-panel-mobile-safe input,
+.class-form-modal-panel-mobile-safe select {
+  min-height: 2.65rem !important;
+  height: 2.65rem !important;
+  padding-top: 0.58rem !important;
+  padding-bottom: 0.58rem !important;
+  overflow: visible !important;
+}
+
+
 /* Chrome mobile bottom toolbar fix + no visual input-size changes */
 @media (max-width: 640px) {
   .class-form-modal-overlay-mobile-safe {
@@ -417,18 +465,23 @@ onUnmounted(() => {
   font-weight: 700;
   color: #475569;
   margin-bottom: 0.2rem;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
 }
 
 .form-input {
   width: 100%;
   border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
-  padding: 0.42rem 0.6rem;
-  font-size: 0.75rem;
+  padding: 0.58rem 0.6rem;
+  font-size: 12px;
+  line-height: 1.9;
   color: #334155;
   background: #ffffff;
   outline: none;
-  min-height: 2rem;
+  min-height: 2.65rem;
+  height: auto;
   transition: all 0.2s ease;
 }
 

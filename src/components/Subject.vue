@@ -7,7 +7,7 @@
       >
         <div class="min-w-0">
           <h1
-            class="text-base sm:text-lg md:text-xl font-extrabold text-slate-800 flex items-center gap-2"
+            class="text-base sm:text-lg md:text-xl font-extrabold text-slate-800 flex items-start gap-2 leading-snug"
           >
             <span
               class="h-7 w-7 sm:h-8 sm:w-8 bg-blue-100 text-blue-700 rounded-lg flex items-center justify-center text-xs sm:text-sm shrink-0"
@@ -15,12 +15,12 @@
               <i class="fa-solid fa-book-open"></i>
             </span>
 
-            <span class="truncate">
+            <span class="break-words leading-snug">
               គ្រប់គ្រងមុខវិជ្ជាសិក្សា
             </span>
           </h1>
 
-          <p class="text-[11px] sm:text-xs text-slate-500 mt-1 truncate">
+          <p class="text-[11px] sm:text-xs text-slate-500 mt-1 break-words leading-snug">
             គ្រប់គ្រងមុខវិជ្ជា ឈ្មោះថ្នាក់រៀន គ្រូបង្រៀន ប្រភេទមុខវិជ្ជា និងថ្លៃសិក្សា
           </p>
         </div>
@@ -83,7 +83,7 @@
 
           <div class="min-w-0">
             <p class="summary-label">ថ្លៃសិក្សាមធ្យម</p>
-            <p class="summary-value text-[0.86rem] sm:text-lg truncate">
+            <p class="summary-value text-[0.86rem] sm:text-lg break-words leading-snug">
               {{ formatRiel(calculateAvgFee()) }}
             </p>
           </div>
@@ -177,11 +177,11 @@
             >
               <div class="flex items-start justify-between gap-2">
                 <div class="min-w-0">
-                  <h3 class="text-sm font-extrabold text-slate-800 leading-tight truncate">
+                  <h3 class="text-sm font-extrabold text-slate-800 leading-snug break-words">
                     {{ sub.subjectName }}
                   </h3>
 
-                  <p class="text-[10px] text-slate-400 mt-0.5 font-mono truncate">
+                  <p class="text-[10px] text-slate-400 mt-0.5 font-mono break-words leading-snug">
                     ID: {{ String(sub._id || "").substring(0, 8) }}...
                   </p>
                 </div>
@@ -246,11 +246,11 @@
                 </p>
 
                 <div v-if="sub.teacher" class="min-w-0">
-                  <p class="text-[11px] font-extrabold text-slate-800 truncate">
+                  <p class="text-[11px] font-extrabold text-slate-800 break-words leading-snug">
                     {{ sub.teacher.khmerName || sub.teacher.englishName || "បានកំណត់" }}
                   </p>
 
-                  <p class="text-[10px] text-slate-400 truncate">
+                  <p class="text-[10px] text-slate-400 break-words leading-snug">
                     {{ sub.teacher.englishName || "" }}
                   </p>
                 </div>
@@ -320,8 +320,8 @@
                   :key="sub._id"
                   class="hover:bg-slate-50 transition border-b border-slate-100 group"
                 >
-                  <td class="table-td whitespace-nowrap">
-                    <div class="font-bold text-slate-800 group-hover:text-blue-600 transition">
+                  <td class="table-td">
+                    <div class="font-bold text-slate-800 group-hover:text-blue-600 transition break-words leading-snug">
                       {{ sub.subjectName }}
                     </div>
 
@@ -353,7 +353,7 @@
                     </span>
                   </td>
 
-                  <td class="table-td whitespace-nowrap">
+                  <td class="table-td">
                     <span
                       :class="getTypeClass(sub.type)"
                       class="px-2.5 py-1 rounded-full text-[11px] font-bold border"
@@ -362,13 +362,13 @@
                     </span>
                   </td>
 
-                  <td class="table-td whitespace-nowrap">
+                  <td class="table-td">
                     <div v-if="sub.teacher" class="flex flex-col">
-                      <span class="font-bold text-slate-800">
+                      <span class="font-bold text-slate-800 break-words leading-snug">
                         {{ sub.teacher.khmerName || sub.teacher.englishName || "បានកំណត់" }}
                       </span>
 
-                      <span class="text-[10px] text-slate-400 mt-0.5">
+                      <span class="text-[10px] text-slate-400 mt-0.5 break-words leading-snug">
                         {{ sub.teacher.englishName || "" }}
                       </span>
                     </div>
@@ -475,7 +475,7 @@
               >
                 <div class="px-3 sm:px-4 py-2.5 sm:py-3 border-b border-slate-100 flex justify-between items-start gap-2 bg-slate-50 shrink-0">
                   <div class="min-w-0">
-                    <h3 class="text-sm sm:text-base font-bold text-slate-900 flex items-center gap-2">
+                    <h3 class="text-sm sm:text-base font-bold text-slate-900 flex items-start gap-2 leading-snug">
                       <i
                         :class="
                           isEditing
@@ -483,12 +483,12 @@
                             : 'fa-solid fa-plus text-blue-600'
                         "
                       ></i>
-                      <span class="truncate">
+                      <span class="break-words leading-snug">
                         {{ isEditing ? "កែប្រែមុខវិជ្ជា" : "បង្កើតមុខវិជ្ជាថ្មី" }}
                       </span>
                     </h3>
 
-                    <p class="text-[10px] sm:text-xs text-slate-500 mt-0.5 truncate">
+                    <p class="text-[10px] sm:text-xs text-slate-500 mt-0.5 break-words leading-snug">
                       បំពេញព័ត៌មានមុខវិជ្ជាខាងក្រោម
                     </p>
                   </div>
@@ -570,7 +570,7 @@
                             class="h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500"
                           />
 
-                          <span class="truncate text-xs font-bold">
+                          <span class="break-words leading-snug text-xs font-bold">
                             {{ c.className }}
                           </span>
                         </span>
@@ -754,14 +754,14 @@
                 v-if="showDeleteModal"
                 class="subject-modal-panel-mobile-safe bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden border border-slate-100"
               >
-                <div class="px-4 py-3 border-b border-slate-100 flex justify-between items-center bg-slate-50">
-                  <div>
-                    <h3 class="text-base font-bold text-slate-900 flex items-center gap-2">
+                <div class="px-4 py-3 border-b border-slate-100 flex justify-between items-start gap-2 bg-slate-50">
+                  <div class="min-w-0">
+                    <h3 class="text-base font-bold text-slate-900 flex items-start gap-2 leading-snug">
                       <i class="fa-solid fa-triangle-exclamation text-red-600"></i>
                       បញ្ជាក់ការលុប
                     </h3>
 
-                    <p class="text-xs text-slate-500 mt-0.5">
+                    <p class="text-xs text-slate-500 mt-0.5 break-words leading-snug">
                       សូមពិនិត្យមុនពេលបន្តលុបមុខវិជ្ជា
                     </p>
                   </div>
@@ -783,7 +783,7 @@
 
                   <p class="text-sm text-slate-600 leading-7">
                     តើអ្នកពិតជាចង់លុបមុខវិជ្ជា
-                    <span class="font-extrabold text-slate-900">
+                    <span class="font-extrabold text-slate-900 break-words leading-snug">
                       "{{ subjectToDelete?.subjectName || 'មុខវិជ្ជានេះ' }}"
                     </span>
                     មែនទេ?
@@ -1242,24 +1242,99 @@ const confirmDeleteSubject = async () => {
 </script>
 
 <style scoped>
+
+.subjects-page-mobile-safe,
+.subject-modal-panel-mobile-safe {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif;
+  line-height: 1.45;
+}
+
+.subjects-page-mobile-safe h1,
+.subjects-page-mobile-safe h3,
+.subjects-page-mobile-safe p,
+.subjects-page-mobile-safe span,
+.subjects-page-mobile-safe label,
+.subjects-page-mobile-safe button,
+.subjects-page-mobile-safe th,
+.subjects-page-mobile-safe td,
+.subject-modal-panel-mobile-safe h3,
+.subject-modal-panel-mobile-safe p,
+.subject-modal-panel-mobile-safe span,
+.subject-modal-panel-mobile-safe label,
+.subject-modal-panel-mobile-safe button {
+  line-height: 1.45;
+}
+
+.subjects-page-mobile-safe .break-words,
+.subject-modal-panel-mobile-safe .break-words,
+.form-label,
+.summary-label,
+.summary-value {
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.subjects-page-mobile-safe input,
+.subjects-page-mobile-safe select,
+.subjects-page-mobile-safe textarea,
+.subjects-page-mobile-safe option,
+.subjects-page-mobile-safe input::placeholder,
+.subjects-page-mobile-safe textarea::placeholder,
+.subject-modal-panel-mobile-safe input,
+.subject-modal-panel-mobile-safe select,
+.subject-modal-panel-mobile-safe textarea,
+.subject-modal-panel-mobile-safe option,
+.subject-modal-panel-mobile-safe input::placeholder,
+.subject-modal-panel-mobile-safe textarea::placeholder {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif !important;
+  font-size: 12px !important;
+  line-height: 1.9 !important;
+  font-weight: 500;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: geometricPrecision;
+}
+
+.subjects-page-mobile-safe input,
+.subjects-page-mobile-safe select,
+.subject-modal-panel-mobile-safe input,
+.subject-modal-panel-mobile-safe select {
+  min-height: 2.65rem !important;
+  height: 2.65rem !important;
+  padding-top: 0.58rem !important;
+  padding-bottom: 0.58rem !important;
+  overflow: visible !important;
+}
+
+.subjects-page-mobile-safe textarea,
+.subject-modal-panel-mobile-safe textarea {
+  min-height: 4.75rem !important;
+  padding-top: 0.6rem !important;
+  padding-bottom: 0.6rem !important;
+}
+
 .form-label {
   display: block;
   font-size: 0.62rem;
   font-weight: 800;
   color: #64748b;
   margin-bottom: 0.2rem;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
 }
 
 .form-input {
   width: 100%;
   border: 1px solid #e2e8f0;
   border-radius: 0.5rem;
-  padding: 0.36rem 0.55rem;
-  font-size: 0.7rem;
+  padding: 0.58rem 0.55rem;
+  font-size: 12px;
+  line-height: 1.9;
   color: #334155;
   background: #ffffff;
   outline: none;
-  min-height: 1.95rem;
+  min-height: 2.65rem;
+  height: auto;
   transition: all 0.2s ease;
 }
 
@@ -1312,10 +1387,10 @@ const confirmDeleteSubject = async () => {
   font-size: 0.58rem;
   font-weight: 800;
   color: #94a3b8;
-  line-height: 1.15;
-  white-space: nowrap;
-  overflow: hidden;
-  text-overflow: ellipsis;
+  line-height: 1.45;
+  white-space: normal;
+  overflow: visible;
+  text-overflow: clip;
 }
 
 .summary-value {
@@ -1323,7 +1398,7 @@ const confirmDeleteSubject = async () => {
   font-size: 1rem;
   font-weight: 900;
   color: #0f172a;
-  line-height: 1.1;
+  line-height: 1.35;
 }
 
 .table-th {
@@ -1332,7 +1407,9 @@ const confirmDeleteSubject = async () => {
   font-weight: 900;
   color: #475569;
   border: 1px solid #e2e8f0;
-  white-space: nowrap;
+  white-space: normal;
+  overflow-wrap: anywhere;
+  word-break: break-word;
 }
 
 .table-td {
@@ -1413,9 +1490,11 @@ const confirmDeleteSubject = async () => {
   }
 
   .form-input {
-    padding: 0.44rem 0.6rem;
-    font-size: 0.75rem;
-    min-height: 2.25rem;
+    padding: 0.62rem 0.6rem;
+    font-size: 12px !important;
+    line-height: 1.9 !important;
+    min-height: 2.65rem !important;
+    height: auto;
   }
 
   .summary-card {
