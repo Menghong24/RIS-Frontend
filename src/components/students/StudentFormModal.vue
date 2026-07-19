@@ -1,20 +1,21 @@
 <template>
-  <div
+  <Teleport to="body">
+    <div
     v-if="isOpen"
-    class="student-form-modal-overlay-mobile-safe fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-2 sm:p-3"
+    class="student-form-modal-overlay-mobile-safe fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-end sm:items-center justify-center z-[9999] p-2.5 sm:p-4"
     @click.self="handleClose"
   >
     <div
-      class="student-form-modal-panel-mobile-safe bg-white rounded-t-2xl sm:rounded-xl shadow-xl w-full max-w-5xl max-h-[94dvh] sm:max-h-[88vh] overflow-hidden border border-slate-100 flex flex-col"
+      class="student-form-modal-panel-mobile-safe bg-white rounded-t-2xl sm:rounded-2xl shadow-xl w-full max-w-6xl max-h-[95dvh] sm:max-h-[90vh] overflow-hidden border border-slate-100 flex flex-col"
     >
       <!-- Header -->
       <div
-        class="px-2.5 sm:px-3 py-2.5 border-b border-slate-100 bg-slate-50 flex items-start justify-between gap-2 shrink-0"
+        class="px-3.5 sm:px-5 py-3 sm:py-4 border-b border-slate-100 bg-slate-50 flex items-start justify-between gap-3 shrink-0"
       >
         <div class="min-w-0">
-          <h2 class="text-sm sm:text-base font-extrabold text-slate-800 flex items-start gap-2 leading-snug">
+          <h2 class="text-base sm:text-lg font-extrabold text-slate-800 flex items-start gap-2.5 leading-snug">
             <span
-              class="h-7 w-7 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-xs shrink-0"
+              class="h-8 w-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-sm shrink-0"
             >
               <i :class="isEditing ? 'fa-solid fa-user-pen' : 'fa-solid fa-user-plus'"></i>
             </span>
@@ -24,7 +25,7 @@
             </span>
           </h2>
 
-          <p class="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 break-words leading-snug">
+          <p class="text-xs sm:text-sm text-slate-500 mt-1 break-words leading-snug">  
             សូមបំពេញព័ត៌មានសិស្ស និងព័ត៌មានអាណាព្យាបាល
           </p>
         </div>
@@ -32,7 +33,7 @@
         <button
           type="button"
           @click="handleClose"
-          class="h-7 w-7 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition shrink-0"
+          class="h-8 w-8 sm:h-9 sm:w-9 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition shrink-0"
         >
           <i class="fa-solid fa-xmark text-sm"></i>
         </button>
@@ -40,13 +41,13 @@
 
       <form
         @submit.prevent="handleSubmit"
-        class="student-form-modal-body-mobile-safe p-2.5 sm:p-3 space-y-2.5 sm:space-y-3 overflow-y-auto modal-scroll"
+        class="student-form-modal-body-mobile-safe p-3 sm:p-5 space-y-3 sm:space-y-4 overflow-y-auto modal-scroll"
       >
         <!-- Student Image -->
         <div class="form-section">
-          <div class="flex items-center gap-2.5 sm:gap-3">
+          <div class="flex items-center gap-3 sm:gap-4">
             <div
-              class="h-14 w-14 sm:h-20 sm:w-20 rounded-full overflow-hidden bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0"
+              class="h-16 w-16 sm:h-24 sm:w-24 rounded-full overflow-hidden bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0"
             >
               <img
                 v-if="imagePreviewUrl"
@@ -57,26 +58,26 @@
 
               <span
                 v-else
-                class="text-base sm:text-xl font-extrabold text-blue-600"
+                class="text-lg sm:text-2xl font-extrabold text-blue-600"
               >
                 {{ studentInitial }}
               </span>
             </div>
 
             <div class="min-w-0 flex-1">
-              <p class="text-[11px] sm:text-xs font-extrabold text-slate-800">
+              <p class="text-sm font-extrabold text-slate-800">
                 រូបសិស្ស
               </p>
 
-              <p class="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 leading-5">
+              <p class="text-xs sm:text-sm text-slate-500 mt-1 leading-6 break-words">
                 JPG, PNG ឬ WEBP។ ទំហំមិនលើស 2MB។
               </p>
 
-              <div class="mt-1.5 sm:mt-2 flex flex-wrap items-center gap-1.5 sm:gap-2">
+              <div class="mt-2 sm:mt-3 flex flex-wrap items-center gap-2 sm:gap-2.5">
                 <label
-                  class="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg bg-blue-600 text-white text-[11px] sm:text-xs font-bold cursor-pointer hover:bg-blue-700 transition"
+                  class="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-bold cursor-pointer hover:bg-blue-700 transition"
                 >
-                  <i class="fa-solid fa-camera text-[10px] sm:text-xs"></i>
+                  <i class="fa-solid fa-camera text-sm"></i>
                   ជ្រើសរូប
 
                   <input
@@ -91,7 +92,7 @@
                   v-if="selectedImageFile"
                   type="button"
                   @click="clearSelectedImage"
-                  class="px-2.5 sm:px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 text-[11px] sm:text-xs font-bold hover:bg-slate-200 transition"
+                  class="px-3 sm:px-4 py-2 rounded-lg bg-slate-100 text-slate-600 text-sm font-bold hover:bg-slate-200 transition"
                 >
                   សម្អាតរូបថ្មី
                 </button>
@@ -99,7 +100,7 @@
 
               <p
                 v-if="imageError"
-                class="text-[10px] sm:text-[11px] font-bold text-red-600 mt-1.5 sm:mt-2"
+                class="text-xs sm:text-sm font-bold text-red-600 mt-2"
               >
                 {{ imageError }}
               </p>
@@ -119,7 +120,7 @@
             </h3>
           </div>
 
-          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3">
             <div>
               <label class="field-label">
                 ឈ្មោះខ្មែរ <span class="text-red-500">*</span>
@@ -228,7 +229,7 @@
             </h3>
           </div>
 
-          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2">
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3">
             <div>
               <label class="field-label">
                 ថ្ងៃកំណើត <span class="text-red-500">*</span>
@@ -325,7 +326,7 @@
             </h3>
           </div>
 
-          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2">
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3">
             <div>
               <label class="field-label">
                 ឈ្មោះអាណាព្យាបាល
@@ -369,12 +370,12 @@
 
         <!-- Actions -->
         <div
-          class="student-form-modal-footer-mobile-safe sticky bottom-0 -mx-2.5 sm:-mx-3 px-2.5 sm:px-3 py-2.5 bg-white border-t border-slate-100 flex justify-end gap-2"
+          class="student-form-modal-footer-mobile-safe sticky bottom-0 -mx-3 sm:-mx-5 px-3 sm:px-5 py-3 sm:py-4 bg-white border-t border-slate-100 flex justify-end gap-2.5 sm:gap-3"
         >
           <button
             type="button"
             @click="handleClose"
-            class="px-3 sm:px-3.5 py-1.5 text-[11px] sm:text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition"
+            class="px-4 sm:px-5 py-2 text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition"
           >
             បោះបង់
           </button>
@@ -382,16 +383,16 @@
           <button
             type="submit"
             :disabled="isSaving"
-            class="px-3.5 sm:px-4 py-1.5 text-[11px] sm:text-xs font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-1.5 sm:gap-2"
+            class="px-4 sm:px-5 py-2 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
           >
             <i
               v-if="isSaving"
-              class="fa-solid fa-circle-notch fa-spin text-[10px] sm:text-xs"
+              class="fa-solid fa-circle-notch fa-spin text-sm"
             ></i>
 
             <i
               v-else
-              class="fa-solid fa-floppy-disk text-[10px] sm:text-xs"
+              class="fa-solid fa-floppy-disk text-sm"
             ></i>
 
             {{ isSaving ? "កំពុងរក្សាទុក..." : (isEditing ? "រក្សាទុកការកែប្រែ" : "បញ្ចូលសិស្សថ្មី") }}
@@ -399,7 +400,8 @@
         </div>
       </form>
     </div>
-  </div>
+    </div>
+  </Teleport>
 </template>
 
 <script setup>
@@ -797,7 +799,7 @@ select.form-input,
 textarea.form-input,
 .form-input::placeholder {
   font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif !important;
-  font-size: 12px !important;
+  font-size: 14px !important;
   line-height: 1.9 !important;
   font-weight: 500;
   -webkit-font-smoothing: antialiased;
@@ -806,17 +808,17 @@ textarea.form-input,
 
 input.form-input,
 select.form-input {
-  min-height: 2.65rem !important;
-  height: 2.65rem !important;
-  padding-top: 0.58rem !important;
-  padding-bottom: 0.58rem !important;
+  min-height: 2.68rem !important;
+  height: 2.68rem !important;
+  padding-top: 0.56rem !important;
+  padding-bottom: 0.56rem !important;
   overflow: visible !important;
 }
 
 textarea.form-input {
   min-height: 5rem !important;
-  padding-top: 0.6rem !important;
-  padding-bottom: 0.6rem !important;
+  padding-top: 0.58rem !important;
+  padding-bottom: 0.58rem !important;
 }
 
 
@@ -853,8 +855,8 @@ textarea.form-input {
   }
 
   .student-form-modal-body-mobile-safe {
-    max-height: calc(100vh - 8.5rem);
-    max-height: calc(100dvh - 8.5rem);
+    max-height: calc(100vh - 9.75rem);
+    max-height: calc(100dvh - 9.75rem);
     -webkit-overflow-scrolling: touch;
   }
 
@@ -869,42 +871,42 @@ textarea.form-input {
 .form-section {
   border: 1px solid #e2e8f0;
   background: #ffffff;
-  border-radius: 0.75rem;
-  padding: 0.65rem;
+  border-radius: 0.9rem;
+  padding: 0.9rem;
 }
 
 .section-heading {
   display: flex;
   align-items: center;
-  gap: 0.45rem;
-  margin-bottom: 0.5rem;
+  gap: 0.6rem;
+  margin-bottom: 0.75rem;
 }
 
 .section-icon {
-  height: 1.45rem;
-  width: 1.45rem;
-  border-radius: 0.5rem;
+  height: 1.75rem;
+  width: 1.75rem;
+  border-radius: 0.6rem;
   background: #eff6ff;
   color: #2563eb;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.62rem;
+  font-size: 0.78rem;
   flex-shrink: 0;
 }
 
 .section-title {
-  font-size: 0.72rem;
+  font-size: 15px;
   font-weight: 900;
   color: #1e293b;
 }
 
 .field-label {
   display: block;
-  font-size: 0.62rem;
+  font-size: 14px;
   font-weight: 800;
   color: #64748b;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.32rem;
   white-space: normal;
   overflow: visible;
   text-overflow: clip;
@@ -913,14 +915,14 @@ textarea.form-input {
 .form-input {
   width: 100%;
   border: 1px solid #e2e8f0;
-  border-radius: 0.45rem;
-  padding: 0.58rem 0.56rem;
-  font-size: 0.7rem;
-  line-height: 1.9;
+  border-radius: 0.55rem;
+  padding: 0.56rem 0.7rem;
+  font-size: 14px;
+  line-height: 1.7;
   color: #334155;
   background: #ffffff;
   outline: none;
-  min-height: 2.55rem;
+  min-height: 2.58rem;
   height: auto;
   transition: all 0.2s ease;
 }
@@ -961,19 +963,62 @@ textarea.form-input {
 
 @media (min-width: 640px) {
   .form-section {
-    padding: 0.75rem;
+    padding: 1rem;
   }
 
   .field-label {
-    font-size: 0.68rem;
+    font-size: 14px;
   }
 
   .form-input {
-    padding: 0.62rem 0.62rem;
-    font-size: 0.75rem;
-    line-height: 1.9;
-    min-height: 2.75rem;
+    padding: 0.6rem 0.75rem;
+    font-size: 14px;
+    line-height: 1.7;
+    min-height: 2.68rem;
     height: auto;
   }
 }
+
+.student-form-modal-panel-mobile-safe input,
+.student-form-modal-panel-mobile-safe select,
+.student-form-modal-panel-mobile-safe textarea,
+.student-form-modal-panel-mobile-safe option,
+.student-form-modal-panel-mobile-safe input::placeholder,
+.student-form-modal-panel-mobile-safe textarea::placeholder,
+.student-form-modal-panel-mobile-safe .field-label,
+.student-form-modal-panel-mobile-safe .section-title,
+.student-form-modal-footer-mobile-safe button {
+  font-size: 14px !important;
+}
+
+
+
+
+
+/* Force StudentForm modal to cover Header, Sidebar, and page transition stacking contexts */
+.student-form-modal-overlay-mobile-safe {
+  position: fixed !important;
+  inset: 0 !important;
+  top: 0 !important;
+  right: 0 !important;
+  bottom: 0 !important;
+  left: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  z-index: 9999 !important;
+  isolation: isolate;
+}
+
+
+@media (max-width: 640px) {
+  .student-form-modal-overlay-mobile-safe {
+    padding-top: calc(0.5rem + env(safe-area-inset-top)) !important;
+  }
+
+  .student-form-modal-panel-mobile-safe {
+    max-height: calc(100dvh - 1rem - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
+  }
+}
+
 </style>
