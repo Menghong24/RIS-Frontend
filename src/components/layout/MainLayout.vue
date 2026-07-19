@@ -102,11 +102,11 @@
               </div>
 
               <div class="text-left">
-                <h2 class="text-base font-extrabold text-slate-800 break-words leading-snug">
+                <h2 class="text-base font-extrabold text-slate-800">
                   បញ្ជាក់ការចាកចេញ
                 </h2>
 
-                <p class="text-xs text-slate-500 mt-0.5 break-words leading-snug">
+                <p class="text-xs text-slate-500 mt-0.5">
                   តើអ្នកពិតជាចង់ចាកចេញពីគណនីមែនទេ?
                 </p>
               </div>
@@ -127,11 +127,11 @@
             <div
               class="logout-warning rounded-xl bg-red-50 border border-red-100 px-4 py-3 text-left"
             >
-              <p class="text-sm font-bold text-red-700 break-words leading-snug">
+              <p class="text-sm font-bold text-red-700">
                 ចាកចេញពីប្រព័ន្ធ
               </p>
 
-              <p class="text-xs text-red-600 mt-1 leading-relaxed break-words">
+              <p class="text-xs text-red-600 mt-1 leading-relaxed">
                 បន្ទាប់ពីចាកចេញ អ្នកត្រូវ login ម្តងទៀត ដើម្បីប្រើប្រាស់ប្រព័ន្ធ។
               </p>
             </div>
@@ -556,20 +556,7 @@ async function confirmLogout() {
 
 <style scoped>
 .layout-root {
-  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif;
-  line-height: 1.45;
-}
-
-.layout-root h2,
-.layout-root p,
-.layout-root span,
-.layout-root button {
-  line-height: 1.45;
-}
-
-.layout-root .break-words {
-  overflow-wrap: anywhere;
-  word-break: break-word;
+  font-family: "Khmer OS Battambang", "Battambang", "Noto Sans Khmer", system-ui, sans-serif;
 }
 
 .layout-shell {
@@ -610,6 +597,7 @@ async function confirmLogout() {
 .sidebar-shell {
   will-change: transform;
 }
+
 
 .loading-card {
   animation: loadingCardIn 0.28s ease-out both;

@@ -6,7 +6,7 @@
     <Transition name="sidebar-content" appear>
       <div
         v-show="isSidebarOpen"
-        class="h-full flex flex-col min-w-[19rem] max-w-[88vw]"
+        class="h-full flex flex-col min-w-72 max-w-[85vw]"
       >
         <!-- Logo -->
         <div class="sidebar-logo-wrap">
@@ -15,16 +15,16 @@
               <img
                 :src="logoRIS"
                 alt="RIS Logo"
-                class="h-9 w-9 object-contain"
+                class="h-8 w-8 object-contain"
               />
             </div>
 
             <div class="min-w-0">
-              <p class="text-lg font-extrabold text-blue-700 tracking-widest leading-snug">
+              <p class="text-base font-extrabold text-blue-700 tracking-widest leading-none">
                 R I S
               </p>
 
-              <p class="text-[11px] text-slate-500 mt-1 break-words leading-snug">
+              <p class="text-[10px] text-slate-500 mt-1 truncate">
                 សាលាអន្តរជាតិ អា អាយ អេស
               </p>
             </div>
@@ -67,7 +67,7 @@
                   ></i>
                 </span>
 
-                <span class="ml-3 flex-1 text-left break-words leading-snug">
+                <span class="ml-3 truncate flex-1 text-left">
                   {{ item.name }}
                 </span>
 
@@ -114,7 +114,7 @@
                       ></i>
                     </span>
 
-                    <span class="ml-3 break-words leading-snug">
+                    <span class="ml-3 truncate">
                       {{ child.name }}
                     </span>
                   </button>
@@ -146,7 +146,7 @@
                   ></i>
                 </span>
 
-                <span class="ml-3 break-words leading-snug">
+                <span class="ml-3 truncate">
                   {{ item.name }}
                 </span>
               </button>
@@ -350,18 +350,7 @@ watch(
     border-color 220ms ease,
     box-shadow 220ms ease;
   will-change: width, max-width;
-  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif;
-}
-
-.sidebar-root p,
-.sidebar-root span,
-.sidebar-root button {
-  line-height: 1.45;
-}
-
-.sidebar-root .break-words {
-  overflow-wrap: anywhere;
-  word-break: break-word;
+  font-family: "Khmer OS Battambang", "Battambang", "Noto Sans Khmer", system-ui, sans-serif;
 }
 
 @media (min-width: 1024px) {
@@ -371,8 +360,8 @@ watch(
 }
 
 .sidebar-open {
-  width: 19.5rem;
-  max-width: 88vw;
+  width: 18rem;
+  max-width: 85vw;
 }
 
 .sidebar-closed {
@@ -381,7 +370,7 @@ watch(
 }
 
 .sidebar-logo-wrap {
-  height: 4.45rem;
+  height: 4rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -395,17 +384,17 @@ watch(
   width: 100%;
   display: flex;
   align-items: center;
-  gap: 0.85rem;
+  gap: 0.75rem;
   border-radius: 0.75rem;
   background: #eff6ff;
   border: 1px solid #dbeafe;
-  padding: 0.58rem 0.85rem;
+  padding: 0.5rem 0.75rem;
   animation: logoIn 360ms cubic-bezier(0.22, 1, 0.36, 1) both;
 }
 
 .sidebar-logo-image {
-  height: 2.55rem;
-  width: 2.55rem;
+  height: 2.25rem;
+  width: 2.25rem;
   border-radius: 0.5rem;
   background: #ffffff;
   display: flex;
@@ -431,9 +420,9 @@ watch(
   justify-content: flex-start;
   border-radius: 0.75rem;
   border-width: 1px;
-  font-size: 0.94rem;
+  font-size: 0.875rem;
   font-weight: 800;
-  min-height: 2.85rem;
+  min-height: 2.55rem;
   transition:
     transform 180ms ease,
     background-color 180ms ease,
@@ -445,11 +434,11 @@ watch(
 }
 
 .menu-button {
-  padding: 0.72rem 0.85rem;
+  padding: 0.625rem 0.75rem;
 }
 
 .submenu-button {
-  padding: 0.66rem 0.85rem;
+  padding: 0.58rem 0.75rem;
   animation: childItemIn 260ms ease both;
   animation-delay: var(--child-delay, 0ms);
 }
@@ -503,7 +492,7 @@ watch(
 }
 
 .menu-icon-wrap {
-  width: 1.7rem;
+  width: 1.5rem;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -511,8 +500,8 @@ watch(
 }
 
 .submenu-wrap {
-  margin-left: 1.1rem;
-  padding-left: 0.85rem;
+  margin-left: 1rem;
+  padding-left: 0.75rem;
   border-left: 1px solid #dbeafe;
   display: flex;
   flex-direction: column;
@@ -524,14 +513,14 @@ watch(
 }
 
 .sidebar-logout-wrap {
-  padding: 0.85rem;
+  padding: 0.75rem;
   border-top: 1px solid #e2e8f0;
   flex-shrink: 0;
   background: #ffffff;
 }
 
 .logout-button {
-  padding: 0.72rem 0.85rem;
+  padding: 0.625rem 0.75rem;
   color: #475569;
   border-color: transparent;
 }
@@ -641,7 +630,7 @@ watch(
   .menu-button,
   .submenu-button,
   .logout-button {
-    font-size: 0.92rem;
+    font-size: 0.86rem;
   }
 }
 

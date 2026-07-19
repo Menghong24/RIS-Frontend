@@ -428,7 +428,7 @@ const formatDate = (date) => {
 }
 
 .section-title {
-  font-size: 14px;
+  font-size: 0.72rem;
   font-weight: 900;
   color: #1e293b;
   margin-bottom: 0.45rem;
@@ -449,7 +449,7 @@ const formatDate = (date) => {
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 14px;
+  font-size: 0.62rem;
   flex-shrink: 0;
 }
 
@@ -463,7 +463,7 @@ const formatDate = (date) => {
 
 .info-label {
   display: block;
-  font-size: 14px;
+  font-size: 0.58rem;
   font-weight: 700;
   color: #64748b;
   margin-bottom: 0.1rem;
@@ -474,7 +474,7 @@ const formatDate = (date) => {
 }
 
 .info-value {
-  font-size: 14px;
+  font-size: 0.68rem;
   font-weight: 800;
   color: #1e293b;
   line-height: 1.45;
@@ -505,11 +505,11 @@ const formatDate = (date) => {
   }
 
   .info-label {
-    font-size: 14px;
+    font-size: 0.62rem;
   }
 
   .info-value {
-    font-size: 14px;
+    font-size: 0.75rem;
   }
 }
 
@@ -540,24 +540,6 @@ const formatDate = (date) => {
     z-index: 5;
     padding-bottom: calc(0.65rem + env(safe-area-inset-bottom)) !important;
   }
-}
-
-
-.student-view-modal-panel-mobile-safe,
-.student-view-modal-panel-mobile-safe h2,
-.student-view-modal-panel-mobile-safe h3,
-.student-view-modal-panel-mobile-safe p,
-.student-view-modal-panel-mobile-safe span,
-.student-view-modal-panel-mobile-safe button,
-.student-view-modal-panel-mobile-safe .section-title,
-.student-view-modal-panel-mobile-safe .info-label,
-.student-view-modal-panel-mobile-safe .info-value {
-  font-size: 14px !important;
-  line-height: 1.45 !important;
-}
-
-.student-view-modal-panel-mobile-safe .section-icon {
-  font-size: 14px !important;
 }
 
 </style>
