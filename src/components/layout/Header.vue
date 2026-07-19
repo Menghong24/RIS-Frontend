@@ -2,7 +2,7 @@
   <div class="shrink-0 header-animation-scope">
     <!-- Header -->
     <header
-      class="app-header sticky top-0 z-30 h-16 px-3 md:px-5 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm shrink-0 flex items-center justify-between"
+      class="app-header sticky top-0 z-20 h-16 px-3 md:px-5 bg-white/95 backdrop-blur border-b border-slate-200 shadow-sm shrink-0 flex items-center justify-between"
     >
       <!-- Left Side -->
       <div class="flex items-center gap-2.5 min-w-0">
@@ -90,11 +90,13 @@
       </div>
     </header>
 
-    <!-- Notice Modal -->
+    <Teleport to="body">
+      <div class="header-teleport-scope header-animation-scope">
+        <!-- Notice Modal -->
     <Transition name="modal-fade">
       <div
         v-if="isNoticeModalOpen"
-        class="header-modal-overlay-mobile-safe fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[80] p-3"
+        class="header-modal-overlay-mobile-safe fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[120] p-3"
         @click="isNoticeModalOpen = false"
       >
         <Transition name="modal-card" appear>
@@ -242,7 +244,7 @@
     <Transition name="modal-fade">
       <div
         v-if="isProfileModalOpen"
-        class="header-modal-overlay-mobile-safe fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[80] p-3"
+        class="header-modal-overlay-mobile-safe fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[120] p-3"
         @click="isProfileModalOpen = false"
       >
         <Transition name="modal-card" appear>
@@ -468,7 +470,7 @@
     <Transition name="modal-fade">
       <div
         v-if="isLogoutConfirmOpen"
-        class="header-modal-overlay-mobile-safe fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-[90] p-3"
+        class="header-modal-overlay-mobile-safe header-logout-overlay-mobile-safe fixed inset-0 bg-slate-900/50 backdrop-blur-sm flex items-center justify-center z-[130] p-3"
         @click="isLogoutConfirmOpen = false"
       >
         <Transition name="confirm-card" appear>
@@ -537,6 +539,8 @@
         </Transition>
       </div>
     </Transition>
+      </div>
+    </Teleport>
   </div>
 </template>
 
@@ -805,6 +809,25 @@ const handleLogout = async () => {
 
 .app-header {
   animation: headerSlideDown 0.28s ease-out both;
+}
+
+/* Fixed stacking: Header stays below body-level modals */
+.app-header {
+  z-index: 20;
+}
+
+.header-modal-overlay-mobile-safe {
+  position: fixed !important;
+  inset: 0 !important;
+  z-index: 120 !important;
+}
+
+.header-logout-overlay-mobile-safe {
+  z-index: 130 !important;
+}
+
+.header-teleport-scope {
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif;
 }
 
 .notification-badge {
