@@ -427,7 +427,7 @@
               @click.stop
             >
               <div class="px-4 sm:px-5 py-3 sm:py-4 border-b border-slate-100 flex items-start justify-between gap-3 bg-slate-50 shrink-0">
-                <h3 class="font-extrabold text-slate-800 text-base sm:text-lg flex items-start gap-2.5 leading-snug min-w-0">
+                <h3 class="users-account-modal-title font-extrabold text-slate-800 text-base sm:text-lg flex items-start gap-2.5 leading-snug min-w-0">
                   <i
                     :class="
                       modal.mode === 'add'
@@ -450,90 +450,93 @@
               </div>
 
               <form
+                id="userAccountForm"
                 @submit.prevent="handleModalSubmit"
-                class="modal-body-mobile-safe p-4 sm:p-5 space-y-4 overflow-y-auto modal-scroll"
+                class="users-account-modal-form flex flex-1 min-h-0 flex-col overflow-hidden"
               >
-                <div>
-                  <label class="form-label">
-                    ឈ្មោះអ្នកប្រើប្រាស់
-                  </label>
+                <div class="modal-body-mobile-safe flex-1 min-h-0 p-4 sm:p-5 space-y-4 overflow-y-auto modal-scroll">
+                  <div>
+                    <label class="form-label">
+                      ឈ្មោះអ្នកប្រើប្រាស់
+                    </label>
 
-                  <input
-                    v-model="modal.form.username"
-                    type="text"
-                    required
-                    placeholder="ឧ. admin01"
-                    class="form-input"
-                  />
-                </div>
+                    <input
+                      v-model="modal.form.username"
+                      type="text"
+                      required
+                      placeholder="ឧ. admin01"
+                      class="form-input"
+                    />
+                  </div>
 
-                <div v-if="modal.mode === 'add'">
-                  <label class="form-label">
-                    ពាក្យសម្ងាត់
-                  </label>
+                  <div v-if="modal.mode === 'add'">
+                    <label class="form-label">
+                      ពាក្យសម្ងាត់
+                    </label>
 
-                  <input
-                    v-model="modal.form.password"
-                    type="password"
-                    required
-                    placeholder="••••••••"
-                    class="form-input"
-                  />
-                </div>
+                    <input
+                      v-model="modal.form.password"
+                      type="password"
+                      required
+                      placeholder="••••••••"
+                      class="form-input"
+                    />
+                  </div>
 
-                <div>
-                  <label class="form-label">
-                    តួនាទីអ្នកប្រើប្រាស់
-                  </label>
+                  <div>
+                    <label class="form-label">
+                      តួនាទីអ្នកប្រើប្រាស់
+                    </label>
 
-                  <select
-                    v-model="modal.form.role"
-                    required
-                    class="form-input"
-                  >
-                    <option value="user">អ្នកប្រើប្រាស់ធម្មតា</option>
-                    <option value="teacher">គ្រូបង្រៀន</option>
-                    <option value="admin">អ្នកគ្រប់គ្រងប្រព័ន្ធ</option>
-                  </select>
-                </div>
-
-                <div v-if="modal.form.role === 'teacher'">
-                  <label class="form-label">
-                    ជ្រើសគ្រូបង្រៀន
-                  </label>
-
-                  <select
-                    v-model="modal.form.teacher"
-                    required
-                    class="form-input"
-                  >
-                    <option
-                      value=""
-                      disabled
+                    <select
+                      v-model="modal.form.role"
+                      required
+                      class="form-input"
                     >
-                      ជ្រើសរើស Teacher profile...
-                    </option>
+                      <option value="user">អ្នកប្រើប្រាស់ធម្មតា</option>
+                      <option value="teacher">គ្រូបង្រៀន</option>
+                      <option value="admin">អ្នកគ្រប់គ្រងប្រព័ន្ធ</option>
+                    </select>
+                  </div>
 
-                    <option
-                      v-for="teacher in teachersList"
-                      :key="teacher._id"
-                      :value="teacher._id"
+                  <div v-if="modal.form.role === 'teacher'">
+                    <label class="form-label">
+                      ជ្រើសគ្រូបង្រៀន
+                    </label>
+
+                    <select
+                      v-model="modal.form.teacher"
+                      required
+                      class="form-input"
                     >
-                      {{ teacher.khmerName || teacher.englishName || teacher.name || teacher.username || teacher._id }}
-                    </option>
-                  </select>
+                      <option
+                        value=""
+                        disabled
+                      >
+                        ជ្រើសរើស Teacher profile...
+                      </option>
 
-                  <p class="text-[11px] text-slate-400 mt-1 break-words leading-snug">
-                    គណនី role គ្រូបង្រៀន ត្រូវភ្ជាប់ទៅ Teacher profile ដើម្បីកំណត់សិទ្ធិថ្នាក់។
-                  </p>
+                      <option
+                        v-for="teacher in teachersList"
+                        :key="teacher._id"
+                        :value="teacher._id"
+                      >
+                        {{ teacher.khmerName || teacher.englishName || teacher.name || teacher.username || teacher._id }}
+                      </option>
+                    </select>
+
+                    <p class="users-account-modal-helper text-slate-400 mt-1 break-words leading-snug">
+                      គណនី role គ្រូបង្រៀន ត្រូវភ្ជាប់ទៅ Teacher profile ដើម្បីកំណត់សិទ្ធិថ្នាក់។
+                    </p>
+                  </div>
                 </div>
 
-                <div class="modal-footer-mobile-safe sticky bottom-0 -mx-4 sm:-mx-5 px-4 sm:px-5 py-3 sm:py-4 flex items-center justify-end gap-2.5 border-t border-slate-100 bg-white">
+                <div class="modal-footer-mobile-safe shrink-0 px-4 sm:px-5 py-3 sm:py-4 flex flex-row items-center justify-end gap-2.5 border-t border-slate-100 bg-white">
                   <button
                     type="button"
                     @click="closeModal"
                     :disabled="modal.isSubmitting"
-                    class="px-3 sm:px-4 py-1.5 sm:py-2 border border-slate-200 text-slate-700 text-[11px] sm:text-sm font-bold rounded-lg hover:bg-slate-50 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    class="px-3 sm:px-4 py-1.5 sm:py-2 border border-slate-200 text-slate-700 text-[11px] sm:text-sm font-bold rounded-lg hover:bg-slate-50 transition disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                   >
                     បោះបង់
                   </button>
@@ -541,7 +544,7 @@
                   <button
                     type="submit"
                     :disabled="modal.isSubmitting"
-                    class="px-4 sm:px-5 py-1.5 sm:py-2 bg-blue-600 text-white text-[11px] sm:text-sm font-bold rounded-lg hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 transition flex items-center gap-2"
+                    class="px-4 sm:px-5 py-1.5 sm:py-2 bg-blue-600 text-white text-[11px] sm:text-sm font-bold rounded-lg hover:bg-blue-700 active:bg-blue-800 disabled:opacity-50 transition flex items-center justify-center gap-2 whitespace-nowrap"
                   >
                     <i
                       v-if="modal.isSubmitting"
@@ -575,18 +578,18 @@
                 </div>
 
                 <div class="min-w-0">
-                  <h3 class="text-sm sm:text-base font-extrabold text-slate-800 break-words leading-snug">
+                  <h3 class="users-delete-modal-title text-sm sm:text-base font-extrabold text-slate-800 break-words leading-snug">
                     បញ្ជាក់ការលុប
                   </h3>
 
-                  <p class="text-xs sm:text-sm text-red-600 font-bold mt-0.5 break-words leading-snug">
+                  <p class="users-delete-modal-subtitle text-xs sm:text-sm text-red-600 font-bold mt-0.5 break-words leading-snug">
                     Delete Confirmation
                   </p>
                 </div>
               </div>
 
               <div class="p-4">
-                <p class="text-xs sm:text-sm text-slate-600 leading-relaxed">
+                <p class="users-delete-modal-message text-xs sm:text-sm text-slate-600 leading-relaxed">
                   តើអ្នកពិតជាចង់លុបគណនី
                   <span class="font-extrabold text-slate-800 break-words leading-snug">
                     "{{ deleteModal.username || 'អ្នកប្រើប្រាស់' }}"
@@ -594,17 +597,17 @@
                   មែនទេ?
                 </p>
 
-                <div class="mt-3 rounded-xl bg-red-50 border border-red-100 px-3 py-2 text-xs sm:text-sm text-red-600 font-bold leading-relaxed">
+                <div class="users-delete-modal-warning mt-3 rounded-xl bg-red-50 border border-red-100 px-3 py-2 text-xs sm:text-sm text-red-600 font-bold leading-relaxed">
                   សកម្មភាពនេះមិនអាចត្រឡប់វិញបានទេ។
                 </div>
               </div>
 
-              <div class="modal-footer-mobile-safe px-4 py-3 bg-slate-50 border-t border-slate-100 flex flex-col-reverse sm:flex-row sm:justify-end gap-2">
+              <div class="modal-footer-mobile-safe px-4 py-3 bg-slate-50 border-t border-slate-100 flex flex-row justify-end gap-2">
                 <button
                   type="button"
                   @click="closeDeleteModal"
                   :disabled="Boolean(isDeleting)"
-                  class="w-full sm:w-auto px-3.5 py-1.5 sm:py-2 border border-slate-200 bg-white text-slate-700 text-[11px] sm:text-sm font-bold rounded-lg hover:bg-slate-100 transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  class="px-3.5 py-1.5 sm:py-2 border border-slate-200 bg-white text-slate-700 text-[11px] sm:text-sm font-bold rounded-lg hover:bg-slate-100 transition disabled:opacity-50 disabled:cursor-not-allowed whitespace-nowrap"
                 >
                   បោះបង់
                 </button>
@@ -613,7 +616,7 @@
                   type="button"
                   @click="confirmDeleteUser"
                   :disabled="Boolean(isDeleting)"
-                  class="w-full sm:w-auto px-4 py-1.5 sm:py-2 bg-red-600 text-white text-[11px] sm:text-sm font-bold rounded-lg hover:bg-red-700 active:bg-red-800 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center justify-center gap-2"
+                  class="px-4 py-1.5 sm:py-2 bg-red-600 text-white text-[11px] sm:text-sm font-bold rounded-lg hover:bg-red-700 active:bg-red-800 disabled:opacity-50 disabled:cursor-not-allowed transition flex items-center justify-center gap-2 whitespace-nowrap"
                 >
                   <i
                     v-if="isDeleting"
@@ -688,6 +691,68 @@ const restoreViewport = () => {
   );
 };
 
+const pageScrollY = ref(0);
+const pageScrollLocked = ref(false);
+const originalHtmlOverflow = ref("");
+const originalBodyStyle = {
+  position: "",
+  top: "",
+  left: "",
+  right: "",
+  width: "",
+  overflow: "",
+  overscrollBehavior: "",
+  paddingRight: ""
+};
+
+const lockPageScroll = () => {
+  if (typeof document === "undefined" || pageScrollLocked.value) return;
+
+  const body = document.body;
+  const html = document.documentElement;
+
+  pageScrollY.value = window.scrollY || window.pageYOffset || 0;
+  originalHtmlOverflow.value = html.style.overflow;
+
+  Object.keys(originalBodyStyle).forEach((property) => {
+    originalBodyStyle[property] = body.style[property] || "";
+  });
+
+  const scrollbarWidth = Math.max(0, window.innerWidth - html.clientWidth);
+
+  html.style.overflow = "hidden";
+  body.style.position = "fixed";
+  body.style.top = `-${pageScrollY.value}px`;
+  body.style.left = "0";
+  body.style.right = "0";
+  body.style.width = "100%";
+  body.style.overflow = "hidden";
+  body.style.overscrollBehavior = "none";
+
+  if (scrollbarWidth > 0) {
+    body.style.paddingRight = `${scrollbarWidth}px`;
+  }
+
+  pageScrollLocked.value = true;
+};
+
+const unlockPageScroll = () => {
+  if (typeof document === "undefined" || !pageScrollLocked.value) return;
+
+  const body = document.body;
+  const html = document.documentElement;
+  const scrollY = pageScrollY.value;
+
+  html.style.overflow = originalHtmlOverflow.value;
+
+  Object.entries(originalBodyStyle).forEach(([property, value]) => {
+    body.style[property] = value;
+  });
+
+  pageScrollLocked.value = false;
+  window.scrollTo(0, scrollY);
+};
+
 const {
   users,
   isLoading,
@@ -732,6 +797,23 @@ const deleteModal = reactive({
   targetId: null,
   username: ""
 });
+
+watch(
+  () => modal.isOpen || deleteModal.isOpen,
+  (isAnyModalOpen) => {
+    if (isAnyModalOpen) {
+      setNoZoomViewport();
+      lockPageScroll();
+      return;
+    }
+
+    unlockPageScroll();
+
+    if (originalViewportContent.value || viewportMetaWasCreated.value) {
+      restoreViewport();
+    }
+  }
+);
 
 let searchDebounceTimeout = null;
 
@@ -829,11 +911,11 @@ const syncUserDirectory = async () => {
 };
 
 onMounted(() => {
-  setNoZoomViewport();
   syncUserDirectory();
 });
 
 onBeforeUnmount(() => {
+  unlockPageScroll();
   restoreViewport();
   clearTimeout(searchDebounceTimeout);
 });
@@ -1148,8 +1230,8 @@ const formatDate = (dateString) => {
 }
 
 
-/* Mobile safe layout + balanced Khmer input text */
-@media (max-width: 640px) {
+/* Mobile safe layout + balanced Khmer form typography */
+@media (max-width: 639px) {
   .users-page-mobile-safe {
     padding-bottom: calc(2.75rem + env(safe-area-inset-bottom));
     -webkit-text-size-adjust: 100%;
@@ -1174,6 +1256,7 @@ const formatDate = (dateString) => {
     min-height: 100dvh;
     align-items: flex-end;
     padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+    overscroll-behavior: none;
   }
 
   .modal-panel-mobile-safe {
@@ -1181,20 +1264,76 @@ const formatDate = (dateString) => {
     max-height: calc(100dvh - 1rem);
   }
 
+  .users-account-modal-form {
+    flex: 1 1 auto;
+    min-height: 0;
+    overflow: hidden;
+  }
+
   .modal-body-mobile-safe {
-    max-height: calc(100vh - 9.75rem);
-    max-height: calc(100dvh - 9.75rem);
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: none;
+    overflow-y: auto;
+    overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
   }
 
   .modal-footer-mobile-safe {
-    position: sticky;
-    bottom: 0;
+    position: static;
+    flex-shrink: 0;
     z-index: 5;
     padding-bottom: calc(0.65rem + env(safe-area-inset-bottom)) !important;
   }
-}
 
+  .users-page-mobile-safe .form-input,
+  .modal-panel-mobile-safe .form-input {
+    min-height: 35px !important;
+    height: 35px !important;
+    padding: 0 0.625rem !important;
+    font-size: 14px !important;
+    line-height: 1.45 !important;
+  }
+
+  .users-page-mobile-safe .search-input {
+    min-height: 35px !important;
+    height: 35px !important;
+    padding-left: 2.25rem !important;
+    padding-right: 0.625rem !important;
+  }
+
+  .modal-panel-mobile-safe .form-label {
+    font-size: 13px !important;
+    line-height: 1.45 !important;
+    margin-bottom: 0.3rem;
+  }
+
+  .users-account-modal-title,
+  .users-delete-modal-title {
+    font-size: 16px !important;
+    line-height: 1.45 !important;
+  }
+
+  .users-account-modal-helper,
+  .users-delete-modal-subtitle {
+    font-size: 12px !important;
+    line-height: 1.5 !important;
+  }
+
+  .users-delete-modal-message,
+  .users-delete-modal-warning {
+    font-size: 14px !important;
+    line-height: 1.65 !important;
+  }
+
+  .modal-footer-mobile-safe button {
+    min-height: 35px;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    font-size: 14px !important;
+    line-height: 1.45 !important;
+  }
+}
 .modal-scroll::-webkit-scrollbar {
   width: 4px;
 }
@@ -1231,7 +1370,7 @@ const formatDate = (dateString) => {
 
 @media (min-width: 640px) {
   .form-label {
-    font-size: 0.68rem;
+    font-size: 13px;
   }
 
   .form-input {

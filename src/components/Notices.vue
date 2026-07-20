@@ -283,6 +283,7 @@
                 </div>
 
                 <button
+                  type="button"
                   @click="closeModal"
                   :disabled="isSaving"
                   class="text-slate-400 hover:text-slate-600 p-1.5 hover:bg-slate-100 rounded-lg transition shrink-0 disabled:opacity-50 disabled:cursor-not-allowed"
@@ -293,8 +294,11 @@
 
               <form
                 @submit.prevent="handleSubmit"
-                class="announcement-modal-body-mobile-safe p-4 sm:p-5 space-y-4 overflow-y-auto modal-scroll"
+                class="flex flex-1 min-h-0 flex-col"
               >
+                <div
+                  class="announcement-modal-body-mobile-safe flex-1 min-h-0 p-4 sm:p-5 space-y-4 overflow-y-auto overscroll-contain modal-scroll"
+                >
                 <!-- Title -->
                 <div>
                   <label class="form-label">
@@ -403,13 +407,15 @@
                   </select>
                 </div>
 
-                <!-- Actions -->
-                <div class="announcement-modal-footer-mobile-safe sticky bottom-0 -mx-4 sm:-mx-5 px-4 sm:px-5 py-3 sm:py-4 flex justify-end gap-2.5 sm:gap-3 border-t border-slate-100 bg-white">
+                </div>
+
+                <!-- Actions: fixed below the scrollable fields -->
+                <div class="announcement-modal-footer-mobile-safe shrink-0 px-4 sm:px-5 py-3 sm:py-4 flex flex-row items-center justify-end gap-2.5 sm:gap-3 border-t border-slate-100 bg-white">
                   <button
                     type="button"
                     @click="closeModal"
                     :disabled="isSaving"
-                    class="px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                    class="flex-1 sm:flex-none min-w-0 h-9 sm:h-auto px-3 sm:px-4 sm:py-2 text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed inline-flex items-center justify-center"
                   >
                     បោះបង់
                   </button>
@@ -417,7 +423,7 @@
                   <button
                     type="submit"
                     :disabled="isSaving"
-                    class="px-4 sm:px-5 py-1.5 sm:py-2 text-[11px] sm:text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition active:scale-95 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    class="flex-1 sm:flex-none min-w-0 h-9 sm:h-auto px-3 sm:px-5 sm:py-2 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition active:scale-95 inline-flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
                   >
                     <i
                       v-if="isSaving"
@@ -429,7 +435,9 @@
                       class="fa-solid fa-floppy-disk"
                     ></i>
 
-                    {{ isSaving ? "កំពុងរក្សាទុក..." : (isEditing ? "រក្សាទុកការកែប្រែ" : "រក្សាទុក") }}
+                    <span class="truncate">
+                      {{ isSaving ? "កំពុងរក្សាទុក..." : (isEditing ? "រក្សាទុកការកែប្រែ" : "រក្សាទុក") }}
+                    </span>
                   </button>
                 </div>
               </form>
@@ -545,7 +553,7 @@
 </template>
 
 <script setup>
-import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
+import { ref, computed, watch, onBeforeUnmount } from "vue";
 import { useQuery } from "../hooks/useQuery";
 import { useCollection } from "../hooks/useCollection";
 import { useToast } from "vue-toastification";
@@ -555,6 +563,73 @@ const toast = useToast();
 
 const originalViewportContent = ref("");
 const viewportMetaWasCreated = ref(false);
+
+const pageScrollLock = {
+  isLocked: false,
+  scrollY: 0,
+  body: {},
+  htmlOverflow: ""
+};
+
+const lockPageScroll = () => {
+  if (typeof window === "undefined" || typeof document === "undefined") return;
+  if (pageScrollLock.isLocked) return;
+
+  const body = document.body;
+  const html = document.documentElement;
+  const scrollbarWidth = Math.max(0, window.innerWidth - html.clientWidth);
+
+  pageScrollLock.isLocked = true;
+  pageScrollLock.scrollY = window.scrollY || window.pageYOffset || 0;
+  pageScrollLock.body = {
+    position: body.style.position,
+    top: body.style.top,
+    left: body.style.left,
+    right: body.style.right,
+    width: body.style.width,
+    overflow: body.style.overflow,
+    paddingRight: body.style.paddingRight
+  };
+  pageScrollLock.htmlOverflow = html.style.overflow;
+
+  body.style.position = "fixed";
+  body.style.top = `-${pageScrollLock.scrollY}px`;
+  body.style.left = "0";
+  body.style.right = "0";
+  body.style.width = "100%";
+  body.style.overflow = "hidden";
+  html.style.overflow = "hidden";
+
+  if (scrollbarWidth > 0) {
+    body.style.paddingRight = `${scrollbarWidth}px`;
+  }
+};
+
+const unlockPageScroll = () => {
+  if (typeof window === "undefined" || typeof document === "undefined") return;
+  if (!pageScrollLock.isLocked) return;
+
+  const body = document.body;
+  const html = document.documentElement;
+  const previous = pageScrollLock.body;
+  const scrollY = pageScrollLock.scrollY;
+
+  body.style.position = previous.position || "";
+  body.style.top = previous.top || "";
+  body.style.left = previous.left || "";
+  body.style.right = previous.right || "";
+  body.style.width = previous.width || "";
+  body.style.overflow = previous.overflow || "";
+  body.style.paddingRight = previous.paddingRight || "";
+  html.style.overflow = pageScrollLock.htmlOverflow || "";
+
+  pageScrollLock.isLocked = false;
+  pageScrollLock.scrollY = 0;
+  pageScrollLock.body = {};
+  pageScrollLock.htmlOverflow = "";
+
+  window.scrollTo(0, scrollY);
+};
 
 const setNoZoomViewport = () => {
   if (typeof document === "undefined") return;
@@ -885,6 +960,20 @@ const forceCloseModal = () => {
 };
 
 watch(
+  () => showModal.value || showDeleteModal.value,
+  (isAnyModalOpen) => {
+    if (isAnyModalOpen) {
+      setNoZoomViewport();
+      lockPageScroll();
+    } else {
+      unlockPageScroll();
+      restoreViewport();
+    }
+  },
+  { immediate: true }
+);
+
+watch(
   () => form.value.targetType,
   (targetType) => {
     if (targetType === "all") {
@@ -996,11 +1085,8 @@ const confirmDelete = async () => {
   }
 };
 
-onMounted(() => {
-  setNoZoomViewport();
-});
-
 onBeforeUnmount(() => {
+  unlockPageScroll();
   restoreViewport();
 });
 
@@ -1123,7 +1209,7 @@ onBeforeUnmount(() => {
 
 
 /* Mobile safe layout + balanced Khmer form UI */
-@media (max-width: 640px) {
+@media (max-width: 639px) {
   .announcements-page-mobile-safe {
     padding-bottom: calc(2.75rem + env(safe-area-inset-bottom));
     -webkit-text-size-adjust: 100%;
@@ -1147,25 +1233,57 @@ onBeforeUnmount(() => {
     min-height: 100vh;
     min-height: 100dvh;
     align-items: flex-end;
+    padding-top: calc(0.5rem + env(safe-area-inset-top));
     padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+    overscroll-behavior: none;
   }
 
   .announcement-modal-panel-mobile-safe {
-    max-height: calc(100vh - 1rem);
-    max-height: calc(100dvh - 1rem);
+    max-height: calc(100vh - 1rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    max-height: calc(100dvh - 1rem - env(safe-area-inset-top) - env(safe-area-inset-bottom));
+    border-radius: 1rem 1rem 0 0;
   }
 
   .announcement-modal-body-mobile-safe {
-    max-height: calc(100vh - 9.75rem);
-    max-height: calc(100dvh - 9.75rem);
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: none;
+    overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
   }
 
   .announcement-modal-footer-mobile-safe {
-    position: sticky;
-    bottom: 0;
+    position: relative;
+    bottom: auto;
     z-index: 5;
     padding-bottom: calc(0.65rem + env(safe-area-inset-bottom)) !important;
+    box-shadow: 0 -8px 20px rgb(15 23 42 / 0.05);
+  }
+
+  .announcement-modal-panel-mobile-safe input.form-input,
+  .announcement-modal-panel-mobile-safe select.form-input {
+    min-height: 35px !important;
+    height: 35px !important;
+    padding: 0 0.625rem !important;
+    font-size: 14px !important;
+    line-height: 1.45 !important;
+  }
+
+  .announcement-modal-panel-mobile-safe textarea.form-input {
+    min-height: 6.5rem !important;
+    padding: 0.5rem 0.625rem !important;
+    font-size: 14px !important;
+    line-height: 1.6 !important;
+  }
+
+  .announcement-modal-panel-mobile-safe .form-label {
+    font-size: 13px;
+    line-height: 1.45;
+    margin-bottom: 0.3rem;
+  }
+
+  .announcement-modal-panel-mobile-safe button {
+    font-size: 14px;
   }
 }
 
@@ -1211,14 +1329,5 @@ onBeforeUnmount(() => {
   -webkit-overflow-scrolling: touch;
 }
 
-@media (max-width: 640px) {
-  .announcement-modal-overlay-mobile-safe {
-    padding-top: calc(0.5rem + env(safe-area-inset-top));
-  }
-
-  .announcement-modal-panel-mobile-safe {
-    border-radius: 1rem 1rem 0 0;
-  }
-}
 
 </style>

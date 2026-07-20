@@ -7,7 +7,7 @@
       class="enroll-student-modal-panel-mobile-safe bg-white rounded-t-2xl sm:rounded-xl shadow-xl w-full max-w-3xl overflow-hidden flex flex-col max-h-[94dvh] sm:max-h-[86vh] border border-slate-100"
     >
       <!-- Header -->
-      <div class="px-3 py-2.5 border-b border-slate-100 flex justify-between items-start gap-2 bg-slate-50">
+      <div class="enroll-student-modal-header-mobile-safe px-3 py-2.5 border-b border-slate-100 flex justify-between items-start gap-2 bg-slate-50 shrink-0">
         <div class="min-w-0">
           <h2 class="text-sm font-extrabold text-slate-800 flex items-start gap-2 leading-snug">
             <span
@@ -50,7 +50,7 @@
       <!-- Student Selection -->
       <template v-if="!showTargetClassSelection">
         <!-- Search -->
-        <div class="p-3 border-b border-slate-100 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center bg-white">
+        <div class="enroll-student-modal-search-mobile-safe p-3 border-b border-slate-100 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center bg-white shrink-0">
           <div class="relative flex-1 min-w-[200px]">
             <i class="fa-solid fa-magnifying-glass absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 text-xs"></i>
 
@@ -81,7 +81,7 @@
         </div>
 
         <!-- List -->
-        <div class="enroll-student-modal-body-mobile-safe overflow-y-auto flex-1 p-3 bg-slate-50 modal-scroll">
+        <div class="enroll-student-modal-body-mobile-safe min-h-0 overflow-y-auto flex-1 p-3 bg-slate-50 modal-scroll">
           <div v-if="isLoading" class="flex flex-col items-center justify-center py-8">
             <div class="h-10 w-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
               <i class="fa-solid fa-circle-notch fa-spin text-xl"></i>
@@ -205,7 +205,7 @@
 
       <!-- Target Class Selection -->
       <template v-else>
-        <div class="flex-1 bg-slate-50 flex flex-col items-center justify-center p-4">
+        <div class="enroll-student-modal-body-mobile-safe min-h-0 overflow-y-auto modal-scroll flex-1 bg-slate-50 flex flex-col items-center justify-center p-4">
           <div class="bg-white p-4 rounded-xl shadow-sm border border-slate-200 w-full max-w-sm text-center">
             <div class="w-12 h-12 bg-orange-100 text-orange-500 rounded-xl flex items-center justify-center mx-auto mb-3">
               <i class="fa-solid fa-right-left text-xl"></i>
@@ -259,7 +259,7 @@
       </template>
 
       <!-- Footer -->
-      <div class="enroll-student-modal-footer-mobile-safe px-3 py-2.5 bg-white border-t border-slate-100 flex justify-between items-center shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.03)]">
+      <div class="enroll-student-modal-footer-mobile-safe shrink-0 px-3 py-2.5 bg-white border-t border-slate-100 flex justify-between items-center gap-2 shadow-[0_-4px_6px_-1px_rgba(0,0,0,0.03)]">
         <div class="text-xs font-bold text-slate-600">
           <span v-if="!showTargetClassSelection">
             បានជ្រើសរើស:
@@ -268,7 +268,7 @@
           </span>
         </div>
 
-        <div class="flex gap-2">
+        <div class="enroll-student-modal-actions-mobile-safe flex gap-2 min-w-0">
           <button
             @click="closeModal"
             :disabled="isSubmitting"
@@ -348,6 +348,66 @@ const toast = useToast()
 
 const originalViewportContent = ref('')
 const viewportMetaWasCreated = ref(false)
+
+const bodyScrollState = {
+  scrollY: 0,
+  bodyStyle: '',
+  htmlStyle: '',
+  isLocked: false
+}
+
+const lockBackgroundScroll = () => {
+  if (typeof document === 'undefined' || typeof window === 'undefined') return
+  if (bodyScrollState.isLocked) return
+
+  const body = document.body
+  const html = document.documentElement
+  const scrollbarWidth = Math.max(0, window.innerWidth - html.clientWidth)
+
+  bodyScrollState.scrollY = window.scrollY || window.pageYOffset || 0
+  bodyScrollState.bodyStyle = body.getAttribute('style') || ''
+  bodyScrollState.htmlStyle = html.getAttribute('style') || ''
+  bodyScrollState.isLocked = true
+
+  html.style.overflow = 'hidden'
+  html.style.overscrollBehavior = 'none'
+
+  body.style.position = 'fixed'
+  body.style.top = `-${bodyScrollState.scrollY}px`
+  body.style.left = '0'
+  body.style.right = '0'
+  body.style.width = '100%'
+  body.style.overflow = 'hidden'
+  body.style.overscrollBehavior = 'none'
+
+  if (scrollbarWidth > 0) {
+    body.style.paddingRight = `${scrollbarWidth}px`
+  }
+}
+
+const restoreBackgroundScroll = () => {
+  if (typeof document === 'undefined' || typeof window === 'undefined') return
+  if (!bodyScrollState.isLocked) return
+
+  const body = document.body
+  const html = document.documentElement
+  const scrollY = bodyScrollState.scrollY
+
+  if (bodyScrollState.bodyStyle) {
+    body.setAttribute('style', bodyScrollState.bodyStyle)
+  } else {
+    body.removeAttribute('style')
+  }
+
+  if (bodyScrollState.htmlStyle) {
+    html.setAttribute('style', bodyScrollState.htmlStyle)
+  } else {
+    html.removeAttribute('style')
+  }
+
+  bodyScrollState.isLocked = false
+  window.scrollTo(0, scrollY)
+}
 
 const setNoZoomViewport = () => {
   if (typeof document === 'undefined') return
@@ -483,23 +543,32 @@ const toggleSelectAll = () => {
   }
 }
 
-watch(() => props.isOpen, (newVal) => {
-  if (!newVal) {
-    restoreViewport()
-    selectedIds.value = []
-    searchQuery.value = ''
-    currentPage.value = 1
-    showTargetClassSelection.value = false
-    targetClassId.value = ''
-    return
-  }
+watch(
+  () => props.isOpen,
+  (newVal) => {
+    if (!newVal) {
+      restoreViewport()
+      restoreBackgroundScroll()
+      selectedIds.value = []
+      searchQuery.value = ''
+      currentPage.value = 1
+      showTargetClassSelection.value = false
+      targetClassId.value = ''
+      return
+    }
 
-  setNoZoomViewport()
-})
+    setNoZoomViewport()
+    lockBackgroundScroll()
+  },
+  {
+    immediate: true
+  }
+)
 
 const closeModal = () => {
   if (isSubmitting.value) return
   restoreViewport()
+  restoreBackgroundScroll()
   emit('close')
 }
 
@@ -532,6 +601,7 @@ const handleBulkEnroll = async () => {
 
     emit('refresh')
     restoreViewport()
+    restoreBackgroundScroll()
     emit('close')
   } catch (error) {
     console.error("Bulk action error:", error)
@@ -543,6 +613,7 @@ const handleBulkEnroll = async () => {
 
 onBeforeUnmount(() => {
   restoreViewport()
+  restoreBackgroundScroll()
 })
 </script>
 
@@ -550,13 +621,17 @@ onBeforeUnmount(() => {
 
 .enroll-student-modal-panel-mobile-safe {
   font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif;
+  line-height: 1.45;
 }
 
 .enroll-student-modal-panel-mobile-safe h2,
 .enroll-student-modal-panel-mobile-safe h3,
 .enroll-student-modal-panel-mobile-safe p,
 .enroll-student-modal-panel-mobile-safe span,
-.enroll-student-modal-panel-mobile-safe button {
+.enroll-student-modal-panel-mobile-safe button,
+.enroll-student-modal-panel-mobile-safe input,
+.enroll-student-modal-panel-mobile-safe select,
+.enroll-student-modal-panel-mobile-safe option {
   font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif;
   line-height: 1.45;
 }
@@ -620,12 +695,109 @@ select.enroll-form-input {
     -webkit-overflow-scrolling: touch;
   }
 
+  .enroll-student-modal-header-mobile-safe {
+    flex: 0 0 auto;
+  }
+
+  .enroll-student-modal-search-mobile-safe {
+    flex: 0 0 auto;
+  }
+
+  .enroll-student-modal-body-mobile-safe {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: none;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
   .enroll-student-modal-footer-mobile-safe {
-    position: sticky;
-    bottom: 0;
-    z-index: 5;
+    position: relative;
+    bottom: auto;
+    z-index: 10;
+    flex: 0 0 auto;
     padding-bottom: calc(0.65rem + env(safe-area-inset-bottom)) !important;
   }
+
+  input.enroll-form-input,
+  select.enroll-form-input {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 35px !important;
+    height: 35px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    padding-left: 0.625rem !important;
+    padding-right: 0.625rem !important;
+    font-size: 14px !important;
+    line-height: normal !important;
+  }
+
+  input.enroll-form-input::placeholder {
+    font-size: 14px !important;
+    line-height: normal !important;
+  }
+
+  input.enroll-form-input[class*="pl-9"] {
+    padding-left: 2.25rem !important;
+  }
+
+  select.enroll-form-input {
+    padding-right: 2rem !important;
+  }
+
+  .enroll-student-modal-header-mobile-safe h2 {
+    font-size: 16px !important;
+    line-height: 1.45 !important;
+  }
+
+  .enroll-student-modal-header-mobile-safe p {
+    font-size: 12px !important;
+    line-height: 1.45 !important;
+  }
+
+  .enroll-student-modal-footer-mobile-safe,
+  .enroll-student-modal-footer-mobile-safe button {
+    font-size: 14px !important;
+  }
+
+  .enroll-student-modal-footer-mobile-safe {
+    align-items: center;
+  }
+
+  .enroll-student-modal-actions-mobile-safe {
+    flex: 1 1 auto;
+    justify-content: flex-end;
+  }
+
+  .enroll-student-modal-actions-mobile-safe > button,
+  .enroll-student-modal-actions-mobile-safe > template {
+    min-width: 0;
+  }
+
+  .enroll-student-modal-footer-mobile-safe button {
+    min-height: 35px;
+    white-space: nowrap;
+  }
+}
+
+.enroll-student-modal-overlay-mobile-safe {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  z-index: 9999 !important;
+  isolation: isolate;
+}
+
+.enroll-student-modal-panel-mobile-safe {
+  min-height: 0;
+}
+
+.enroll-student-modal-footer-mobile-safe {
+  flex-shrink: 0;
 }
 
 .loading-line {

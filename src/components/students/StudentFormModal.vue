@@ -2,11 +2,11 @@
   <Teleport to="body">
     <div
     v-if="isOpen"
-    class="student-form-modal-overlay-mobile-safe fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-stretch sm:items-center justify-center z-[9999] p-0 sm:p-4"
+    class="student-form-modal-overlay-mobile-safe fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-end sm:items-center justify-center z-[9999] p-2.5 sm:p-4"
     @click.self="handleClose"
   >
     <div
-      class="student-form-modal-panel-mobile-safe bg-white rounded-none sm:rounded-2xl shadow-xl w-full max-w-6xl h-[100dvh] sm:h-auto max-h-[100dvh] sm:max-h-[90vh] overflow-hidden border-0 sm:border sm:border-slate-100 flex flex-col"
+      class="student-form-modal-panel-mobile-safe bg-white rounded-t-2xl sm:rounded-2xl shadow-xl w-full max-w-6xl max-h-[95dvh] sm:max-h-[90vh] overflow-hidden border border-slate-100 flex flex-col"
     >
       <!-- Header -->
       <div
@@ -41,8 +41,11 @@
 
       <form
         @submit.prevent="handleSubmit"
-        class="student-form-modal-body-mobile-safe flex-1 min-h-0 p-3 sm:p-5 space-y-3 sm:space-y-4 overflow-y-auto modal-scroll"
+        class="flex flex-1 min-h-0 flex-col"
       >
+        <div
+          class="student-form-modal-body-mobile-safe flex-1 min-h-0 p-3 sm:p-5 space-y-3 sm:space-y-4 overflow-y-auto modal-scroll"
+        >
         <!-- Student Image -->
         <div class="form-section">
           <div class="flex items-center gap-3 sm:gap-4">
@@ -120,7 +123,7 @@
             </h3>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3">
             <div>
               <label class="field-label">
                 ឈ្មោះខ្មែរ <span class="text-red-500">*</span>
@@ -229,7 +232,7 @@
             </h3>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-3">
+          <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-6 gap-2.5 sm:gap-3">
             <div>
               <label class="field-label">
                 ថ្ងៃកំណើត <span class="text-red-500">*</span>
@@ -326,7 +329,7 @@
             </h3>
           </div>
 
-          <div class="grid grid-cols-1 sm:grid-cols-3 gap-3">
+          <div class="grid grid-cols-2 sm:grid-cols-3 gap-2.5 sm:gap-3">
             <div>
               <label class="field-label">
                 ឈ្មោះអាណាព្យាបាល
@@ -353,7 +356,7 @@
               />
             </div>
 
-            <div>
+            <div class="col-span-2 sm:col-span-1">
               <label class="field-label">
                 Facebook
               </label>
@@ -368,14 +371,16 @@
           </div>
         </div>
 
+        </div>
+
         <!-- Actions -->
         <div
-          class="student-form-modal-footer-mobile-safe sticky bottom-0 -mx-3 sm:-mx-5 px-3 sm:px-5 py-3 sm:py-4 bg-white border-t border-slate-100 flex flex-col-reverse sm:flex-row sm:justify-end gap-2.5 sm:gap-3"
+          class="student-form-modal-footer-mobile-safe shrink-0 px-3 sm:px-5 py-3 sm:py-4 bg-white border-t border-slate-100 flex flex-row justify-end gap-2.5 sm:gap-3"
         >
           <button
             type="button"
             @click="handleClose"
-            class="w-full sm:w-auto min-h-11 px-4 sm:px-5 py-2 text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition"
+            class="flex-1 sm:flex-none min-w-0 px-3 sm:px-5 py-2 text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition"
           >
             បោះបង់
           </button>
@@ -383,7 +388,7 @@
           <button
             type="submit"
             :disabled="isSaving"
-            class="w-full sm:w-auto min-h-11 px-4 sm:px-5 py-2 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+            class="flex-1 sm:flex-none min-w-0 px-3 sm:px-5 py-2 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
           >
             <i
               v-if="isSaving"
@@ -436,6 +441,78 @@ const toast = useToast();
 const originalViewportContent = ref("");
 const viewportMetaWasCreated = ref(false);
 
+let pageScrollLocked = false;
+let lockedScrollY = 0;
+let originalHtmlOverflow = "";
+let originalBodyStyles = null;
+
+const lockPageScroll = () => {
+  if (
+    typeof document === "undefined" ||
+    typeof window === "undefined" ||
+    pageScrollLocked
+  ) {
+    return;
+  }
+
+  const html = document.documentElement;
+  const body = document.body;
+  const scrollbarWidth = Math.max(0, window.innerWidth - html.clientWidth);
+
+  lockedScrollY = window.scrollY || html.scrollTop || 0;
+  originalHtmlOverflow = html.style.overflow;
+  originalBodyStyles = {
+    overflow: body.style.overflow,
+    position: body.style.position,
+    top: body.style.top,
+    left: body.style.left,
+    right: body.style.right,
+    width: body.style.width,
+    paddingRight: body.style.paddingRight
+  };
+
+  html.style.overflow = "hidden";
+  body.style.overflow = "hidden";
+  body.style.position = "fixed";
+  body.style.top = `-${lockedScrollY}px`;
+  body.style.left = "0";
+  body.style.right = "0";
+  body.style.width = "100%";
+
+  if (scrollbarWidth > 0) {
+    body.style.paddingRight = `${scrollbarWidth}px`;
+  }
+
+  pageScrollLocked = true;
+};
+
+const unlockPageScroll = () => {
+  if (
+    typeof document === "undefined" ||
+    typeof window === "undefined" ||
+    !pageScrollLocked
+  ) {
+    return;
+  }
+
+  const html = document.documentElement;
+  const body = document.body;
+  const styles = originalBodyStyles || {};
+
+  html.style.overflow = originalHtmlOverflow;
+  body.style.overflow = styles.overflow || "";
+  body.style.position = styles.position || "";
+  body.style.top = styles.top || "";
+  body.style.left = styles.left || "";
+  body.style.right = styles.right || "";
+  body.style.width = styles.width || "";
+  body.style.paddingRight = styles.paddingRight || "";
+
+  pageScrollLocked = false;
+  originalBodyStyles = null;
+  window.scrollTo(0, lockedScrollY);
+};
+
 const setNoZoomViewport = () => {
   if (typeof document === "undefined") return;
 
@@ -477,6 +554,7 @@ const restoreViewport = () => {
 
 const handleClose = () => {
   restoreViewport();
+  unlockPageScroll();
   emit("close");
 };
 
@@ -485,8 +563,10 @@ watch(
   (isOpen) => {
     if (isOpen) {
       setNoZoomViewport();
+      lockPageScroll();
     } else {
       restoreViewport();
+      unlockPageScroll();
     }
   },
   {
@@ -774,6 +854,7 @@ watch(
 
 onBeforeUnmount(() => {
   restoreViewport();
+  unlockPageScroll();
   clearLocalPreview();
 });
 </script>
@@ -837,6 +918,39 @@ textarea.form-input {
   line-height: 1.45;
 }
 
+
+/* Chrome mobile bottom toolbar fix + no visual input-size changes */
+@media (max-width: 640px) {
+  .student-form-modal-overlay-mobile-safe {
+    min-height: 100vh;
+    min-height: 100dvh;
+    align-items: flex-end;
+    padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+    -webkit-text-size-adjust: 100%;
+    text-size-adjust: 100%;
+  }
+
+  .student-form-modal-panel-mobile-safe {
+    max-height: calc(100vh - 0.75rem);
+    max-height: calc(100dvh - 0.75rem);
+  }
+
+  .student-form-modal-body-mobile-safe {
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: none;
+    overflow-y: auto;
+    overscroll-behavior: contain;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .student-form-modal-footer-mobile-safe {
+    position: relative;
+    z-index: 5;
+    padding-bottom: calc(0.65rem + env(safe-area-inset-bottom)) !important;
+    box-shadow: 0 -8px 20px rgb(15 23 42 / 0.05);
+  }
+}
 
 .form-section {
   border: 1px solid #e2e8f0;
@@ -981,70 +1095,42 @@ textarea.form-input {
 }
 
 
-/* Mobile-only layout. Desktop styles from sm: and above remain unchanged. */
-@media (max-width: 639px) {
+@media (max-width: 640px) {
   .student-form-modal-overlay-mobile-safe {
-    min-height: 100vh;
-    min-height: 100dvh;
-    align-items: stretch;
-    padding: 0 !important;
-    -webkit-text-size-adjust: 100%;
-    text-size-adjust: 100%;
+    padding-top: calc(0.5rem + env(safe-area-inset-top)) !important;
   }
 
   .student-form-modal-panel-mobile-safe {
-    width: 100%;
-    height: 100vh;
-    height: 100dvh;
-    max-height: 100vh !important;
-    max-height: 100dvh !important;
-    border: 0;
-    border-radius: 0;
+    max-height: calc(100dvh - 1rem - env(safe-area-inset-top) - env(safe-area-inset-bottom)) !important;
   }
+}
 
-  .student-form-modal-body-mobile-safe {
-    flex: 1 1 auto;
-    min-height: 0;
-    max-height: none;
-    padding-bottom: 0.75rem;
-    overscroll-behavior: contain;
-    -webkit-overflow-scrolling: touch;
-  }
-
-  .form-section {
-    border-radius: 0.75rem;
-    padding: 0.8rem;
-  }
-
-  .section-heading {
-    align-items: flex-start;
-    margin-bottom: 0.65rem;
-  }
-
-  .student-form-modal-panel-mobile-safe input.form-input,
-  .student-form-modal-panel-mobile-safe select.form-input,
-  .student-form-modal-panel-mobile-safe textarea.form-input,
-  .student-form-modal-panel-mobile-safe input::placeholder,
-  .student-form-modal-panel-mobile-safe textarea::placeholder {
-    font-size: 16px !important;
-  }
-
-  .student-form-modal-panel-mobile-safe input.form-input,
+/* Mobile controls only. Desktop sizing remains unchanged from sm (640px) upward. */
+@media (max-width: 639px) {
+  .student-form-modal-panel-mobile-safe input.form-input:not([type="file"]),
   .student-form-modal-panel-mobile-safe select.form-input {
-    min-height: 3rem !important;
-    height: 3rem !important;
+    box-sizing: border-box;
+    width: 100%;
+    height: 35px !important;
+    min-height: 35px !important;
+    padding: 0 0.625rem !important;
+    font-size: 14px !important;
+    line-height: 1.2 !important;
   }
 
-  .student-form-modal-footer-mobile-safe {
-    position: sticky;
-    bottom: 0;
-    z-index: 10;
-    padding-bottom: calc(0.75rem + env(safe-area-inset-bottom)) !important;
-    box-shadow: 0 -8px 20px rgb(15 23 42 / 0.05);
+  .student-form-modal-panel-mobile-safe input[type="date"].form-input {
+    padding: 0 0.625rem !important;
+  }
+
+  .student-form-modal-panel-mobile-safe input[type="date"].form-input::-webkit-date-and-time-value {
+    min-height: 0;
+    margin: 0;
+    line-height: 1.2;
   }
 
   .student-form-modal-footer-mobile-safe button {
-    min-height: 2.75rem;
+    min-height: 35px;
+    font-size: 14px !important;
   }
 }
 

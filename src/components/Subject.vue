@@ -457,10 +457,10 @@
       >
         <div
           v-if="showModal"
-          class="subject-modal-overlay-mobile-safe fixed inset-0 z-[9999] bg-slate-900/40 backdrop-blur-sm overflow-y-auto"
+          class="subject-modal-overlay-mobile-safe fixed inset-0 z-[9999] bg-slate-900/40 backdrop-blur-sm overflow-hidden"
           @click.self="closeModal"
         >
-          <div class="subject-modal-wrapper-mobile-safe min-h-full flex items-end sm:items-center justify-center p-2.5 sm:p-4">
+          <div class="subject-modal-wrapper-mobile-safe h-full min-h-0 flex items-end sm:items-center justify-center p-2.5 sm:p-4">
             <Transition
               appear
               enter-active-class="transition duration-200 ease-out"
@@ -504,8 +504,9 @@
                 </div>
 
                 <form
+                  id="subjectForm"
                   @submit.prevent="handleSubmit"
-                  class="subject-modal-body-mobile-safe p-4 sm:p-5 space-y-4 overflow-y-auto modal-scroll"
+                  class="subject-modal-body-mobile-safe flex-1 min-h-0 p-4 sm:p-5 space-y-4 overflow-y-auto modal-scroll"
                 >
                   <div>
                     <label class="form-label">
@@ -697,30 +698,34 @@
                     ></textarea>
                   </div>
 
-                  <div class="subject-modal-footer-mobile-safe sticky bottom-0 -mx-4 sm:-mx-5 px-4 sm:px-5 py-3 sm:py-4 flex justify-end gap-2.5 sm:gap-3 border-t border-slate-100 bg-white">
-                    <button
-                      type="button"
-                      @click="closeModal"
-                      :disabled="isSaving"
-                      class="px-3 sm:px-4 py-1.5 sm:py-2 text-[11px] sm:text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      បោះបង់
-                    </button>
-
-                    <button
-                      type="submit"
-                      :disabled="isSaving"
-                      class="px-4 sm:px-5 py-1.5 sm:py-2 text-[11px] sm:text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition active:scale-95 flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
-                    >
-                      <i
-                        v-if="isSaving"
-                        class="fa-solid fa-circle-notch fa-spin"
-                      ></i>
-                      <i v-else class="fa-solid fa-floppy-disk"></i>
-                      {{ isSaving ? "កំពុងរក្សាទុក..." : (isEditing ? "រក្សាទុកការកែប្រែ" : "រក្សាទុកមុខវិជ្ជា") }}
-                    </button>
-                  </div>
                 </form>
+
+                <div class="subject-modal-footer-mobile-safe shrink-0 px-4 sm:px-5 py-3 sm:py-4 flex items-center justify-end gap-2.5 sm:gap-3 border-t border-slate-100 bg-white">
+                  <button
+                    type="button"
+                    @click="closeModal"
+                    :disabled="isSaving"
+                    class="flex-1 sm:flex-none min-w-0 px-3 sm:px-4 py-2 text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    បោះបង់
+                  </button>
+
+                  <button
+                    type="submit"
+                    form="subjectForm"
+                    :disabled="isSaving"
+                    class="flex-1 sm:flex-none min-w-0 px-4 sm:px-5 py-2 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition active:scale-95 flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                  >
+                    <i
+                      v-if="isSaving"
+                      class="fa-solid fa-circle-notch fa-spin"
+                    ></i>
+                    <i v-else class="fa-solid fa-floppy-disk"></i>
+                    <span class="truncate">
+                      {{ isSaving ? "កំពុងរក្សាទុក..." : (isEditing ? "រក្សាទុកការកែប្រែ" : "រក្សាទុកមុខវិជ្ជា") }}
+                    </span>
+                  </button>
+                </div>
               </div>
             </Transition>
           </div>
@@ -738,10 +743,10 @@
       >
         <div
           v-if="showDeleteModal"
-          class="subject-modal-overlay-mobile-safe subject-delete-overlay-mobile-safe fixed inset-0 z-[10000] bg-slate-900/45 backdrop-blur-sm overflow-y-auto"
+          class="subject-modal-overlay-mobile-safe subject-delete-overlay-mobile-safe fixed inset-0 z-[10000] bg-slate-900/45 backdrop-blur-sm overflow-hidden"
           @click.self="closeDeleteConfirm"
         >
-          <div class="subject-modal-wrapper-mobile-safe min-h-full flex items-end sm:items-center justify-center p-2.5 sm:p-4">
+          <div class="subject-modal-wrapper-mobile-safe h-full min-h-0 flex items-end sm:items-center justify-center p-2.5 sm:p-4">
             <Transition
               appear
               enter-active-class="transition duration-200 ease-out"
@@ -831,7 +836,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import { ref, computed, watch, onBeforeUnmount } from "vue";
 import { useQuery } from "../hooks/useQuery";
 import { useCollection } from "../hooks/useCollection";
 import { useToast } from "vue-toastification";
@@ -881,13 +886,72 @@ const restoreViewport = () => {
   );
 };
 
-onMounted(() => {
-  setNoZoomViewport();
-});
+const originalBodyStyle = {
+  overflow: "",
+  position: "",
+  top: "",
+  left: "",
+  right: "",
+  width: "",
+  paddingRight: ""
+};
+let originalHtmlOverflow = "";
+let lockedScrollY = 0;
+let isPageScrollLocked = false;
 
-onBeforeUnmount(() => {
-  restoreViewport();
-});
+const lockPageScroll = () => {
+  if (typeof window === "undefined" || typeof document === "undefined") return;
+  if (isPageScrollLocked) return;
+
+  lockedScrollY = window.scrollY || window.pageYOffset || 0;
+
+  const body = document.body;
+  const html = document.documentElement;
+  const scrollbarWidth = Math.max(0, window.innerWidth - html.clientWidth);
+
+  originalBodyStyle.overflow = body.style.overflow;
+  originalBodyStyle.position = body.style.position;
+  originalBodyStyle.top = body.style.top;
+  originalBodyStyle.left = body.style.left;
+  originalBodyStyle.right = body.style.right;
+  originalBodyStyle.width = body.style.width;
+  originalBodyStyle.paddingRight = body.style.paddingRight;
+  originalHtmlOverflow = html.style.overflow;
+
+  html.style.overflow = "hidden";
+  body.style.overflow = "hidden";
+  body.style.position = "fixed";
+  body.style.top = `-${lockedScrollY}px`;
+  body.style.left = "0";
+  body.style.right = "0";
+  body.style.width = "100%";
+
+  if (scrollbarWidth > 0) {
+    body.style.paddingRight = `${scrollbarWidth}px`;
+  }
+
+  isPageScrollLocked = true;
+};
+
+const unlockPageScroll = () => {
+  if (typeof window === "undefined" || typeof document === "undefined") return;
+  if (!isPageScrollLocked) return;
+
+  const body = document.body;
+  const html = document.documentElement;
+
+  html.style.overflow = originalHtmlOverflow;
+  body.style.overflow = originalBodyStyle.overflow;
+  body.style.position = originalBodyStyle.position;
+  body.style.top = originalBodyStyle.top;
+  body.style.left = originalBodyStyle.left;
+  body.style.right = originalBodyStyle.right;
+  body.style.width = originalBodyStyle.width;
+  body.style.paddingRight = originalBodyStyle.paddingRight;
+
+  isPageScrollLocked = false;
+  window.scrollTo(0, lockedScrollY);
+};
 
 const { data: subjects, fetchData, loading } = useQuery("subjects");
 const { data: teachers } = useQuery("teachers");
@@ -909,6 +973,21 @@ const editId = ref(null);
 const showDeleteModal = ref(false);
 const subjectToDelete = ref(null);
 const isDeleting = ref(false);
+
+watch(
+  () => showModal.value || showDeleteModal.value,
+  (hasOpenModal) => {
+    if (hasOpenModal) {
+      setNoZoomViewport();
+      lockPageScroll();
+      return;
+    }
+
+    unlockPageScroll();
+    restoreViewport();
+  },
+  { immediate: true }
+);
 
 const defaultForm = () => ({
   subjectName: "",
@@ -1241,6 +1320,11 @@ const confirmDeleteSubject = async () => {
     isDeleting.value = false;
   }
 };
+
+onBeforeUnmount(() => {
+  unlockPageScroll();
+  restoreViewport();
+});
 </script>
 
 <style scoped>
@@ -1296,10 +1380,10 @@ const confirmDeleteSubject = async () => {
   text-rendering: geometricPrecision;
 }
 
-.subjects-page-mobile-safe input,
-.subjects-page-mobile-safe select,
-.subject-modal-panel-mobile-safe input,
-.subject-modal-panel-mobile-safe select {
+.subjects-page-mobile-safe input.form-input,
+.subjects-page-mobile-safe select.form-input,
+.subject-modal-panel-mobile-safe input.form-input,
+.subject-modal-panel-mobile-safe select.form-input {
   min-height: 2.68rem !important;
   height: 2.68rem !important;
   padding-top: 0.56rem !important;
@@ -1477,16 +1561,42 @@ const confirmDeleteSubject = async () => {
   }
 
   .subject-modal-body-mobile-safe {
-    max-height: calc(100vh - 9.75rem);
-    max-height: calc(100dvh - 9.75rem);
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: none;
+    overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
   }
 
   .subject-modal-footer-mobile-safe {
-    position: sticky;
-    bottom: 0;
     z-index: 5;
     padding-bottom: calc(0.65rem + env(safe-area-inset-bottom)) !important;
+    box-shadow: 0 -8px 20px rgb(15 23 42 / 0.05);
+  }
+
+  .subject-modal-panel-mobile-safe input.form-input,
+  .subject-modal-panel-mobile-safe select.form-input {
+    min-height: 35px !important;
+    height: 35px !important;
+    padding: 0 0.625rem !important;
+    font-size: 14px !important;
+    line-height: 1.45 !important;
+  }
+
+  .subject-modal-panel-mobile-safe input[type="date"].form-input,
+  .subject-modal-panel-mobile-safe input[type="time"].form-input,
+  .subject-modal-panel-mobile-safe input[type="number"].form-input {
+    min-height: 35px !important;
+    height: 35px !important;
+    padding: 0 0.625rem !important;
+  }
+
+  .subject-modal-panel-mobile-safe .form-label {
+    font-size: 13px;
+  }
+
+  .subject-modal-panel-mobile-safe button {
+    font-size: 14px;
   }
 }
 
@@ -1535,6 +1645,7 @@ const confirmDeleteSubject = async () => {
 
 .subject-modal-panel-mobile-safe {
   line-height: 1.45;
+  min-height: 0;
 }
 
 .subject-modal-panel-mobile-safe h3,
@@ -1554,6 +1665,11 @@ const confirmDeleteSubject = async () => {
 @media (max-width: 640px) {
   .subject-modal-panel-mobile-safe {
     border-radius: 1rem 1rem 0 0;
+  }
+
+  .subject-modal-panel-mobile-safe .currency-input {
+    padding-left: 2.7rem !important;
+    padding-right: 0.625rem !important;
   }
 }
 

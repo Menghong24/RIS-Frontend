@@ -1,5 +1,5 @@
 <template>
-  <div class="score-report-page-mobile-safe bg-slate-50 p-2 md:p-3">
+  <div class="score-report-page-mobile-safe bg-slate-50 p-2 sm:p-3 md:p-4 overflow-x-hidden">
     <div class="max-w-7xl mx-auto space-y-2.5">
       <!-- Header -->
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm px-3 py-2.5">
@@ -20,12 +20,12 @@
             </p>
           </div>
 
-          <div class="flex flex-wrap items-center gap-2 w-full sm:w-auto">
+          <div class="score-report-export-actions grid grid-cols-2 gap-2 w-full sm:flex sm:flex-wrap sm:items-center sm:w-auto">
             <button
               type="button"
               @click="exportPDF"
               :disabled="!canExport || exportingPdf"
-              class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-[11px] font-extrabold rounded-lg shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition"
+              class="mobile-action-btn flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-red-600 hover:bg-red-700 text-white text-[11px] font-extrabold rounded-lg shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition"
             >
               <i
                 class="fa-solid text-[10px]"
@@ -38,7 +38,7 @@
               type="button"
               @click="exportExcel"
               :disabled="!canExport || exportingExcel"
-              class="flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-[11px] font-extrabold rounded-lg shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition"
+              class="mobile-action-btn flex-1 sm:flex-none inline-flex items-center justify-center gap-1.5 px-3 py-1.5 bg-green-600 hover:bg-green-700 text-white text-[11px] font-extrabold rounded-lg shadow-sm disabled:opacity-50 disabled:cursor-not-allowed transition"
             >
               <i
                 class="fa-solid text-[10px]"
@@ -109,7 +109,7 @@
             type="button"
             @click="generateReport"
             :disabled="!isFilterValid || loading"
-            class="w-full lg:w-auto flex justify-center items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-extrabold text-white bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition shadow-sm min-h-[1.95rem] whitespace-nowrap"
+            class="report-generate-btn w-full lg:w-auto flex justify-center items-center gap-1.5 px-3 py-1.5 rounded-lg text-[11px] font-extrabold text-white bg-blue-600 hover:bg-blue-700 disabled:bg-slate-300 disabled:cursor-not-allowed transition shadow-sm min-h-[1.95rem] whitespace-nowrap"
           >
             <i
               v-if="loading"
@@ -143,11 +143,11 @@
               </div>
             </div>
 
-            <div class="flex items-center gap-1.5 shrink-0">
+            <div class="subject-bulk-actions grid grid-cols-2 gap-1.5 w-full md:flex md:items-center md:w-auto md:shrink-0">
               <button
                 type="button"
                 @click="selectAllSubjects"
-                class="px-2.5 py-1 text-[10px] font-bold text-blue-600 bg-blue-50 border border-blue-100 rounded-lg hover:bg-blue-100 transition whitespace-nowrap"
+                class="subject-bulk-btn px-2.5 py-1 text-[10px] font-bold text-blue-600 bg-blue-50 border border-blue-100 rounded-lg hover:bg-blue-100 transition whitespace-nowrap"
               >
                 ជ្រើសទាំងអស់
               </button>
@@ -155,18 +155,18 @@
               <button
                 type="button"
                 @click="clearSubjects"
-                class="px-2.5 py-1 text-[10px] font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-100 transition whitespace-nowrap"
+                class="subject-bulk-btn px-2.5 py-1 text-[10px] font-bold text-slate-600 bg-white border border-slate-200 rounded-lg hover:bg-slate-100 transition whitespace-nowrap"
               >
                 ដកទាំងអស់
               </button>
             </div>
           </div>
 
-          <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-1.5">
+          <div class="subject-options-grid grid grid-cols-1 min-[380px]:grid-cols-2 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-6 xl:grid-cols-8 gap-1.5">
             <label
               v-for="subject in subjectsList"
               :key="subject._id"
-              class="flex items-center gap-1.5 bg-white border rounded-lg px-2 py-1.5 cursor-pointer transition hover:border-blue-300 min-w-0"
+              class="subject-option flex items-center gap-2 bg-white border rounded-lg px-2.5 py-2 cursor-pointer transition hover:border-blue-300 min-w-0"
               :class="
                 filters.subjectIds.includes(subject._id)
                   ? 'border-blue-400 bg-blue-50'
@@ -177,10 +177,10 @@
                 type="checkbox"
                 :value="subject._id"
                 v-model="filters.subjectIds"
-                class="h-3.5 w-3.5 rounded border-slate-300 text-blue-600 focus:ring-blue-500 shrink-0"
+                class="subject-checkbox h-4 w-4 rounded border-slate-300 text-blue-600 focus:ring-blue-500 shrink-0"
               />
 
-              <span class="text-[11px] font-bold text-slate-700 break-words leading-snug min-w-0">
+              <span class="subject-option-label text-[11px] font-bold text-slate-700 break-words leading-snug min-w-0">
                 {{ subject.subjectName }}
               </span>
             </label>
@@ -227,7 +227,7 @@
         </div>
 
         <!-- Summary Cards -->
-        <div class="grid grid-cols-2 md:grid-cols-4 gap-2 p-2.5 border-b border-slate-200 bg-white">
+        <div class="report-summary-grid grid grid-cols-2 md:grid-cols-4 gap-2 p-2.5 border-b border-slate-200 bg-white">
           <div class="bg-slate-50 px-2.5 py-2 rounded-lg border border-slate-200 flex items-center justify-between gap-2">
             <p class="text-[10px] text-slate-500 font-bold">
               សិស្សសរុប
@@ -272,15 +272,20 @@
         </div>
 
         <!-- Table -->
-        <div class="report-table-wrap overflow-x-auto">
+        <div class="mobile-table-hint sm:hidden px-3 py-2 bg-blue-50 border-b border-blue-100 text-xs font-bold text-blue-700 flex items-center gap-2">
+          <i class="fa-solid fa-arrows-left-right"></i>
+          អូសតារាងទៅឆ្វេង ឬស្ដាំ ដើម្បីមើលពិន្ទុទាំងអស់
+        </div>
+
+        <div class="report-table-wrap overflow-x-auto overscroll-x-contain">
           <table class="report-table min-w-full divide-y divide-slate-200">
             <thead class="bg-slate-100">
               <tr>
-                <th class="table-th text-center w-10">
+                <th class="table-th mobile-sticky-no text-center w-10">
                   ល.រ
                 </th>
 
-                <th class="table-th text-left student-col">
+                <th class="table-th mobile-sticky-student text-left student-col">
                   ឈ្មោះសិស្ស
                 </th>
 
@@ -316,11 +321,11 @@
                 :key="student._id || student.studentId"
                 class="hover:bg-slate-50"
               >
-                <td class="table-td text-center text-slate-500">
+                <td class="table-td mobile-sticky-no text-center text-slate-500">
                   {{ student.originalNo }}
                 </td>
 
-                <td class="table-td font-bold text-slate-800 break-words leading-snug">
+                <td class="table-td mobile-sticky-student font-bold text-slate-800 break-words leading-snug">
                   {{ student.khmerName || "-" }}
                 </td>
 
@@ -1520,34 +1525,33 @@ onBeforeUnmount(() => {
   word-break: break-word;
 }
 
-.score-report-page-mobile-safe input,
+.score-report-page-mobile-safe input:not([type="checkbox"]):not([type="radio"]),
 .score-report-page-mobile-safe select,
 .score-report-page-mobile-safe textarea,
 .score-report-page-mobile-safe option,
 .score-report-page-mobile-safe input::placeholder {
   font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif !important;
-  font-size: 12px !important;
-  line-height: 1.9 !important;
+  font-size: 14px !important;
+  line-height: 1.45 !important;
   font-weight: 500;
   -webkit-font-smoothing: antialiased;
   text-rendering: geometricPrecision;
 }
 
-.score-report-page-mobile-safe input,
+.score-report-page-mobile-safe input:not([type="checkbox"]):not([type="radio"]),
 .score-report-page-mobile-safe select {
-  min-height: 2.65rem !important;
-  height: 2.65rem !important;
-  padding-top: 0.58rem !important;
-  padding-bottom: 0.58rem !important;
+  min-height: 35px !important;
+  height: 35px !important;
+  padding: 0 0.625rem !important;
   overflow: visible !important;
 }
 
 .form-label {
   display: block;
-  font-size: 0.62rem;
+  font-size: 13px;
   font-weight: 800;
   color: #64748b;
-  margin-bottom: 0.16rem;
+  margin-bottom: 0.3rem;
   white-space: normal;
   overflow: visible;
   text-overflow: clip;
@@ -1557,14 +1561,14 @@ onBeforeUnmount(() => {
   width: 100%;
   border: 1px solid #e2e8f0;
   border-radius: 0.45rem;
-  padding: 0.58rem 0.52rem;
-  font-size: 12px;
-  line-height: 1.9;
+  padding: 0 0.625rem;
+  font-size: 14px;
+  line-height: 1.45;
   color: #334155;
   background: #ffffff;
   outline: none;
-  min-height: 2.65rem;
-  height: auto;
+  min-height: 35px;
+  height: 35px;
   transition: all 0.2s ease;
 }
 
@@ -1821,18 +1825,165 @@ onBeforeUnmount(() => {
     padding-bottom: calc(1.5rem + env(safe-area-inset-bottom));
   }
 
+  .score-report-page-mobile-safe h2 {
+    font-size: 16px;
+  }
+
+  .score-report-export-actions,
+  .subject-bulk-actions {
+    width: 100%;
+  }
+
+  .mobile-action-btn,
+  .report-generate-btn,
+  .subject-bulk-btn {
+    min-height: 35px;
+    font-size: 14px !important;
+    line-height: 1.35 !important;
+  }
+
+  .subject-option {
+    min-height: 42px;
+  }
+
+  .subject-option-label {
+    font-size: 13px !important;
+  }
+
+  .subject-checkbox {
+    width: 16px !important;
+    height: 16px !important;
+    min-height: 16px !important;
+    padding: 0 !important;
+  }
+
+  .report-summary-grid > div {
+    min-height: 60px;
+    padding: 0.65rem;
+    align-items: center;
+  }
+
+  .report-summary-grid > div > p:first-child {
+    font-size: 12px !important;
+  }
+
+  .report-summary-grid > div > p:last-child {
+    font-size: 18px !important;
+  }
+
+  .mobile-table-hint {
+    font-size: 12px;
+    line-height: 1.45;
+  }
+
   .score-report-page-mobile-safe .report-table-wrap {
     margin-bottom: calc(1.25rem + env(safe-area-inset-bottom));
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: thin;
+  }
+
+  .report-table-wrap::-webkit-scrollbar {
+    height: 6px;
+  }
+
+  .report-table-wrap::-webkit-scrollbar-thumb {
+    background: #cbd5e1;
+    border-radius: 999px;
+  }
+
+  .report-table {
+    width: max-content;
+    min-width: 100%;
+  }
+
+  .report-table .table-th,
+  .report-table .table-td {
+    white-space: nowrap;
+    font-size: 12px;
+  }
+
+  .report-table .score-col {
+    min-width: 76px;
+  }
+
+  .report-table .avg-col {
+    min-width: 72px;
+  }
+
+  .report-table .result-col {
+    min-width: 76px;
+  }
+
+  .report-table .rank-col {
+    min-width: 88px;
+  }
+
+  .report-table .remark-col {
+    min-width: 150px;
+    white-space: normal;
+  }
+
+  .mobile-sticky-no {
+    position: sticky;
+    left: 0;
+    z-index: 4;
+    min-width: 44px;
+    width: 44px;
+    background: #ffffff;
+  }
+
+  .mobile-sticky-student {
+    position: sticky;
+    left: 44px;
+    z-index: 3;
+    min-width: 145px;
+    max-width: 165px;
+    white-space: normal !important;
+    background: #ffffff;
+    box-shadow: 5px 0 8px -7px rgb(15 23 42 / 0.45);
+  }
+
+  thead .mobile-sticky-no,
+  thead .mobile-sticky-student {
+    z-index: 7;
+    background: #f1f5f9;
+  }
+
+  tbody tr:hover .mobile-sticky-no,
+  tbody tr:hover .mobile-sticky-student {
+    background: #f8fafc;
   }
 }
 
 @media (min-width: 640px) {
+  .score-report-page-mobile-safe input:not([type="checkbox"]):not([type="radio"]),
+  .score-report-page-mobile-safe select {
+    min-height: 2.65rem !important;
+    height: 2.65rem !important;
+    padding-top: 0.58rem !important;
+    padding-bottom: 0.58rem !important;
+  }
+
+  .score-report-page-mobile-safe input:not([type="checkbox"]):not([type="radio"]),
+  .score-report-page-mobile-safe select,
+  .score-report-page-mobile-safe textarea,
+  .score-report-page-mobile-safe option,
+  .score-report-page-mobile-safe input::placeholder {
+    font-size: 12px !important;
+    line-height: 1.9 !important;
+  }
+
+  .form-label {
+    font-size: 0.62rem;
+    margin-bottom: 0.16rem;
+  }
+
   .form-input {
     padding: 0.62rem 0.6rem;
     font-size: 12px !important;
     line-height: 1.9 !important;
     min-height: 2.65rem !important;
-    height: auto;
+    height: 2.65rem;
   }
 }
 

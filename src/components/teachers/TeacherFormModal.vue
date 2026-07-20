@@ -1,6 +1,5 @@
 <template>
-  <Teleport to="body">
-    <Transition
+  <Transition
     enter-active-class="transition duration-200 ease-out"
     enter-from-class="opacity-0"
     enter-to-class="opacity-100"
@@ -10,20 +9,20 @@
   >
     <div
       v-if="isOpen"
-      class="teacher-form-modal-overlay-mobile-safe fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-end sm:items-center justify-center z-[9999] p-2.5 sm:p-4"
+      class="teacher-form-modal-overlay-mobile-safe fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-2 sm:p-3"
       @click.self="handleClose"
     >
       <div
-        class="teacher-form-modal-panel-mobile-safe bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full max-w-5xl max-h-[95dvh] sm:max-h-[90vh] overflow-hidden border border-slate-100 flex flex-col"
+        class="teacher-form-modal-panel-mobile-safe bg-white rounded-t-2xl sm:rounded-xl shadow-xl w-full max-w-4xl max-h-[94dvh] sm:max-h-[86vh] overflow-hidden border border-slate-100 flex flex-col"
       >
         <!-- Header -->
         <div
-          class="px-3.5 sm:px-5 py-3 sm:py-4 border-b border-slate-100 bg-slate-50 flex items-start justify-between gap-3 shrink-0"
+          class="px-2.5 sm:px-3 py-2.5 border-b border-slate-100 bg-slate-50 flex items-start justify-between gap-2 shrink-0"
         >
           <div class="min-w-0">
-            <h1 class="text-base sm:text-lg font-extrabold text-slate-800 flex items-start gap-2.5 leading-snug">
+            <h1 class="text-base font-extrabold text-slate-800 flex items-start gap-2 leading-snug">
               <span
-                class="h-8 w-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-sm shrink-0"
+                class="h-7 w-7 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-xs shrink-0"
               >
                 <i :class="isEditing ? 'fa-solid fa-user-pen' : 'fa-solid fa-user-plus'"></i>
               </span>
@@ -33,7 +32,7 @@
               </span>
             </h1>
 
-            <p class="text-xs sm:text-sm text-slate-500 mt-1 break-words leading-snug">
+            <p class="text-xs text-slate-500 mt-0.5 break-words leading-relaxed">
               បំពេញព័ត៌មានគ្រូបង្រៀន
             </p>
           </div>
@@ -41,7 +40,7 @@
           <button
             type="button"
             @click="handleClose"
-            class="h-8 w-8 sm:h-9 sm:w-9 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition shrink-0"
+            class="h-7 w-7 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition shrink-0"
           >
             <i class="fa-solid fa-xmark text-sm"></i>
           </button>
@@ -49,13 +48,16 @@
 
         <form
           @submit.prevent="handleSubmit"
-          class="teacher-form-modal-body-mobile-safe p-3 sm:p-5 space-y-3 sm:space-y-4 overflow-y-auto modal-scroll"
+          class="teacher-form-modal-form-mobile-safe flex flex-1 min-h-0 flex-col overflow-hidden"
         >
+          <div
+            class="teacher-form-modal-body-mobile-safe flex-1 min-h-0 p-2.5 sm:p-3 space-y-2.5 sm:space-y-3 overflow-y-auto modal-scroll"
+          >
           <!-- Teacher Image -->
           <div class="form-section">
-            <div class="flex items-center gap-3 sm:gap-4">
+            <div class="flex items-center gap-2.5 sm:gap-3">
               <div
-                class="h-16 w-16 sm:h-24 sm:w-24 rounded-full overflow-hidden bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0"
+                class="h-14 w-14 sm:h-20 sm:w-20 rounded-full overflow-hidden bg-blue-50 border border-blue-100 flex items-center justify-center shrink-0"
               >
                 <img
                   v-if="imagePreviewUrl"
@@ -73,17 +75,17 @@
               </div>
 
               <div class="min-w-0 flex-1">
-                <p class="text-sm font-extrabold text-slate-800 break-words leading-snug">
+                <p class="text-sm font-extrabold text-slate-800">
                   រូបគ្រូបង្រៀន
                 </p>
 
-                <p class="text-xs sm:text-sm text-slate-500 mt-1 leading-snug break-words">
+                <p class="text-xs text-slate-500 mt-0.5 leading-relaxed">
                   JPG, PNG ឬ WEBP។ ទំហំមិនលើស 2MB។
                 </p>
 
                 <div class="mt-1.5 sm:mt-2 flex flex-wrap items-center gap-1.5 sm:gap-2">
                   <label
-                    class="inline-flex items-center gap-2 px-3 sm:px-4 py-2 rounded-lg bg-blue-600 text-white text-sm font-bold cursor-pointer hover:bg-blue-700 transition"
+                    class="inline-flex items-center gap-1.5 sm:gap-2 px-2.5 sm:px-3 py-1.5 rounded-lg bg-blue-600 text-white text-sm font-bold cursor-pointer hover:bg-blue-700 transition"
                   >
                     <i class="fa-solid fa-camera text-[10px] sm:text-xs"></i>
                     ជ្រើសរូប
@@ -100,7 +102,7 @@
                     v-if="selectedImageFile"
                     type="button"
                     @click="clearSelectedImage"
-                    class="px-3 sm:px-4 py-2 rounded-lg bg-slate-100 text-slate-600 text-sm font-bold hover:bg-slate-200 transition"
+                    class="px-2.5 sm:px-3 py-1.5 rounded-lg bg-slate-100 text-slate-600 text-sm font-bold hover:bg-slate-200 transition"
                   >
                     សម្អាតរូបថ្មី
                   </button>
@@ -108,7 +110,7 @@
 
                 <p
                   v-if="imageError"
-                  class="text-xs sm:text-sm font-bold text-red-600 mt-2 break-words leading-snug"
+                  class="text-xs font-bold text-red-600 mt-1.5 sm:mt-2"
                 >
                   {{ imageError }}
                 </p>
@@ -128,7 +130,7 @@
               </h3>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
               <div>
                 <label class="form-label">
                   ឈ្មោះខ្មែរ <span class="text-red-500">*</span>
@@ -202,7 +204,7 @@
               </h3>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 gap-3">
+            <div class="grid grid-cols-2 md:grid-cols-3 gap-2">
               <div>
                 <label class="form-label">
                   ថ្ងៃកំណើត <span class="text-red-500">*</span>
@@ -230,7 +232,7 @@
                 />
               </div>
 
-              <div class="sm:col-span-2 md:col-span-1">
+              <div class="col-span-2 md:col-span-1">
                 <label class="form-label">
                   Telegram
                 </label>
@@ -257,7 +259,7 @@
               </h3>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+            <div class="grid grid-cols-2 md:grid-cols-4 gap-2">
               <div>
                 <label class="form-label">
                   ភូមិ
@@ -324,7 +326,7 @@
               </h3>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mb-3">
+            <div class="grid grid-cols-2 md:grid-cols-2 gap-2 mb-2">
               <div>
                 <label class="form-label">
                   ជំនាញឯកទេស <span class="text-red-500">*</span>
@@ -353,7 +355,7 @@
               </div>
             </div>
 
-            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
+            <div class="grid grid-cols-2 md:grid-cols-2 gap-2">
               <div>
                 <label class="form-label">
                   Facebook
@@ -382,14 +384,16 @@
             </div>
           </div>
 
+          </div>
+
           <!-- Actions -->
           <div
-            class="teacher-form-modal-footer-mobile-safe sticky bottom-0 -mx-3 sm:-mx-5 px-3 sm:px-5 py-3 sm:py-4 bg-white border-t border-slate-100 flex justify-end gap-2.5 sm:gap-3 shrink-0"
+            class="teacher-form-modal-footer-mobile-safe shrink-0 px-2.5 sm:px-3 py-2.5 bg-white border-t border-slate-100 flex flex-row items-center justify-end gap-2"
           >
             <button
               type="button"
               @click="handleClose"
-              class="px-4 sm:px-5 py-2 text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition"
+              class="px-3 py-1.5 text-sm font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition"
             >
               បោះបង់
             </button>
@@ -397,16 +401,16 @@
             <button
               type="submit"
               :disabled="isSubmitting"
-              class="px-4 sm:px-5 py-2 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition flex items-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="px-3.5 py-1.5 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition flex items-center gap-1.5 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <i
                 v-if="isSubmitting"
-                class="fa-solid fa-circle-notch fa-spin text-sm"
+                class="fa-solid fa-circle-notch fa-spin text-[10px] sm:text-xs"
               ></i>
 
               <i
                 v-else
-                class="fa-solid fa-floppy-disk text-sm"
+                class="fa-solid fa-floppy-disk text-[10px] sm:text-xs"
               ></i>
 
               {{ isSubmitting ? "កំពុងរក្សាទុក..." : (isEditing ? "រក្សាទុក" : "បញ្ចូលគ្រូថ្មី") }}
@@ -415,8 +419,7 @@
         </form>
       </div>
     </div>
-    </Transition>
-  </Teleport>
+  </Transition>
 </template>
 
 <script setup>
@@ -437,6 +440,54 @@ const emit = defineEmits(["close", "save"]);
 
 const originalViewportContent = ref("");
 const viewportMetaWasCreated = ref(false);
+
+const lockedScrollY = ref(0);
+const pageScrollLockState = ref(null);
+
+const lockPageScroll = () => {
+  if (typeof document === "undefined" || pageScrollLockState.value) return;
+
+  const body = document.body;
+  const html = document.documentElement;
+
+  lockedScrollY.value = window.scrollY || window.pageYOffset || 0;
+  pageScrollLockState.value = {
+    bodyPosition: body.style.position,
+    bodyTop: body.style.top,
+    bodyLeft: body.style.left,
+    bodyRight: body.style.right,
+    bodyWidth: body.style.width,
+    bodyOverflow: body.style.overflow,
+    htmlOverflow: html.style.overflow
+  };
+
+  html.style.overflow = "hidden";
+  body.style.position = "fixed";
+  body.style.top = `-${lockedScrollY.value}px`;
+  body.style.left = "0";
+  body.style.right = "0";
+  body.style.width = "100%";
+  body.style.overflow = "hidden";
+};
+
+const unlockPageScroll = () => {
+  if (typeof document === "undefined" || !pageScrollLockState.value) return;
+
+  const body = document.body;
+  const html = document.documentElement;
+  const saved = pageScrollLockState.value;
+
+  body.style.position = saved.bodyPosition;
+  body.style.top = saved.bodyTop;
+  body.style.left = saved.bodyLeft;
+  body.style.right = saved.bodyRight;
+  body.style.width = saved.bodyWidth;
+  body.style.overflow = saved.bodyOverflow;
+  html.style.overflow = saved.htmlOverflow;
+
+  pageScrollLockState.value = null;
+  window.scrollTo(0, lockedScrollY.value);
+};
 
 const setNoZoomViewport = () => {
   if (typeof document === "undefined") return;
@@ -478,6 +529,7 @@ const restoreViewport = () => {
 };
 
 const handleClose = () => {
+  unlockPageScroll();
   restoreViewport();
   emit("close");
 };
@@ -665,12 +717,14 @@ watch(
   () => props.isOpen,
   (newVal) => {
     if (!newVal) {
+      unlockPageScroll();
       restoreViewport();
       isSubmitting.value = false;
       clearLocalPreview();
       return;
     }
 
+    lockPageScroll();
     setNoZoomViewport();
     clearLocalPreview();
 
@@ -732,6 +786,7 @@ watch(
 );
 
 onBeforeUnmount(() => {
+  unlockPageScroll();
   restoreViewport();
   clearLocalPreview();
 });
@@ -741,6 +796,10 @@ onBeforeUnmount(() => {
 
 .teacher-form-modal-panel-mobile-safe {
   font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif;
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+  text-rendering: optimizeLegibility;
 }
 
 .teacher-form-modal-panel-mobile-safe label,
@@ -748,9 +807,22 @@ onBeforeUnmount(() => {
 .teacher-form-modal-panel-mobile-safe span,
 .teacher-form-modal-panel-mobile-safe h1,
 .teacher-form-modal-panel-mobile-safe h3,
-.teacher-form-modal-panel-mobile-safe button {
-  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif;
+.teacher-form-modal-panel-mobile-safe button,
+.teacher-form-modal-panel-mobile-safe input,
+.teacher-form-modal-panel-mobile-safe select,
+.teacher-form-modal-panel-mobile-safe textarea,
+.teacher-form-modal-panel-mobile-safe option {
+  font-family: inherit;
+}
+
+.teacher-form-modal-panel-mobile-safe h1 {
+  font-size: 16px !important;
   line-height: 1.45;
+}
+
+.teacher-form-modal-panel-mobile-safe button {
+  font-size: 14px !important;
+  line-height: 1.4;
 }
 
 .teacher-form-modal-panel-mobile-safe .break-words,
@@ -760,108 +832,149 @@ onBeforeUnmount(() => {
   word-break: break-word;
 }
 
+.teacher-form-modal-form-mobile-safe {
+  display: flex;
+  flex: 1 1 auto;
+  min-height: 0;
+  flex-direction: column;
+  overflow: hidden;
+}
+
+.teacher-form-modal-body-mobile-safe {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+}
+
+.teacher-form-modal-footer-mobile-safe {
+  flex-shrink: 0;
+}
+
 input.form-input,
 select.form-input,
 textarea.form-input,
 .form-input::placeholder {
-  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif !important;
+  font-family: inherit !important;
   font-size: 14px !important;
-  line-height: 1.7 !important;
+  line-height: 1.45 !important;
   font-weight: 500;
   -webkit-font-smoothing: antialiased;
-  text-rendering: geometricPrecision;
+  text-rendering: optimizeLegibility;
 }
 
 input.form-input,
 select.form-input {
-  min-height: 2.68rem !important;
-  height: 2.68rem !important;
-  padding-top: 0.56rem !important;
-  padding-bottom: 0.56rem !important;
+  min-height: 2.65rem !important;
+  height: 2.65rem !important;
+  padding-top: 0.58rem !important;
+  padding-bottom: 0.58rem !important;
   overflow: visible !important;
 }
 
 textarea.form-input {
-  min-height: 5rem !important;
+  min-height: 4.75rem !important;
   padding-top: 0.6rem !important;
   padding-bottom: 0.6rem !important;
-  line-height: 1.7 !important;
+  line-height: 1.9 !important;
 }
 
 
-/* Mobile safe modal + balanced Khmer form UI */
-@media (max-width: 640px) {
+/* Mobile-only behavior. Desktop styles from sm (640px) and above stay unchanged. */
+@media (max-width: 639px) {
   .teacher-form-modal-overlay-mobile-safe {
     min-height: 100vh;
     min-height: 100dvh;
     align-items: flex-end;
-    padding-top: calc(0.5rem + env(safe-area-inset-top));
     padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
+    overscroll-behavior: none;
     -webkit-text-size-adjust: 100%;
     text-size-adjust: 100%;
   }
 
   .teacher-form-modal-panel-mobile-safe {
-    max-height: calc(100vh - 1rem);
-    max-height: calc(100dvh - 1rem);
+    max-height: calc(100vh - 0.75rem);
+    max-height: calc(100dvh - 0.75rem);
+    overscroll-behavior: contain;
+  }
+
+  .teacher-form-modal-form-mobile-safe,
+  .teacher-form-modal-body-mobile-safe {
+    min-height: 0;
   }
 
   .teacher-form-modal-body-mobile-safe {
-    max-height: calc(100vh - 9.75rem);
-    max-height: calc(100dvh - 9.75rem);
+    flex: 1 1 auto;
+    max-height: none;
+    overflow-y: auto;
+    overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
   }
 
   .teacher-form-modal-footer-mobile-safe {
-    position: sticky;
-    bottom: 0;
+    position: relative;
     z-index: 5;
     padding-bottom: calc(0.65rem + env(safe-area-inset-bottom)) !important;
+    box-shadow: 0 -8px 20px rgb(15 23 42 / 0.05);
+  }
+
+  .teacher-form-modal-panel-mobile-safe input.form-input,
+  .teacher-form-modal-panel-mobile-safe select.form-input {
+    box-sizing: border-box;
+    width: 100%;
+    min-height: 35px !important;
+    height: 35px !important;
+    padding: 0 0.625rem !important;
+    font-size: 14px !important;
+    line-height: 1.25 !important;
+  }
+
+  .teacher-form-modal-panel-mobile-safe input[type="date"].form-input {
+    appearance: auto;
+    -webkit-appearance: auto;
   }
 }
 
 .form-section {
   border: 1px solid #e2e8f0;
   background: #ffffff;
-  border-radius: 0.9rem;
-  padding: 0.85rem;
-  box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
+  border-radius: 0.75rem;
+  padding: 0.65rem;
 }
 
 .section-heading {
   display: flex;
-  align-items: flex-start;
-  gap: 0.65rem;
-  margin-bottom: 0.8rem;
+  align-items: center;
+  gap: 0.45rem;
+  margin-bottom: 0.5rem;
 }
 
 .section-icon {
-  height: 1.8rem;
-  width: 1.8rem;
-  border-radius: 0.6rem;
+  height: 1.45rem;
+  width: 1.45rem;
+  border-radius: 0.5rem;
   background: #eff6ff;
   color: #2563eb;
   display: flex;
   align-items: center;
   justify-content: center;
-  font-size: 0.8rem;
+  font-size: 0.62rem;
   flex-shrink: 0;
 }
 
 .section-title {
-  font-size: 15px;
+  font-size: 14px;
+  line-height: 1.45;
   font-weight: 900;
   color: #1e293b;
-  line-height: 1.45;
 }
 
 .form-label {
   display: block;
-  font-size: 14px;
+  font-size: 13px;
+  line-height: 1.45;
   font-weight: 800;
   color: #64748b;
-  margin-bottom: 0.35rem;
-  line-height: 1.45;
+  margin-bottom: 0.3rem;
   white-space: normal;
   overflow: visible;
   text-overflow: clip;
@@ -870,14 +983,13 @@ textarea.form-input {
 .form-input {
   width: 100%;
   border: 1px solid #e2e8f0;
-  border-radius: 0.6rem;
-  padding: 0.56rem 0.7rem;
+  border-radius: 0.45rem;
+  padding: 0.36rem 0.52rem;
   font-size: 14px;
-  line-height: 1.7;
   color: #334155;
   background: #ffffff;
   outline: none;
-  min-height: 2.68rem;
+  min-height: 1.95rem;
   transition: all 0.2s ease;
 }
 
@@ -901,46 +1013,17 @@ textarea.form-input {
 
 @media (min-width: 640px) {
   .form-section {
-    padding: 1rem;
+    padding: 0.75rem;
+  }
+
+  .form-label {
+    font-size: 13px;
+  }
+
+  .form-input {
+    padding: 0.38rem 0.6rem;
+    font-size: 14px;
+    min-height: 2.05rem;
   }
 }
-
-.teacher-form-modal-overlay-mobile-safe {
-  position: fixed !important;
-  inset: 0 !important;
-  width: 100vw !important;
-  height: 100vh !important;
-  height: 100dvh !important;
-  z-index: 9999 !important;
-  isolation: isolate;
-}
-
-.teacher-form-modal-panel-mobile-safe {
-  line-height: 1.45;
-}
-
-.teacher-form-modal-panel-mobile-safe label,
-.teacher-form-modal-panel-mobile-safe p,
-.teacher-form-modal-panel-mobile-safe span,
-.teacher-form-modal-panel-mobile-safe h1,
-.teacher-form-modal-panel-mobile-safe h3,
-.teacher-form-modal-panel-mobile-safe button {
-  line-height: 1.45;
-  overflow-wrap: anywhere;
-  word-break: break-word;
-}
-
-.teacher-form-modal-panel-mobile-safe input,
-.teacher-form-modal-panel-mobile-safe select,
-.teacher-form-modal-panel-mobile-safe textarea,
-.teacher-form-modal-panel-mobile-safe option,
-.teacher-form-modal-panel-mobile-safe input::placeholder,
-.teacher-form-modal-panel-mobile-safe textarea::placeholder {
-  font-size: 14px !important;
-}
-
-.modal-scroll {
-  -webkit-overflow-scrolling: touch;
-}
-
 </style>

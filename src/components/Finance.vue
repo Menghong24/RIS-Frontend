@@ -699,6 +699,8 @@ const toast = useToast();
 
 const originalViewportContent = ref("");
 const viewportMetaWasCreated = ref(false);
+const lockedScrollY = ref(0);
+const pageScrollLockState = ref(null);
 
 const setNoZoomViewport = () => {
   if (typeof document === "undefined") return;
@@ -739,6 +741,49 @@ const restoreViewport = () => {
   );
 };
 
+const lockPageScroll = () => {
+  if (typeof window === "undefined" || typeof document === "undefined") return;
+  if (pageScrollLockState.value) return;
+
+  lockedScrollY.value = window.scrollY || window.pageYOffset || 0;
+
+  pageScrollLockState.value = {
+    htmlOverflow: document.documentElement.style.overflow,
+    bodyPosition: document.body.style.position,
+    bodyTop: document.body.style.top,
+    bodyLeft: document.body.style.left,
+    bodyRight: document.body.style.right,
+    bodyWidth: document.body.style.width,
+    bodyOverflow: document.body.style.overflow
+  };
+
+  document.documentElement.style.overflow = "hidden";
+  document.body.style.position = "fixed";
+  document.body.style.top = `-${lockedScrollY.value}px`;
+  document.body.style.left = "0";
+  document.body.style.right = "0";
+  document.body.style.width = "100%";
+  document.body.style.overflow = "hidden";
+};
+
+const unlockPageScroll = () => {
+  if (typeof window === "undefined" || typeof document === "undefined") return;
+  if (!pageScrollLockState.value) return;
+
+  const previous = pageScrollLockState.value;
+
+  document.documentElement.style.overflow = previous.htmlOverflow;
+  document.body.style.position = previous.bodyPosition;
+  document.body.style.top = previous.bodyTop;
+  document.body.style.left = previous.bodyLeft;
+  document.body.style.right = previous.bodyRight;
+  document.body.style.width = previous.bodyWidth;
+  document.body.style.overflow = previous.bodyOverflow;
+
+  pageScrollLockState.value = null;
+  window.scrollTo(0, lockedScrollY.value);
+};
+
 const paymentsQuery = useQuery("payments");
 const classesQuery = useQuery("classes");
 const studentsQuery = useQuery("students");
@@ -776,6 +821,14 @@ const filters = reactive({
 
 const showDeleteModal = ref(false);
 const paymentToDelete = ref(null);
+
+watch(showDeleteModal, (isOpen) => {
+  if (isOpen) {
+    lockPageScroll();
+  } else {
+    unlockPageScroll();
+  }
+});
 
 const currentPage = ref(1);
 const perPage = ref(6);
@@ -1377,6 +1430,7 @@ onMounted(() => {
 });
 
 onBeforeUnmount(() => {
+  unlockPageScroll();
   restoreViewport();
 });
 
@@ -1569,8 +1623,8 @@ onBeforeUnmount(() => {
 }
 
 
-/* Chrome mobile bottom toolbar fix + no visual input-size changes */
-@media (max-width: 640px) {
+/* Mobile-safe spacing and balanced Khmer controls. */
+@media (max-width: 639px) {
   .payment-page-mobile-safe {
     padding-bottom: calc(2.75rem + env(safe-area-inset-bottom));
     -webkit-text-size-adjust: 100%;
@@ -1594,6 +1648,57 @@ onBeforeUnmount(() => {
 
   .payment-pagination-mobile-safe {
     padding-bottom: calc(0.75rem + env(safe-area-inset-bottom)) !important;
+  }
+
+  .payment-page-mobile-safe input:not([type="checkbox"]):not([type="radio"]),
+  .payment-page-mobile-safe select {
+    box-sizing: border-box;
+    min-height: 35px !important;
+    height: 35px !important;
+    padding-top: 0 !important;
+    padding-bottom: 0 !important;
+    font-size: 14px !important;
+    line-height: 1.25 !important;
+  }
+
+  .payment-page-mobile-safe .form-input,
+  .payment-page-mobile-safe .money-input,
+  .payment-page-mobile-safe .remark-input,
+  .payment-page-mobile-safe .date-input,
+  .payment-page-mobile-safe .additional-input,
+  .payment-page-mobile-safe .mobile-input {
+    min-height: 35px !important;
+    height: 35px !important;
+    padding-left: 0.625rem;
+    padding-right: 0.625rem;
+    font-size: 14px !important;
+    line-height: 1.25 !important;
+  }
+
+  .payment-page-mobile-safe .search-input {
+    padding-left: 2.15rem !important;
+    padding-right: 0.625rem !important;
+  }
+
+  .payment-page-mobile-safe .form-label,
+  .payment-page-mobile-safe .mobile-label {
+    font-size: 13px;
+    line-height: 1.45;
+    margin-bottom: 0.25rem;
+  }
+
+  .payment-mobile-list button,
+  .payment-pagination-mobile-safe button,
+  .payment-pagination-mobile-safe select {
+    min-height: 35px;
+    font-size: 14px !important;
+    line-height: 1.25;
+  }
+
+  .payment-page-mobile-safe input[type="date"],
+  .payment-page-mobile-safe input[type="month"] {
+    appearance: auto;
+    -webkit-appearance: auto;
   }
 }
 

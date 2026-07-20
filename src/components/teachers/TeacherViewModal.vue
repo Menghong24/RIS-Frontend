@@ -1,5 +1,6 @@
 <template>
-  <Transition
+  <Teleport to="body">
+    <Transition
     enter-active-class="transition duration-200 ease-out"
     enter-from-class="opacity-0"
     enter-to-class="opacity-100"
@@ -10,7 +11,7 @@
     <div
       v-if="isOpen"
       class="teacher-view-modal-overlay-mobile-safe fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-2 sm:p-3"
-      @click.self="$emit('close')"
+      @click.self="handleClose"
     >
       <div
         class="teacher-view-modal-panel-mobile-safe bg-white rounded-t-2xl sm:rounded-xl shadow-xl w-full max-w-2xl max-h-[94dvh] sm:max-h-[86vh] overflow-hidden border border-slate-100 flex flex-col"
@@ -56,7 +57,7 @@
 
           <button
             type="button"
-            @click="$emit('close')"
+            @click="handleClose"
             class="h-7 w-7 sm:h-8 sm:w-8 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition shrink-0"
           >
             <i class="fa-solid fa-xmark text-sm"></i>
@@ -64,7 +65,7 @@
         </div>
 
         <!-- Body -->
-        <div class="teacher-view-modal-body-mobile-safe p-2.5 sm:p-3 space-y-2.5 sm:space-y-3 overflow-y-auto modal-scroll">
+        <div class="teacher-view-modal-body-mobile-safe flex-1 min-h-0 p-2.5 sm:p-3 space-y-2.5 sm:space-y-3 overflow-y-auto overscroll-contain modal-scroll">
           <!-- Detail -->
           <div class="section-card">
             <h3 class="section-title">
@@ -180,7 +181,7 @@
         <!-- Footer -->
         <div class="teacher-view-modal-footer-mobile-safe px-2.5 sm:px-3 py-2.5 border-t border-slate-100 bg-white flex justify-end shrink-0">
           <button
-            @click="$emit('close')"
+            @click="handleClose"
             class="px-3 sm:px-4 py-1.5 text-[11px] sm:text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition flex items-center gap-1.5 sm:gap-2"
           >
             <i class="fa-solid fa-xmark text-[10px] sm:text-xs"></i>
@@ -189,11 +190,12 @@
         </div>
       </div>
     </div>
-  </Transition>
+    </Transition>
+  </Teleport>
 </template>
 
 <script setup>
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch, onBeforeUnmount } from "vue";
 import api from "../../config/api";
 
 const props = defineProps({
@@ -204,9 +206,85 @@ const props = defineProps({
   }
 });
 
-defineEmits(["close"]);
+const emit = defineEmits(["close"]);
+
+let pageScrollLocked = false;
+let lockedScrollY = 0;
+let originalHtmlOverflow = "";
+let originalBodyStyles = null;
+
+const lockPageScroll = () => {
+  if (typeof window === "undefined" || typeof document === "undefined" || pageScrollLocked) return;
+
+  const html = document.documentElement;
+  const body = document.body;
+  lockedScrollY = window.scrollY || window.pageYOffset || 0;
+  originalHtmlOverflow = html.style.overflow;
+  originalBodyStyles = {
+    position: body.style.position,
+    top: body.style.top,
+    left: body.style.left,
+    right: body.style.right,
+    width: body.style.width,
+    overflow: body.style.overflow,
+    paddingRight: body.style.paddingRight
+  };
+
+  const scrollbarWidth = window.innerWidth - html.clientWidth;
+  html.style.overflow = "hidden";
+  body.style.position = "fixed";
+  body.style.top = `-${lockedScrollY}px`;
+  body.style.left = "0";
+  body.style.right = "0";
+  body.style.width = "100%";
+  body.style.overflow = "hidden";
+
+  if (scrollbarWidth > 0) {
+    body.style.paddingRight = `${scrollbarWidth}px`;
+  }
+
+  pageScrollLocked = true;
+};
+
+const unlockPageScroll = () => {
+  if (typeof window === "undefined" || typeof document === "undefined" || !pageScrollLocked) return;
+
+  const html = document.documentElement;
+  const body = document.body;
+  html.style.overflow = originalHtmlOverflow;
+
+  if (originalBodyStyles) {
+    body.style.position = originalBodyStyles.position;
+    body.style.top = originalBodyStyles.top;
+    body.style.left = originalBodyStyles.left;
+    body.style.right = originalBodyStyles.right;
+    body.style.width = originalBodyStyles.width;
+    body.style.overflow = originalBodyStyles.overflow;
+    body.style.paddingRight = originalBodyStyles.paddingRight;
+  }
+
+  pageScrollLocked = false;
+  window.scrollTo(0, lockedScrollY);
+};
+
+const handleClose = () => {
+  unlockPageScroll();
+  emit("close");
+};
 
 const imageLoadError = ref(false);
+
+watch(
+  () => props.isOpen,
+  (isOpen) => {
+    if (isOpen) {
+      lockPageScroll();
+    } else {
+      unlockPageScroll();
+    }
+  },
+  { immediate: true }
+);
 
 watch(
   () => props.teacher?.profileImage,
@@ -270,6 +348,10 @@ const formatDate = (dateString) => {
     year: "numeric"
   });
 };
+
+onBeforeUnmount(() => {
+  unlockPageScroll();
+});
 </script>
 
 <style scoped>
@@ -409,16 +491,42 @@ const formatDate = (dateString) => {
   }
 
   .teacher-view-modal-body-mobile-safe {
-    max-height: calc(100vh - 8.5rem);
-    max-height: calc(100dvh - 8.5rem);
+    flex: 1 1 auto;
+    min-height: 0;
+    max-height: none;
+    overflow-y: auto;
+    overscroll-behavior: contain;
     -webkit-overflow-scrolling: touch;
   }
 
   .teacher-view-modal-footer-mobile-safe {
-    position: sticky;
-    bottom: 0;
+    position: relative;
+    bottom: auto;
     z-index: 5;
     padding-bottom: calc(0.65rem + env(safe-area-inset-bottom)) !important;
+    box-shadow: 0 -8px 20px rgb(15 23 42 / 0.05);
+  }
+
+  .teacher-view-modal-panel-mobile-safe h2 {
+    font-size: 16px !important;
+  }
+
+  .teacher-view-modal-panel-mobile-safe .section-title {
+    font-size: 14px !important;
+  }
+
+  .teacher-view-modal-panel-mobile-safe .info-label {
+    font-size: 12px !important;
+  }
+
+  .teacher-view-modal-panel-mobile-safe .info-value {
+    font-size: 14px !important;
+  }
+
+  .teacher-view-modal-footer-mobile-safe button {
+    min-height: 35px;
+    padding: 0 0.875rem !important;
+    font-size: 14px !important;
   }
 }
 

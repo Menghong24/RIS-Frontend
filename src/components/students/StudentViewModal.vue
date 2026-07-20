@@ -1,8 +1,9 @@
 <template>
+  <Teleport to="body">
   <div
     v-if="isOpen"
     class="student-view-modal-overlay-mobile-safe fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-2 sm:p-3"
-    @click.self="$emit('close')"
+    @click.self="handleClose"
   >
     <div
       class="student-view-modal-panel-mobile-safe bg-white rounded-t-2xl sm:rounded-xl shadow-xl w-full max-w-2xl max-h-[94dvh] sm:max-h-[88vh] overflow-hidden border border-slate-100 flex flex-col"
@@ -69,7 +70,8 @@
         </div>
 
         <button
-          @click="$emit('close')"
+          type="button"
+          @click="handleClose"
           class="h-7 w-7 sm:h-8 sm:w-8 rounded-lg text-slate-400 hover:text-slate-600 hover:bg-slate-100 transition shrink-0"
         >
           <i class="fa-solid fa-xmark text-sm"></i>
@@ -77,7 +79,7 @@
       </div>
 
       <!-- Body -->
-      <div class="student-view-modal-body-mobile-safe p-2.5 sm:p-3 space-y-2.5 sm:space-y-3 overflow-y-auto modal-scroll">
+      <div class="student-view-modal-body-mobile-safe flex-1 min-h-0 p-2.5 sm:p-3 space-y-2.5 sm:space-y-3 overflow-y-auto modal-scroll">
         <!-- Student Details -->
         <div class="section-card">
           <h3 class="section-title">
@@ -213,7 +215,8 @@
       <!-- Actions -->
       <div class="student-view-modal-footer-mobile-safe px-2.5 sm:px-3 py-2.5 border-t border-slate-100 bg-white flex justify-end shrink-0">
         <button
-          @click="$emit('close')"
+          type="button"
+          @click="handleClose"
           class="px-3 sm:px-4 py-1.5 text-[11px] sm:text-xs font-bold text-slate-600 bg-slate-100 hover:bg-slate-200 rounded-lg transition flex items-center gap-1.5 sm:gap-2"
         >
           <i class="fa-solid fa-xmark text-[10px] sm:text-xs"></i>
@@ -222,10 +225,11 @@
       </div>
     </div>
   </div>
+  </Teleport>
 </template>
 
 <script setup>
-import { computed, ref, watch } from "vue";
+import { computed, ref, watch, onBeforeUnmount } from "vue";
 import api from "../../config/api";
 
 const props = defineProps({
@@ -236,9 +240,86 @@ const props = defineProps({
   }
 });
 
-defineEmits(["close"]);
+const emit = defineEmits(["close"]);
 
 const imageLoadError = ref(false);
+
+
+const pageScrollState = {
+  locked: false,
+  scrollY: 0,
+  body: {},
+  html: {}
+};
+
+const lockBackgroundScroll = () => {
+  if (typeof window === "undefined" || typeof document === "undefined") return;
+  if (pageScrollState.locked) return;
+
+  const body = document.body;
+  const html = document.documentElement;
+
+  pageScrollState.locked = true;
+  pageScrollState.scrollY = window.scrollY || window.pageYOffset || 0;
+  pageScrollState.body = {
+    position: body.style.position,
+    top: body.style.top,
+    left: body.style.left,
+    right: body.style.right,
+    width: body.style.width,
+    overflow: body.style.overflow,
+    paddingRight: body.style.paddingRight
+  };
+  pageScrollState.html = {
+    overflow: html.style.overflow,
+    overscrollBehavior: html.style.overscrollBehavior
+  };
+
+  const scrollbarWidth = Math.max(0, window.innerWidth - html.clientWidth);
+
+  body.style.position = "fixed";
+  body.style.top = `-${pageScrollState.scrollY}px`;
+  body.style.left = "0";
+  body.style.right = "0";
+  body.style.width = "100%";
+  body.style.overflow = "hidden";
+  if (scrollbarWidth > 0) body.style.paddingRight = `${scrollbarWidth}px`;
+
+  html.style.overflow = "hidden";
+  html.style.overscrollBehavior = "none";
+};
+
+const restoreBackgroundScroll = () => {
+  if (typeof window === "undefined" || typeof document === "undefined") return;
+  if (!pageScrollState.locked) return;
+
+  const body = document.body;
+  const html = document.documentElement;
+  const scrollY = pageScrollState.scrollY;
+
+  Object.assign(body.style, pageScrollState.body);
+  Object.assign(html.style, pageScrollState.html);
+
+  pageScrollState.locked = false;
+  window.scrollTo(0, scrollY);
+};
+
+const handleClose = () => {
+  restoreBackgroundScroll();
+  emit("close");
+};
+
+watch(
+  () => props.isOpen,
+  (isOpen) => {
+    if (isOpen) {
+      lockBackgroundScroll();
+    } else {
+      restoreBackgroundScroll();
+    }
+  },
+  { immediate: true }
+);
 
 watch(
   () => props.student?.profileImage,
@@ -395,9 +476,24 @@ const formatDate = (date) => {
     day: "numeric"
   });
 };
+
+onBeforeUnmount(() => {
+  restoreBackgroundScroll();
+});
 </script>
 
 <style scoped>
+
+.student-view-modal-overlay-mobile-safe {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  z-index: 9999 !important;
+  overscroll-behavior: contain;
+  isolation: isolate;
+}
 
 .student-view-modal-panel-mobile-safe {
   font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif;
@@ -539,6 +635,62 @@ const formatDate = (date) => {
     bottom: 0;
     z-index: 5;
     padding-bottom: calc(0.65rem + env(safe-area-inset-bottom)) !important;
+  }
+}
+
+
+.student-view-modal-panel-mobile-safe {
+  min-height: 0;
+}
+
+.student-view-modal-body-mobile-safe {
+  flex: 1 1 auto;
+  min-height: 0;
+  overflow-y: auto;
+  overscroll-behavior: contain;
+  -webkit-overflow-scrolling: touch;
+  touch-action: pan-y;
+}
+
+.student-view-modal-footer-mobile-safe {
+  flex: 0 0 auto;
+}
+
+@media (max-width: 639px) {
+  .student-view-modal-panel-mobile-safe h2 {
+    font-size: 16px !important;
+    line-height: 1.5 !important;
+  }
+
+  .student-view-modal-panel-mobile-safe > div:first-child > div p {
+    font-size: 12px !important;
+    line-height: 1.5 !important;
+  }
+
+  .student-view-modal-panel-mobile-safe .section-title {
+    font-size: 14px !important;
+    line-height: 1.5 !important;
+  }
+
+  .student-view-modal-panel-mobile-safe .info-label {
+    font-size: 12px !important;
+    line-height: 1.5 !important;
+  }
+
+  .student-view-modal-panel-mobile-safe .info-value {
+    font-size: 14px !important;
+    line-height: 1.55 !important;
+  }
+
+  .student-view-modal-footer-mobile-safe button {
+    min-height: 35px;
+    padding: 0 0.875rem !important;
+    font-size: 14px !important;
+    line-height: 1.45 !important;
+  }
+
+  .student-view-modal-body-mobile-safe {
+    max-height: none !important;
   }
 }
 
