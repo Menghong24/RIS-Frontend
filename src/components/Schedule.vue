@@ -14,7 +14,7 @@
                 {{ classFilter ? `កាលវិភាគ - ${selectedClassName}` : "ជ្រើសរើសថ្នាក់" }}
               </h1>
 
-              <p class="text-[11px] sm:text-xs text-slate-500 mt-1 break-words leading-snug">
+              <p class="text-xs sm:text-sm text-slate-500 mt-1 break-words leading-snug">
                 {{
                   classFilter
                     ? "គ្រប់គ្រងម៉ោងសិក្សា មុខវិជ្ជា គ្រូបង្រៀន និងបន្ទប់រៀនតាមថ្ងៃ"
@@ -30,7 +30,7 @@
               type="button"
               @click="goBackToClasses"
               :disabled="loading || isSaving || isDeleting"
-              class="inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg text-[11px] sm:text-xs font-extrabold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 hover:text-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+              class="inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-extrabold text-slate-600 bg-white border border-slate-200 hover:bg-slate-50 hover:text-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <i class="fa-solid fa-arrow-left text-[10px]"></i>
               ត្រឡប់ក្រោយ
@@ -41,7 +41,7 @@
               type="button"
               @click="openCreateModal"
               :disabled="loading || isSaving || isDeleting"
-              class="inline-flex items-center justify-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-[11px] sm:text-xs font-extrabold text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed"
+              class="inline-flex items-center justify-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-extrabold text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <i class="fa-solid fa-plus text-[10px]"></i>
               បន្ថែមកាលវិភាគ
@@ -76,7 +76,7 @@
                 v-model="classSearchQuery"
                 type="text"
                 placeholder="ស្វែងរកថ្នាក់តាមឈ្មោះ កម្រិត ម៉ោងសិក្សា ឬគ្រូ..."
-                class="search-input w-full border border-slate-200 rounded-lg bg-white text-[11px] sm:text-xs text-slate-700 outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition"
+                class="search-input w-full border border-slate-200 rounded-lg bg-white text-xs sm:text-sm text-slate-700 outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 transition"
               />
             </div>
 
@@ -131,15 +131,15 @@
               {{ c.className || "មិនមានឈ្មោះថ្នាក់" }}
             </h3>
 
-            <p class="text-[10px] sm:text-[11px] text-slate-500 mt-1 break-words leading-snug">
+            <p class="text-xs text-slate-500 mt-1 break-words leading-snug">
               កម្រិត: {{ c.classGrade || "-" }}
             </p>
 
-            <p class="text-[10px] sm:text-[11px] text-slate-500 mt-1 break-words leading-snug">
+            <p class="text-xs text-slate-500 mt-1 break-words leading-snug">
               គ្រូបន្ទុក: {{ getTeacherName(c.teacher) || c.teacherName || "មិនទាន់មាន" }}
             </p>
 
-            <div class="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-[10px] sm:text-[11px]">
+            <div class="mt-2.5 pt-2 border-t border-slate-100 flex items-center justify-between text-xs">
               <span class="text-slate-400 font-bold">
                 <i class="fa-solid fa-users mr-1"></i>
                 {{ getClassStudentCount(c) }} នាក់
@@ -243,7 +243,7 @@
                 <span class="break-words leading-snug">{{ day.label }}</span>
               </h3>
 
-              <span class="h-6 min-w-6 px-2 rounded-full bg-white text-blue-600 border border-blue-100 text-[10px] sm:text-[11px] font-extrabold flex items-center justify-center shrink-0">
+              <span class="h-6 min-w-6 px-2 rounded-full bg-white text-blue-600 border border-blue-100 text-xs font-extrabold flex items-center justify-center shrink-0">
                 {{ getSchedulesForDay(day.id).length }}
               </span>
             </div>
@@ -263,12 +263,12 @@
                 class="group relative bg-white border border-slate-200 rounded-xl p-2.5 sm:p-3 shadow-sm hover:shadow-md hover:border-blue-200 transition"
               >
                 <div class="flex items-start justify-between gap-2 mb-2 pr-16">
-                  <span class="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-extrabold text-blue-700 bg-blue-50 px-2 py-1 rounded-lg border border-blue-100 whitespace-nowrap">
+                  <span class="inline-flex items-center gap-1 text-xs font-extrabold text-blue-700 bg-blue-50 px-2 py-1 rounded-lg border border-blue-100 whitespace-nowrap">
                     <i class="fa-regular fa-clock text-[9px]"></i>
                     {{ item.startTime || "--:--" }} - {{ item.endTime || "--:--" }}
                   </span>
 
-                  <span class="inline-flex items-center gap-1 text-[10px] sm:text-[11px] font-bold text-slate-500 bg-slate-50 px-2 py-1 rounded-lg whitespace-nowrap">
+                  <span class="inline-flex items-center gap-1 text-xs font-bold text-slate-500 bg-slate-50 px-2 py-1 rounded-lg whitespace-nowrap">
                     <i class="fa-solid fa-door-open text-[9px]"></i>
                     {{ item.room || "-" }}
                   </span>
@@ -278,7 +278,7 @@
                   {{ getSubjectName(item.subject) }}
                 </h4>
 
-                <p class="text-[11px] sm:text-xs text-slate-500 break-words leading-snug mt-1 pr-16">
+                <p class="text-xs sm:text-sm text-slate-500 break-words leading-snug mt-1 pr-16">
                   <i class="fa-solid fa-chalkboard-user mr-1 text-slate-400"></i>
                   {{ getTeacherName(item.teacher) || "មិនទាន់មានគ្រូ" }}
                 </p>
@@ -312,8 +312,9 @@
         </div>
       </template>
 
-      <!-- Create/Edit Modal -->
-      <Transition
+      <Teleport to="body">
+        <!-- Create/Edit Modal -->
+        <Transition
         enter-active-class="transition duration-200 ease-out"
         enter-from-class="opacity-0"
         enter-to-class="opacity-100"
@@ -323,7 +324,7 @@
       >
         <div
           v-if="showModal"
-          class="schedule-modal-overlay-mobile-safe fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-2 sm:p-4"
+          class="schedule-modal-overlay-mobile-safe fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-end sm:items-center justify-center z-[9999] p-2.5 sm:p-4"
           @click.self="closeModal"
         >
           <Transition
@@ -337,21 +338,21 @@
           >
             <div
               v-if="showModal"
-              class="schedule-modal-panel-mobile-safe bg-white rounded-t-2xl sm:rounded-xl shadow-xl w-full max-w-lg overflow-hidden border border-slate-100 flex flex-col max-h-[94dvh] sm:max-h-[90vh]"
+              class="schedule-modal-panel-mobile-safe bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden border border-slate-100 flex flex-col max-h-[95dvh] sm:max-h-[90vh]"
             >
-              <div class="px-3 sm:px-4 py-2.5 sm:py-3 border-b border-slate-100 flex justify-between items-start gap-2 bg-slate-50 shrink-0">
+              <div class="px-4 sm:px-5 py-3 sm:py-4 border-b border-slate-100 flex justify-between items-start gap-3 bg-slate-50 shrink-0">
                 <div class="min-w-0">
-                  <h3 class="text-sm sm:text-base font-extrabold text-slate-800 flex items-start gap-2 leading-snug">
-                    <span class="h-8 w-8 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-xs shrink-0">
+                  <h3 class="text-base sm:text-lg font-extrabold text-slate-800 flex items-start gap-2.5 leading-snug">
+                    <span class="h-8 w-8 sm:h-9 sm:w-9 rounded-lg bg-blue-100 text-blue-700 flex items-center justify-center text-sm shrink-0">
                       <i :class="isEditing ? 'fa-solid fa-pen-to-square' : 'fa-solid fa-plus'"></i>
                     </span>
 
-                    <span class="truncate">
+                    <span class="break-words leading-snug">
                       {{ isEditing ? "កែប្រែកាលវិភាគ" : "បន្ថែមកាលវិភាគ" }}
                     </span>
                   </h3>
 
-                  <p class="text-[10px] sm:text-xs text-slate-500 mt-0.5 break-words leading-snug">
+                  <p class="text-xs sm:text-sm text-slate-500 mt-1 break-words leading-snug">
                     បំពេញព័ត៌មានកាលវិភាគសិក្សា
                   </p>
                 </div>
@@ -367,8 +368,8 @@
               </div>
 
               <form @submit.prevent="handleSubmit" class="schedule-modal-body-mobile-safe overflow-y-auto modal-scroll">
-                <div class="p-3 sm:p-4 space-y-3 sm:space-y-4">
-                  <div class="rounded-lg border border-blue-100 bg-blue-50 px-3 py-2 text-[11px] font-bold text-blue-700">
+                <div class="p-4 sm:p-5 space-y-4">
+                  <div class="rounded-xl border border-blue-100 bg-blue-50 px-3.5 py-2.5 text-sm font-bold text-blue-700 break-words leading-snug">
                     <i class="fa-solid fa-school mr-1"></i>
                     ថ្នាក់: {{ selectedClassName || "-" }}
                   </div>
@@ -413,7 +414,7 @@
                     </select>
                   </div>
 
-                  <div class="grid grid-cols-2 gap-2.5 sm:gap-3">
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label class="form-label">
                         ម៉ោងចាប់ផ្ដើម <span class="text-red-500">*</span>
@@ -445,7 +446,7 @@
                   </div>
                 </div>
 
-                <div class="schedule-modal-footer-mobile-safe sticky bottom-0 px-3 sm:px-4 py-2.5 flex justify-end gap-2.5 border-t border-slate-100 bg-white shrink-0">
+                <div class="schedule-modal-footer-mobile-safe sticky bottom-0 px-4 sm:px-5 py-3 sm:py-4 flex justify-end gap-2.5 sm:gap-3 border-t border-slate-100 bg-white shrink-0">
                   <button
                     type="button"
                     @click="closeModal"
@@ -482,7 +483,7 @@
       >
         <div
           v-if="showDeleteModal"
-          class="schedule-modal-overlay-mobile-safe fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[60] p-3 sm:p-4"
+          class="schedule-modal-overlay-mobile-safe schedule-delete-overlay-mobile-safe fixed inset-0 bg-slate-900/45 backdrop-blur-sm flex items-end sm:items-center justify-center z-[10000] p-2.5 sm:p-4"
           @click.self="closeDeleteModal"
         >
           <Transition
@@ -496,7 +497,7 @@
           >
             <div
               v-if="showDeleteModal"
-              class="schedule-modal-panel-mobile-safe bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden border border-slate-100"
+              class="schedule-modal-panel-mobile-safe bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-100"
             >
               <div class="px-4 py-3 bg-red-50 border-b border-red-100 flex items-start justify-between gap-3">
                 <div class="flex items-center gap-3 min-w-0">
@@ -568,7 +569,8 @@
             </div>
           </Transition>
         </div>
-      </Transition>
+        </Transition>
+      </Teleport>
     </div>
   </div>
 </template>
@@ -1081,8 +1083,8 @@ onBeforeUnmount(() => {
 .search-input,
 .search-input::placeholder {
   font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif !important;
-  font-size: 12px !important;
-  line-height: 1.9 !important;
+  font-size: 14px !important;
+  line-height: 1.7 !important;
   font-weight: 500;
   -webkit-font-smoothing: antialiased;
   text-rendering: geometricPrecision;
@@ -1093,19 +1095,20 @@ onBeforeUnmount(() => {
 .schedule-modal-panel-mobile-safe input,
 .schedule-modal-panel-mobile-safe select,
 .search-input {
-  min-height: 2.65rem !important;
-  height: 2.65rem !important;
-  padding-top: 0.58rem !important;
-  padding-bottom: 0.58rem !important;
+  min-height: 2.68rem !important;
+  height: 2.68rem !important;
+  padding-top: 0.56rem !important;
+  padding-bottom: 0.56rem !important;
   overflow: visible !important;
 }
 
 .form-label {
   display: block;
-  font-size: 0.62rem;
+  font-size: 14px;
   font-weight: 800;
   color: #64748b;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.35rem;
+  line-height: 1.45;
   white-space: normal;
   overflow: visible;
   text-overflow: clip;
@@ -1114,14 +1117,14 @@ onBeforeUnmount(() => {
 .form-input {
   width: 100%;
   border: 1px solid #e2e8f0;
-  border-radius: 0.5rem;
-  padding: 0.58rem 0.55rem;
-  font-size: 12px;
-  line-height: 1.9;
+  border-radius: 0.6rem;
+  padding: 0.56rem 0.7rem;
+  font-size: 14px;
+  line-height: 1.7;
   color: #334155;
   background: #ffffff;
   outline: none;
-  min-height: 2.65rem;
+  min-height: 2.68rem;
   height: auto;
   transition: all 0.2s ease;
 }
@@ -1144,22 +1147,22 @@ onBeforeUnmount(() => {
 }
 
 .search-input {
-  padding-left: 2.15rem !important;
+  padding-left: 2.25rem !important;
   padding-right: 0.75rem !important;
-  min-height: 2.65rem !important;
+  min-height: 2.68rem !important;
 }
 
 .summary-card {
   border: 1px solid #e2e8f0;
   background: #ffffff;
-  border-radius: 0.75rem;
-  padding: 0.52rem 0.62rem;
+  border-radius: 0.85rem;
+  padding: 0.65rem 0.75rem;
   box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
   min-width: 0;
 }
 
 .summary-label {
-  font-size: 0.58rem;
+  font-size: 14px;
   font-weight: 800;
   color: #64748b;
   line-height: 1.45;
@@ -1167,8 +1170,8 @@ onBeforeUnmount(() => {
 }
 
 .summary-value {
-  margin-top: 0.24rem;
-  font-size: 0.82rem;
+  margin-top: 0.28rem;
+  font-size: 15px;
   font-weight: 900;
   line-height: 1.45;
   white-space: normal;
@@ -1220,13 +1223,13 @@ onBeforeUnmount(() => {
   }
 
   .schedule-modal-panel-mobile-safe {
-    max-height: calc(100vh - 0.75rem);
-    max-height: calc(100dvh - 0.75rem);
+    max-height: calc(100vh - 1rem);
+    max-height: calc(100dvh - 1rem);
   }
 
   .schedule-modal-body-mobile-safe {
-    max-height: calc(100vh - 8.5rem);
-    max-height: calc(100dvh - 8.5rem);
+    max-height: calc(100vh - 9.75rem);
+    max-height: calc(100dvh - 9.75rem);
     -webkit-overflow-scrolling: touch;
   }
 
@@ -1239,32 +1242,71 @@ onBeforeUnmount(() => {
 }
 
 @media (min-width: 640px) {
-  .form-label {
-    font-size: 0.68rem;
-  }
-
   .form-input {
-    padding: 0.62rem 0.6rem;
-    font-size: 12px !important;
-    line-height: 1.9 !important;
-    min-height: 2.65rem !important;
+    padding: 0.56rem 0.7rem;
+    font-size: 14px !important;
+    line-height: 1.7 !important;
+    min-height: 2.68rem !important;
     height: auto;
   }
 
   .summary-card {
-    padding: 0.65rem 0.75rem;
+    padding: 0.75rem 0.9rem;
   }
 
   .summary-label {
-    font-size: 0.62rem;
+    font-size: 14px;
   }
 
   .summary-value {
-    font-size: 0.92rem;
+    font-size: 15px;
   }
 
   .search-input {
-    min-height: 2.65rem !important;
+    min-height: 2.68rem !important;
   }
 }
+
+.schedule-modal-overlay-mobile-safe {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  z-index: 9999 !important;
+  isolation: isolate;
+}
+
+.schedule-delete-overlay-mobile-safe {
+  z-index: 10000 !important;
+}
+
+.schedule-modal-panel-mobile-safe {
+  line-height: 1.45;
+}
+
+.schedule-modal-panel-mobile-safe h3,
+.schedule-modal-panel-mobile-safe p,
+.schedule-modal-panel-mobile-safe span,
+.schedule-modal-panel-mobile-safe label,
+.schedule-modal-panel-mobile-safe button {
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.modal-scroll {
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 640px) {
+  .schedule-modal-overlay-mobile-safe {
+    padding-top: calc(0.5rem + env(safe-area-inset-top));
+  }
+
+  .schedule-modal-panel-mobile-safe {
+    border-radius: 1rem 1rem 0 0;
+  }
+}
+
 </style>

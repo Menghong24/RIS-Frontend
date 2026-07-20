@@ -15,7 +15,7 @@
               </span>
             </h1>
 
-            <p class="text-[11px] sm:text-xs text-slate-500 mt-1 break-words leading-snug">
+            <p class="text-xs sm:text-sm text-slate-500 mt-1 break-words leading-snug">
               {{
                 isAdmin
                   ? "បង្កើត កែប្រែ លុប និងផ្សាយសេចក្តីជូនដំណឹងសម្រាប់សិស្ស ឬថ្នាក់រៀន"
@@ -27,17 +27,17 @@
           <button
             v-if="isAdmin"
             @click="openCreateModal"
-            class="w-full sm:w-auto bg-blue-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg hover:bg-blue-700 font-bold shadow-sm transition active:scale-95 flex items-center justify-center gap-1.5 sm:gap-2 text-[11px] sm:text-xs"
+            class="w-full sm:w-auto bg-blue-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg hover:bg-blue-700 font-bold shadow-sm transition active:scale-95 flex items-center justify-center gap-1.5 sm:gap-2 text-xs sm:text-sm"
           >
-            <i class="fa-solid fa-plus text-[10px] sm:text-xs"></i>
+            <i class="fa-solid fa-plus text-xs sm:text-sm"></i>
             បន្ថែមសេចក្តីជូនដំណឹង
           </button>
 
           <span
             v-else
-            class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 sm:gap-2 bg-slate-100 text-slate-600 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-bold text-[11px] sm:text-xs border border-slate-200"
+            class="w-full sm:w-auto inline-flex items-center justify-center gap-1.5 sm:gap-2 bg-slate-100 text-slate-600 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg font-bold text-xs sm:text-sm border border-slate-200"
           >
-            <i class="fa-solid fa-eye text-[10px] sm:text-xs"></i>
+            <i class="fa-solid fa-eye text-xs sm:text-sm"></i>
             មើលបានប៉ុណ្ណោះ
           </span>
         </div>
@@ -46,7 +46,7 @@
       <!-- Notice for non-admin -->
       <div
         v-if="!isAdmin"
-        class="bg-blue-50 border border-blue-100 text-blue-700 rounded-xl px-3 py-2 text-[11px] sm:text-xs font-bold flex items-start gap-2"
+        class="bg-blue-50 border border-blue-100 text-blue-700 rounded-xl px-3 py-2 text-xs sm:text-sm font-bold flex items-start gap-2"
       >
         <i class="fa-solid fa-circle-info mt-0.5"></i>
 
@@ -60,7 +60,7 @@
       <div class="bg-white rounded-xl border border-slate-200 shadow-sm px-2.5 sm:px-3 py-2.5 sm:py-3">
         <div class="flex flex-col md:flex-row md:items-center md:justify-between gap-2.5 md:gap-3">
           <div class="min-w-0">
-            <p class="text-[10px] sm:text-[11px] font-extrabold text-slate-400 uppercase tracking-wide">
+            <p class="text-xs font-extrabold text-slate-400 uppercase tracking-wide">
               ខែដែលកំពុងបង្ហាញ
             </p>
 
@@ -71,7 +71,7 @@
               </span>
             </h2>
 
-            <p class="text-[10px] sm:text-[11px] text-slate-500 mt-0.5 break-words leading-snug">
+            <p class="text-xs text-slate-500 mt-0.5 break-words leading-snug">
               បង្ហាញសេចក្តីជូនដំណឹងក្នុងខែដែលបានជ្រើសរើសប៉ុណ្ណោះ
             </p>
           </div>
@@ -80,7 +80,7 @@
             <button
               type="button"
               @click="goToPreviousMonth"
-              class="inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 text-[10px] sm:text-xs font-bold transition"
+              class="inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 text-xs sm:text-sm font-bold transition"
             >
               <i class="fa-solid fa-chevron-left text-[9px]"></i>
               ខែមុន
@@ -90,7 +90,7 @@
               type="button"
               @click="goToCurrentMonth"
               :disabled="isViewingCurrentMonth"
-              class="inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg border border-blue-100 bg-blue-50 hover:bg-blue-100 text-blue-700 text-[10px] sm:text-xs font-bold transition disabled:opacity-60 disabled:cursor-not-allowed"
+              class="inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg border border-blue-100 bg-blue-50 hover:bg-blue-100 text-blue-700 text-xs sm:text-sm font-bold transition disabled:opacity-60 disabled:cursor-not-allowed"
             >
               <i class="fa-solid fa-calendar-check text-[9px]"></i>
               ខែនេះ
@@ -99,7 +99,7 @@
             <button
               type="button"
               @click="goToNextMonth"
-              class="inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 text-[10px] sm:text-xs font-bold transition"
+              class="inline-flex items-center justify-center gap-1.5 px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg border border-slate-200 bg-white hover:bg-slate-50 text-slate-600 text-xs sm:text-sm font-bold transition"
             >
               ខែបន្ទាប់
               <i class="fa-solid fa-chevron-right text-[9px]"></i>
@@ -134,7 +134,7 @@
               <div class="flex flex-wrap items-center gap-1.5 sm:gap-2">
                 <span
                   v-if="item.targetType === 'all'"
-                  class="bg-purple-50 text-purple-700 border border-purple-200 text-[10px] sm:text-[11px] font-bold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full"
+                  class="bg-purple-50 text-purple-700 border border-purple-200 text-xs font-bold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full"
                 >
                   <i class="fa-solid fa-users mr-1"></i>
                   សិស្សទាំងអស់
@@ -142,7 +142,7 @@
 
                 <span
                   v-else
-                  class="bg-blue-50 text-blue-700 border border-blue-200 text-[10px] sm:text-[11px] font-bold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full"
+                  class="bg-blue-50 text-blue-700 border border-blue-200 text-xs font-bold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full"
                 >
                   <i class="fa-solid fa-school mr-1"></i>
                   {{ getClassName(item.targetClass) }}
@@ -151,14 +151,14 @@
                 <span
                   v-if="isAdmin"
                   :class="getStatusClass(item.status)"
-                  class="text-[10px] sm:text-[11px] font-bold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full border"
+                  class="text-xs font-bold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full border"
                 >
                   {{ translateStatus(item.status) }}
                 </span>
 
                 <span
                   v-else
-                  class="text-[10px] sm:text-[11px] font-bold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full border bg-green-50 text-green-700 border-green-200"
+                  class="text-xs font-bold px-2 sm:px-2.5 py-0.5 sm:py-1 rounded-full border bg-green-50 text-green-700 border-green-200"
                 >
                   បានផ្សព្វផ្សាយ
                 </span>
@@ -173,7 +173,7 @@
               </p>
             </div>
 
-            <div class="text-left md:text-right text-[10px] sm:text-[11px] text-slate-400 shrink-0">
+            <div class="text-left md:text-right text-xs text-slate-400 shrink-0">
               <p class="font-bold text-slate-500">
                 <i class="fa-solid fa-calendar-days mr-1"></i>
                 {{ formatDate(item.postDate || item.createdAt) }}
@@ -193,7 +193,7 @@
           >
             <button
               @click="openEditModal(item)"
-              class="px-2.5 sm:px-3 py-1.5 text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 text-[11px] sm:text-xs font-bold transition flex items-center gap-1"
+              class="px-2.5 sm:px-3 py-1.5 text-blue-600 bg-blue-50 rounded-lg hover:bg-blue-100 text-xs sm:text-sm font-bold transition flex items-center gap-1"
             >
               <i class="fa-solid fa-pen-to-square text-[10px]"></i>
               កែប្រែ
@@ -202,7 +202,7 @@
             <button
               @click="openDeleteModal(item)"
               :disabled="isDeleting"
-              class="px-2.5 sm:px-3 py-1.5 text-red-600 bg-red-50 rounded-lg hover:bg-red-100 text-[11px] sm:text-xs font-bold transition flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
+              class="px-2.5 sm:px-3 py-1.5 text-red-600 bg-red-50 rounded-lg hover:bg-red-100 text-xs sm:text-sm font-bold transition flex items-center gap-1 disabled:opacity-50 disabled:cursor-not-allowed"
             >
               <i class="fa-solid fa-trash text-[10px]"></i>
               លុប
@@ -223,7 +223,7 @@
             មិនមានសេចក្តីជូនដំណឹង
           </p>
 
-          <p class="text-[11px] sm:text-xs text-slate-400 mt-1 break-words leading-snug">
+          <p class="text-xs sm:text-sm text-slate-400 mt-1 break-words leading-snug">
             {{
               isAdmin
                 ? `មិនមានសេចក្តីជូនដំណឹងក្នុង ${selectedMonthLabel}។ សូមបន្ថែមសេចក្តីជូនដំណឹងថ្មី`
@@ -233,8 +233,9 @@
         </div>
       </div>
 
-      <!-- Create/Edit Modal: Admin Only -->
-      <Transition
+      <Teleport to="body">
+        <!-- Create/Edit Modal: Admin Only -->
+        <Transition
         enter-active-class="transition duration-200 ease-out"
         enter-from-class="opacity-0"
         enter-to-class="opacity-100"
@@ -244,7 +245,7 @@
       >
         <div
           v-if="showModal && isAdmin"
-          class="announcement-modal-overlay-mobile-safe fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-end sm:items-center justify-center z-50 p-2 sm:p-4"
+          class="announcement-modal-overlay-mobile-safe fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-end sm:items-center justify-center z-[9999] p-2.5 sm:p-4"
           @click.self="closeModal"
         >
           <Transition
@@ -258,11 +259,11 @@
           >
             <div
               v-if="showModal && isAdmin"
-              class="announcement-modal-panel-mobile-safe bg-white rounded-t-2xl sm:rounded-xl shadow-xl w-full max-w-lg overflow-hidden border border-slate-100 flex flex-col max-h-[94dvh] sm:max-h-[90vh]"
+              class="announcement-modal-panel-mobile-safe bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full max-w-xl overflow-hidden border border-slate-100 flex flex-col max-h-[95dvh] sm:max-h-[90vh]"
             >
-              <div class="px-3 sm:px-4 py-2.5 sm:py-3 border-b border-slate-100 flex justify-between items-start gap-2 bg-slate-50 shrink-0">
+              <div class="px-4 sm:px-5 py-3 sm:py-4 border-b border-slate-100 flex justify-between items-start gap-3 bg-slate-50 shrink-0">
                 <div class="min-w-0">
-                  <h3 class="text-sm sm:text-base font-bold text-slate-800 flex items-start gap-2 leading-snug">
+                  <h3 class="text-base sm:text-lg font-extrabold text-slate-800 flex items-start gap-2.5 leading-snug">
                     <i
                       :class="
                         isEditing
@@ -276,7 +277,7 @@
                     </span>
                   </h3>
 
-                  <p class="text-[10px] sm:text-xs text-slate-500 mt-0.5 break-words leading-snug">
+                  <p class="text-xs sm:text-sm text-slate-500 mt-1 break-words leading-snug">
                     បំពេញព័ត៌មានសេចក្តីជូនដំណឹងខាងក្រោម
                   </p>
                 </div>
@@ -292,7 +293,7 @@
 
               <form
                 @submit.prevent="handleSubmit"
-                class="announcement-modal-body-mobile-safe p-3 sm:p-4 space-y-3 sm:space-y-4 overflow-y-auto modal-scroll"
+                class="announcement-modal-body-mobile-safe p-4 sm:p-5 space-y-4 overflow-y-auto modal-scroll"
               >
                 <!-- Title -->
                 <div>
@@ -309,7 +310,7 @@
                   />
                 </div>
 
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-2 sm:gap-4">
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4">
                   <!-- Target -->
                   <div>
                     <label class="form-label">
@@ -403,7 +404,7 @@
                 </div>
 
                 <!-- Actions -->
-                <div class="announcement-modal-footer-mobile-safe sticky bottom-0 -mx-3 sm:-mx-4 px-3 sm:px-4 py-2.5 flex justify-end gap-2.5 border-t border-slate-100 bg-white">
+                <div class="announcement-modal-footer-mobile-safe sticky bottom-0 -mx-4 sm:-mx-5 px-4 sm:px-5 py-3 sm:py-4 flex justify-end gap-2.5 sm:gap-3 border-t border-slate-100 bg-white">
                   <button
                     type="button"
                     @click="closeModal"
@@ -448,7 +449,7 @@
       >
         <div
           v-if="showDeleteModal && isAdmin"
-          class="announcement-modal-overlay-mobile-safe fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-center justify-center z-[60] p-3 sm:p-4"
+          class="announcement-modal-overlay-mobile-safe announcement-delete-overlay-mobile-safe fixed inset-0 bg-slate-900/45 backdrop-blur-sm flex items-end sm:items-center justify-center z-[10000] p-2.5 sm:p-4"
           @click.self="closeDeleteModal"
         >
           <Transition
@@ -462,7 +463,7 @@
           >
             <div
               v-if="showDeleteModal && isAdmin"
-              class="announcement-modal-panel-mobile-safe bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden border border-slate-100"
+              class="announcement-modal-panel-mobile-safe bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-100"
             >
               <div class="px-4 py-3 border-b border-slate-100 flex justify-between items-start gap-2 bg-slate-50">
                 <div class="min-w-0">
@@ -537,7 +538,8 @@
             </div>
           </Transition>
         </div>
-      </Transition>
+        </Transition>
+      </Teleport>
     </div>
   </div>
 </template>
@@ -1047,8 +1049,8 @@ onBeforeUnmount(() => {
 .announcement-modal-panel-mobile-safe input::placeholder,
 .announcement-modal-panel-mobile-safe textarea::placeholder {
   font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif !important;
-  font-size: 12px !important;
-  line-height: 1.9 !important;
+  font-size: 14px !important;
+  line-height: 1.7 !important;
   font-weight: 500;
   -webkit-font-smoothing: antialiased;
   text-rendering: geometricPrecision;
@@ -1058,26 +1060,28 @@ onBeforeUnmount(() => {
 .announcements-page-mobile-safe select,
 .announcement-modal-panel-mobile-safe input,
 .announcement-modal-panel-mobile-safe select {
-  min-height: 2.65rem !important;
-  height: 2.65rem !important;
-  padding-top: 0.58rem !important;
-  padding-bottom: 0.58rem !important;
+  min-height: 2.68rem !important;
+  height: 2.68rem !important;
+  padding-top: 0.56rem !important;
+  padding-bottom: 0.56rem !important;
   overflow: visible !important;
 }
 
 .announcements-page-mobile-safe textarea,
 .announcement-modal-panel-mobile-safe textarea {
-  min-height: 6.5rem !important;
-  padding-top: 0.6rem !important;
-  padding-bottom: 0.6rem !important;
+  min-height: 7rem !important;
+  padding-top: 0.65rem !important;
+  padding-bottom: 0.65rem !important;
+  line-height: 1.7 !important;
 }
 
 .form-label {
   display: block;
-  font-size: 0.62rem;
+  font-size: 14px;
   font-weight: 800;
   color: #64748b;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.35rem;
+  line-height: 1.45;
   white-space: normal;
   overflow: visible;
   text-overflow: clip;
@@ -1086,14 +1090,14 @@ onBeforeUnmount(() => {
 .form-input {
   width: 100%;
   border: 1px solid #e2e8f0;
-  border-radius: 0.5rem;
-  padding: 0.58rem 0.55rem;
-  font-size: 12px;
-  line-height: 1.9;
+  border-radius: 0.6rem;
+  padding: 0.56rem 0.7rem;
+  font-size: 14px;
+  line-height: 1.7;
   color: #334155;
   background: #ffffff;
   outline: none;
-  min-height: 2.65rem;
+  min-height: 2.68rem;
   height: auto;
   transition: all 0.2s ease;
 }
@@ -1118,7 +1122,7 @@ onBeforeUnmount(() => {
 }
 
 
-/* Chrome mobile bottom toolbar fix + no visual input-size changes */
+/* Mobile safe layout + balanced Khmer form UI */
 @media (max-width: 640px) {
   .announcements-page-mobile-safe {
     padding-bottom: calc(2.75rem + env(safe-area-inset-bottom));
@@ -1147,13 +1151,13 @@ onBeforeUnmount(() => {
   }
 
   .announcement-modal-panel-mobile-safe {
-    max-height: calc(100vh - 0.75rem);
-    max-height: calc(100dvh - 0.75rem);
+    max-height: calc(100vh - 1rem);
+    max-height: calc(100dvh - 1rem);
   }
 
   .announcement-modal-body-mobile-safe {
-    max-height: calc(100vh - 8.5rem);
-    max-height: calc(100dvh - 8.5rem);
+    max-height: calc(100vh - 9.75rem);
+    max-height: calc(100dvh - 9.75rem);
     -webkit-overflow-scrolling: touch;
   }
 
@@ -1166,16 +1170,55 @@ onBeforeUnmount(() => {
 }
 
 @media (min-width: 640px) {
-  .form-label {
-    font-size: 0.68rem;
-  }
-
   .form-input {
-    padding: 0.62rem 0.6rem;
-    font-size: 12px !important;
-    line-height: 1.9 !important;
-    min-height: 2.65rem !important;
+    padding: 0.56rem 0.7rem;
+    font-size: 14px !important;
+    line-height: 1.7 !important;
+    min-height: 2.68rem !important;
     height: auto;
   }
 }
+
+.announcement-modal-overlay-mobile-safe {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  z-index: 9999 !important;
+  isolation: isolate;
+}
+
+.announcement-delete-overlay-mobile-safe {
+  z-index: 10000 !important;
+}
+
+.announcement-modal-panel-mobile-safe {
+  line-height: 1.45;
+}
+
+.announcement-modal-panel-mobile-safe h3,
+.announcement-modal-panel-mobile-safe p,
+.announcement-modal-panel-mobile-safe span,
+.announcement-modal-panel-mobile-safe label,
+.announcement-modal-panel-mobile-safe button {
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.modal-scroll {
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 640px) {
+  .announcement-modal-overlay-mobile-safe {
+    padding-top: calc(0.5rem + env(safe-area-inset-top));
+  }
+
+  .announcement-modal-panel-mobile-safe {
+    border-radius: 1rem 1rem 0 0;
+  }
+}
+
 </style>

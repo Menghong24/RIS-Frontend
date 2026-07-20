@@ -15,16 +15,16 @@
               </span>
             </h1>
 
-            <p class="text-slate-500 text-[11px] sm:text-xs mt-1 break-words leading-snug">
+            <p class="text-slate-500 text-xs sm:text-sm mt-1 break-words leading-snug">
               គ្រប់គ្រងគណនីអ្នកគ្រប់គ្រង គ្រូបង្រៀន និងអ្នកប្រើប្រាស់ក្នុងប្រព័ន្ធ
             </p>
           </div>
 
           <button
             @click="openAddModal"
-            class="w-full sm:w-auto flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 active:bg-blue-800 transition shadow-sm text-[11px] sm:text-xs"
+            class="w-full sm:w-auto flex items-center justify-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 bg-blue-600 text-white font-bold rounded-lg hover:bg-blue-700 active:bg-blue-800 transition shadow-sm text-xs sm:text-sm"
           >
-            <i class="fa-solid fa-plus text-[10px] sm:text-xs"></i>
+            <i class="fa-solid fa-plus text-xs sm:text-sm"></i>
             បន្ថែមអ្នកប្រើប្រាស់
           </button>
         </div>
@@ -39,7 +39,7 @@
 
         <div class="min-w-0">
           <p class="font-bold text-xs sm:text-sm">មានបញ្ហាក្នុងប្រព័ន្ធ</p>
-          <p class="text-[11px] sm:text-xs text-red-600 mt-0.5 break-words">{{ error }}</p>
+          <p class="text-xs sm:text-sm text-red-600 mt-0.5 break-words">{{ error }}</p>
         </div>
       </div>
 
@@ -77,13 +77,13 @@
             </select>
           </div>
 
-          <div class="flex flex-wrap items-center gap-2 text-[11px] sm:text-xs text-slate-600 leading-snug">
+          <div class="flex flex-wrap items-center gap-2 text-xs sm:text-sm text-slate-600 leading-snug">
             <span>បង្ហាញ</span>
 
             <select
               v-model.number="pagination.limit"
               @change="handleFilterChange"
-              class="border border-slate-200 rounded-lg px-2 py-1.5 bg-white font-bold outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 text-[11px] sm:text-xs cursor-pointer"
+              class="border border-slate-200 rounded-lg px-2 py-1.5 bg-white font-bold outline-none focus:ring-2 focus:ring-blue-100 focus:border-blue-500 text-xs sm:text-sm cursor-pointer"
             >
               <option :value="5">5</option>
               <option :value="10">10</option>
@@ -125,7 +125,7 @@
             មិនមានទិន្នន័យអ្នកប្រើប្រាស់
           </p>
 
-          <p class="text-[11px] sm:text-xs text-slate-400 mt-1 break-words leading-snug">
+          <p class="text-xs sm:text-sm text-slate-400 mt-1 break-words leading-snug">
             សូមកែប្រែការស្វែងរក ឬបន្ថែមគណនីអ្នកប្រើប្រាស់ថ្មី
           </p>
         </div>
@@ -377,7 +377,7 @@
           v-if="users.length > 0"
           class="users-pagination-mobile-safe bg-slate-50 px-2.5 sm:px-4 py-2.5 sm:py-3 border-t border-slate-200 flex flex-col sm:flex-row items-center justify-between gap-2 sm:gap-3"
         >
-          <div class="flex items-center gap-1.5 text-[11px] sm:text-xs text-slate-600 font-medium">
+          <div class="flex items-center gap-1.5 text-xs sm:text-sm text-slate-600 font-medium">
             <span>ទំព័រ</span>
 
             <span class="text-slate-800 font-extrabold">
@@ -395,7 +395,7 @@
             <button
               @click="changePage(pagination.page - 1)"
               :disabled="pagination.page <= 1 || isLoading"
-              class="px-2.5 sm:px-3 py-1.5 border border-slate-200 rounded-lg text-[11px] sm:text-xs font-bold bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center gap-1"
+              class="px-2.5 sm:px-3 py-1.5 border border-slate-200 rounded-lg text-xs sm:text-sm font-bold bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center gap-1"
             >
               <i class="fa-solid fa-chevron-left text-[10px]"></i>
               <span class="hidden min-[380px]:inline">មុន</span>
@@ -404,7 +404,7 @@
             <button
               @click="changePage(pagination.page + 1)"
               :disabled="pagination.page >= totalPages || isLoading"
-              class="px-2.5 sm:px-3 py-1.5 border border-slate-200 rounded-lg text-[11px] sm:text-xs font-bold bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center gap-1"
+              class="px-2.5 sm:px-3 py-1.5 border border-slate-200 rounded-lg text-xs sm:text-sm font-bold bg-white text-slate-600 hover:bg-slate-50 disabled:opacity-40 disabled:cursor-not-allowed transition flex items-center gap-1"
             >
               <span class="hidden min-[380px]:inline">បន្ទាប់</span>
               <i class="fa-solid fa-chevron-right text-[10px]"></i>
@@ -413,20 +413,21 @@
         </div>
       </div>
 
-      <!-- Modal -->
-      <Transition name="fade">
+      <Teleport to="body">
+        <!-- Modal -->
+        <Transition name="fade">
         <div
           v-if="modal.isOpen"
-          class="modal-overlay-mobile-safe fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-end sm:items-center justify-center p-2 sm:p-4 z-50"
+          class="modal-overlay-mobile-safe users-modal-overlay-mobile-safe fixed inset-0 bg-slate-900/40 backdrop-blur-sm flex items-end sm:items-center justify-center p-2.5 sm:p-4 z-[9999]"
           @click.self="closeModal"
         >
           <Transition name="scale">
             <div
-              class="modal-panel-mobile-safe bg-white rounded-t-2xl sm:rounded-xl shadow-xl max-w-md w-full border border-slate-100 overflow-hidden flex flex-col max-h-[94dvh] sm:max-h-[90vh]"
+              class="modal-panel-mobile-safe bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl max-w-lg w-full border border-slate-100 overflow-hidden flex flex-col max-h-[95dvh] sm:max-h-[90vh]"
               @click.stop
             >
-              <div class="px-3 sm:px-4 py-2.5 sm:py-3 border-b border-slate-100 flex items-start justify-between gap-2 bg-slate-50 shrink-0">
-                <h3 class="font-bold text-slate-800 text-sm sm:text-base flex items-start gap-2 leading-snug min-w-0">
+              <div class="px-4 sm:px-5 py-3 sm:py-4 border-b border-slate-100 flex items-start justify-between gap-3 bg-slate-50 shrink-0">
+                <h3 class="font-extrabold text-slate-800 text-base sm:text-lg flex items-start gap-2.5 leading-snug min-w-0">
                   <i
                     :class="
                       modal.mode === 'add'
@@ -450,7 +451,7 @@
 
               <form
                 @submit.prevent="handleModalSubmit"
-                class="modal-body-mobile-safe p-3 sm:p-4 space-y-3 overflow-y-auto modal-scroll"
+                class="modal-body-mobile-safe p-4 sm:p-5 space-y-4 overflow-y-auto modal-scroll"
               >
                 <div>
                   <label class="form-label">
@@ -527,7 +528,7 @@
                   </p>
                 </div>
 
-                <div class="modal-footer-mobile-safe sticky bottom-0 -mx-3 sm:-mx-4 px-3 sm:px-4 py-2.5 flex items-center justify-end gap-2 border-t border-slate-100 bg-white">
+                <div class="modal-footer-mobile-safe sticky bottom-0 -mx-4 sm:-mx-5 px-4 sm:px-5 py-3 sm:py-4 flex items-center justify-end gap-2.5 border-t border-slate-100 bg-white">
                   <button
                     type="button"
                     @click="closeModal"
@@ -560,12 +561,12 @@
       <Transition name="fade">
         <div
           v-if="deleteModal.isOpen"
-          class="modal-overlay-mobile-safe fixed inset-0 bg-slate-900/45 backdrop-blur-sm flex items-end sm:items-center justify-center p-2 sm:p-4 z-[60]"
+          class="modal-overlay-mobile-safe users-modal-overlay-mobile-safe users-delete-overlay-mobile-safe fixed inset-0 bg-slate-900/45 backdrop-blur-sm flex items-end sm:items-center justify-center p-2.5 sm:p-4 z-[10000]"
           @click.self="closeDeleteModal"
         >
           <Transition name="scale">
             <div
-              class="modal-panel-mobile-safe bg-white rounded-t-2xl sm:rounded-xl shadow-xl max-w-sm w-full border border-slate-100 overflow-hidden"
+              class="modal-panel-mobile-safe bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl max-w-sm w-full border border-slate-100 overflow-hidden"
               @click.stop
             >
               <div class="px-4 py-3 bg-red-50 border-b border-red-100 flex items-start gap-3">
@@ -578,7 +579,7 @@
                     បញ្ជាក់ការលុប
                   </h3>
 
-                  <p class="text-[11px] sm:text-xs text-red-600 font-bold mt-0.5 break-words leading-snug">
+                  <p class="text-xs sm:text-sm text-red-600 font-bold mt-0.5 break-words leading-snug">
                     Delete Confirmation
                   </p>
                 </div>
@@ -593,7 +594,7 @@
                   មែនទេ?
                 </p>
 
-                <div class="mt-3 rounded-xl bg-red-50 border border-red-100 px-3 py-2 text-[11px] sm:text-xs text-red-600 font-bold leading-relaxed">
+                <div class="mt-3 rounded-xl bg-red-50 border border-red-100 px-3 py-2 text-xs sm:text-sm text-red-600 font-bold leading-relaxed">
                   សកម្មភាពនេះមិនអាចត្រឡប់វិញបានទេ។
                 </div>
               </div>
@@ -616,12 +617,12 @@
                 >
                   <i
                     v-if="isDeleting"
-                    class="fa-solid fa-circle-notch fa-spin text-[10px] sm:text-xs"
+                    class="fa-solid fa-circle-notch fa-spin text-xs sm:text-sm"
                   ></i>
 
                   <i
                     v-else
-                    class="fa-solid fa-trash-can text-[10px] sm:text-xs"
+                    class="fa-solid fa-trash-can text-xs sm:text-sm"
                   ></i>
 
                   {{ isDeleting ? 'កំពុងលុប...' : 'លុប' }}
@@ -630,7 +631,8 @@
             </div>
           </Transition>
         </div>
-      </Transition>
+        </Transition>
+      </Teleport>
     </div>
   </div>
 </template>
@@ -1059,8 +1061,8 @@ const formatDate = (dateString) => {
 .modal-panel-mobile-safe option,
 .modal-panel-mobile-safe input::placeholder {
   font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif !important;
-  font-size: 12px !important;
-  line-height: 1.9 !important;
+  font-size: 14px !important;
+  line-height: 1.7 !important;
   font-weight: 500;
   -webkit-font-smoothing: antialiased;
   text-rendering: geometricPrecision;
@@ -1070,19 +1072,20 @@ const formatDate = (dateString) => {
 .users-page-mobile-safe select,
 .modal-panel-mobile-safe input,
 .modal-panel-mobile-safe select {
-  min-height: 2.65rem !important;
-  height: 2.65rem !important;
-  padding-top: 0.58rem !important;
-  padding-bottom: 0.58rem !important;
+  min-height: 2.68rem !important;
+  height: 2.68rem !important;
+  padding-top: 0.56rem !important;
+  padding-bottom: 0.56rem !important;
   overflow: visible !important;
 }
 
 .form-label {
   display: block;
-  font-size: 0.62rem;
+  font-size: 14px;
   font-weight: 800;
   color: #64748b;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.35rem;
+  line-height: 1.45;
   white-space: normal;
   overflow: visible;
   text-overflow: clip;
@@ -1091,14 +1094,14 @@ const formatDate = (dateString) => {
 .form-input {
   width: 100%;
   border: 1px solid #e2e8f0;
-  border-radius: 0.5rem;
-  padding: 0.58rem 0.55rem;
-  font-size: 12px;
-  line-height: 1.9;
+  border-radius: 0.6rem;
+  padding: 0.56rem 0.7rem;
+  font-size: 14px;
+  line-height: 1.7;
   color: #334155;
   background: #ffffff;
   outline: none;
-  min-height: 2.65rem;
+  min-height: 2.68rem;
   height: auto;
   transition: all 0.2s ease;
 }
@@ -1121,14 +1124,14 @@ const formatDate = (dateString) => {
 }
 
 .search-input {
-  padding-left: 2.15rem !important;
+  padding-left: 2.25rem !important;
   padding-right: 0.75rem !important;
-  min-height: 2.65rem !important;
+  min-height: 2.68rem !important;
 }
 
 .table-th {
-  padding: 0.5rem 0.6rem;
-  font-size: 0.68rem;
+  padding: 0.65rem 0.75rem;
+  font-size: 13px;
   font-weight: 900;
   color: #475569;
   border: 1px solid #e2e8f0;
@@ -1138,14 +1141,14 @@ const formatDate = (dateString) => {
 }
 
 .table-td {
-  padding: 0.5rem 0.6rem;
+  padding: 0.65rem 0.75rem;
   border: 1px solid #f1f5f9;
-  font-size: 0.7rem;
+  font-size: 13px;
   vertical-align: middle;
 }
 
 
-/* Chrome mobile bottom toolbar fix + no visual input-size changes */
+/* Mobile safe layout + balanced Khmer input text */
 @media (max-width: 640px) {
   .users-page-mobile-safe {
     padding-bottom: calc(2.75rem + env(safe-area-inset-bottom));
@@ -1174,13 +1177,13 @@ const formatDate = (dateString) => {
   }
 
   .modal-panel-mobile-safe {
-    max-height: calc(100vh - 0.75rem);
-    max-height: calc(100dvh - 0.75rem);
+    max-height: calc(100vh - 1rem);
+    max-height: calc(100dvh - 1rem);
   }
 
   .modal-body-mobile-safe {
-    max-height: calc(100vh - 8.5rem);
-    max-height: calc(100dvh - 8.5rem);
+    max-height: calc(100vh - 9.75rem);
+    max-height: calc(100dvh - 9.75rem);
     -webkit-overflow-scrolling: touch;
   }
 
@@ -1233,10 +1236,43 @@ const formatDate = (dateString) => {
 
   .form-input {
     padding: 0.62rem 0.6rem;
-    font-size: 12px !important;
+    font-size: 14px !important;
     line-height: 1.9 !important;
     min-height: 2.65rem !important;
     height: auto;
   }
 }
+
+.users-modal-overlay-mobile-safe {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  z-index: 9999 !important;
+  isolation: isolate;
+}
+
+.users-delete-overlay-mobile-safe {
+  z-index: 10000 !important;
+}
+
+.modal-panel-mobile-safe {
+  line-height: 1.45;
+}
+
+.modal-panel-mobile-safe h3,
+.modal-panel-mobile-safe p,
+.modal-panel-mobile-safe span,
+.modal-panel-mobile-safe label,
+.modal-panel-mobile-safe button {
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.modal-scroll {
+  -webkit-overflow-scrolling: touch;
+}
+
 </style>

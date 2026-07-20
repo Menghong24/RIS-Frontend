@@ -20,7 +20,7 @@
             </span>
           </h1>
 
-          <p class="text-[11px] sm:text-xs text-slate-500 mt-1 break-words leading-snug">
+          <p class="text-xs sm:text-sm text-slate-500 mt-1 break-words leading-snug">
             គ្រប់គ្រងមុខវិជ្ជា ឈ្មោះថ្នាក់រៀន គ្រូបង្រៀន ប្រភេទមុខវិជ្ជា និងថ្លៃសិក្សា
           </p>
         </div>
@@ -28,9 +28,9 @@
         <button
           type="button"
           @click="openCreateModal"
-          class="w-full md:w-auto bg-blue-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg hover:bg-blue-700 font-bold transition active:scale-95 flex items-center justify-center gap-1.5 sm:gap-2 shadow-sm text-[11px] sm:text-xs whitespace-nowrap"
+          class="w-full md:w-auto bg-blue-600 text-white px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg hover:bg-blue-700 font-bold transition active:scale-95 flex items-center justify-center gap-1.5 sm:gap-2 shadow-sm text-xs sm:text-sm whitespace-nowrap"
         >
-          <i class="fa-solid fa-plus text-[10px] sm:text-xs"></i>
+          <i class="fa-solid fa-plus text-xs sm:text-sm"></i>
           បន្ថែមមុខវិជ្ជា
         </button>
       </div>
@@ -144,7 +144,7 @@
           <button
             type="button"
             @click="resetFilters"
-            class="w-full lg:w-auto inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 sm:py-2 text-[11px] sm:text-xs font-bold text-slate-600 hover:bg-slate-50 transition"
+            class="w-full lg:w-auto inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3 py-1.5 sm:py-2 text-xs sm:text-sm font-bold text-slate-600 hover:bg-slate-50 transition"
           >
             <i class="fa-solid fa-rotate-left text-[10px]"></i>
             សម្អាត
@@ -192,7 +192,7 @@
                       ? 'text-green-700 bg-green-50 border-green-200'
                       : 'text-slate-500 bg-slate-50 border-slate-200'
                   "
-                  class="px-2 py-0.5 rounded-full text-[10px] font-bold border shrink-0"
+                  class="px-2 py-0.5 rounded-full text-xs font-bold border shrink-0"
                 >
                   {{ translateStatus(sub.status) }}
                 </span>
@@ -201,20 +201,20 @@
               <div class="mt-2 flex flex-wrap items-center gap-1.5">
                 <span
                   :class="getTypeClass(sub.type)"
-                  class="px-2 py-0.5 rounded-full text-[10px] font-bold border"
+                  class="px-2 py-0.5 rounded-full text-xs font-bold border"
                 >
                   {{ translateType(sub.type) }}
                 </span>
 
                 <span
-                  class="px-2 py-0.5 rounded-full text-[10px] font-bold bg-amber-50 text-amber-700 border border-amber-100"
+                  class="px-2 py-0.5 rounded-full text-xs font-bold bg-amber-50 text-amber-700 border border-amber-100"
                 >
                   {{ formatRiel(sub.fee) }}
                 </span>
               </div>
 
               <div class="mt-2 rounded-lg border border-slate-100 bg-slate-50 px-2 py-1.5">
-                <p class="text-[10px] font-bold text-slate-400 mb-1">
+                <p class="text-xs font-bold text-slate-400 mb-1">
                   ថ្នាក់រៀន
                 </p>
 
@@ -241,7 +241,7 @@
               </div>
 
               <div class="mt-2 rounded-lg border border-slate-100 bg-slate-50 px-2 py-1.5">
-                <p class="text-[10px] font-bold text-slate-400 mb-0.5">
+                <p class="text-xs font-bold text-slate-400 mb-0.5">
                   គ្រូបង្រៀន
                 </p>
 
@@ -268,7 +268,7 @@
                 <button
                   type="button"
                   @click="openEditModal(sub)"
-                  class="inline-flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition"
+                  class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold text-blue-600 bg-blue-50 hover:bg-blue-100 rounded-lg transition"
                 >
                   <i class="fa-solid fa-pen-to-square text-[10px]"></i>
                   កែ
@@ -277,7 +277,7 @@
                 <button
                   type="button"
                   @click="openDeleteConfirm(sub)"
-                  class="inline-flex items-center gap-1 px-2.5 py-1.5 text-[11px] font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition"
+                  class="inline-flex items-center gap-1 px-2.5 py-1.5 text-xs font-bold text-red-600 bg-red-50 hover:bg-red-100 rounded-lg transition"
                 >
                   <i class="fa-solid fa-trash text-[10px]"></i>
                   លុប
@@ -356,7 +356,7 @@
                   <td class="table-td">
                     <span
                       :class="getTypeClass(sub.type)"
-                      class="px-2.5 py-1 rounded-full text-[11px] font-bold border"
+                      class="px-2.5 py-1 rounded-full text-xs font-bold border"
                     >
                       {{ translateType(sub.type) }}
                     </span>
@@ -393,7 +393,7 @@
                           ? 'text-green-700 bg-green-50 border-green-200'
                           : 'text-slate-500 bg-slate-50 border-slate-200'
                       "
-                      class="px-2.5 py-1 rounded-full text-[11px] font-bold border inline-block"
+                      class="px-2.5 py-1 rounded-full text-xs font-bold border inline-block"
                     >
                       {{ translateStatus(sub.status) }}
                     </span>
@@ -445,8 +445,9 @@
         </template>
       </div>
 
-      <!-- Create/Edit Modal -->
-      <Transition
+      <Teleport to="body">
+        <!-- Create/Edit Modal -->
+        <Transition
         enter-active-class="transition duration-200 ease-out"
         enter-from-class="opacity-0"
         enter-to-class="opacity-100"
@@ -456,10 +457,10 @@
       >
         <div
           v-if="showModal"
-          class="subject-modal-overlay-mobile-safe fixed inset-0 z-50 bg-slate-900/40 backdrop-blur-sm overflow-y-auto"
+          class="subject-modal-overlay-mobile-safe fixed inset-0 z-[9999] bg-slate-900/40 backdrop-blur-sm overflow-y-auto"
           @click.self="closeModal"
         >
-          <div class="subject-modal-wrapper-mobile-safe min-h-full flex items-end sm:items-center justify-center p-2 sm:p-4">
+          <div class="subject-modal-wrapper-mobile-safe min-h-full flex items-end sm:items-center justify-center p-2.5 sm:p-4">
             <Transition
               appear
               enter-active-class="transition duration-200 ease-out"
@@ -471,11 +472,11 @@
             >
               <div
                 v-if="showModal"
-                class="subject-modal-panel-mobile-safe bg-white rounded-t-2xl sm:rounded-xl shadow-xl w-full max-w-xl overflow-hidden border border-slate-100 flex flex-col max-h-[94dvh] sm:max-h-[90vh]"
+                class="subject-modal-panel-mobile-safe bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full max-w-2xl overflow-hidden border border-slate-100 flex flex-col max-h-[95dvh] sm:max-h-[90vh]"
               >
-                <div class="px-3 sm:px-4 py-2.5 sm:py-3 border-b border-slate-100 flex justify-between items-start gap-2 bg-slate-50 shrink-0">
+                <div class="px-4 sm:px-5 py-3 sm:py-4 border-b border-slate-100 flex justify-between items-start gap-3 bg-slate-50 shrink-0">
                   <div class="min-w-0">
-                    <h3 class="text-sm sm:text-base font-bold text-slate-900 flex items-start gap-2 leading-snug">
+                    <h3 class="text-base sm:text-lg font-extrabold text-slate-900 flex items-start gap-2.5 leading-snug">
                       <i
                         :class="
                           isEditing
@@ -488,7 +489,7 @@
                       </span>
                     </h3>
 
-                    <p class="text-[10px] sm:text-xs text-slate-500 mt-0.5 break-words leading-snug">
+                    <p class="text-xs sm:text-sm text-slate-500 mt-1 break-words leading-snug">
                       បំពេញព័ត៌មានមុខវិជ្ជាខាងក្រោម
                     </p>
                   </div>
@@ -504,7 +505,7 @@
 
                 <form
                   @submit.prevent="handleSubmit"
-                  class="subject-modal-body-mobile-safe p-3 sm:p-4 space-y-3 overflow-y-auto modal-scroll"
+                  class="subject-modal-body-mobile-safe p-4 sm:p-5 space-y-4 overflow-y-auto modal-scroll"
                 >
                   <div>
                     <label class="form-label">
@@ -532,7 +533,7 @@
                       <span
                         v-for="cls in selectedClasses"
                         :key="cls._id"
-                        class="inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-white px-2 py-1 text-[11px] font-bold text-blue-700"
+                        class="inline-flex items-center gap-1.5 rounded-full border border-blue-200 bg-white px-2 py-1 text-xs font-bold text-blue-700"
                       >
                         <i class="fa-solid fa-school text-[10px]"></i>
                         {{ cls.className }}
@@ -550,7 +551,7 @@
 
                     <div
                       v-else
-                      class="mb-2 rounded-lg border border-dashed border-slate-200 bg-slate-50 px-3 py-2 text-[11px] font-bold text-slate-400"
+                      class="mb-2 rounded-lg border border-dashed border-slate-200 bg-slate-50 px-3 py-2 text-xs font-bold text-slate-400"
                     >
                       មិនទាន់ជ្រើសថ្នាក់រៀន
                     </div>
@@ -577,7 +578,7 @@
 
                         <span
                           v-if="c.classGrade"
-                          class="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-[10px] font-bold text-slate-500"
+                          class="shrink-0 rounded-full bg-slate-100 px-2 py-0.5 text-xs font-bold text-slate-500"
                         >
                           {{ c.classGrade }}
                         </span>
@@ -592,7 +593,7 @@
                     </div>
                   </div>
 
-                  <div class="grid grid-cols-2 gap-2">
+                  <div class="grid grid-cols-1 sm:grid-cols-2 gap-3">
                     <div>
                       <label class="form-label">
                         ប្រភេទមុខវិជ្ជា
@@ -613,8 +614,8 @@
                         ថ្លៃសិក្សា (៛)
                       </label>
 
-                      <div class="relative">
-                        <span class="absolute inset-y-0 left-0 pl-3 flex items-center text-slate-400 font-mono text-sm font-bold">
+                      <div class="currency-input-wrap">
+                        <span class="currency-prefix">
                           ៛
                         </span>
 
@@ -623,7 +624,7 @@
                           type="number"
                           min="0"
                           step="100"
-                          class="form-input pl-8 font-mono font-bold"
+                          class="form-input currency-input font-mono font-bold"
                         />
                       </div>
                     </div>
@@ -654,7 +655,7 @@
                       ស្ថានភាព
                     </label>
 
-                    <div class="grid grid-cols-2 gap-2 mt-1">
+                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 mt-1.5">
                       <label
                         class="flex items-center justify-center gap-2 rounded-lg border px-2 py-2 text-xs font-bold cursor-pointer transition"
                         :class="form.status === 'active' ? 'border-green-200 bg-green-50 text-green-700' : 'border-slate-200 text-slate-600'"
@@ -696,7 +697,7 @@
                     ></textarea>
                   </div>
 
-                  <div class="subject-modal-footer-mobile-safe sticky bottom-0 -mx-3 sm:-mx-4 px-3 sm:px-4 py-2.5 flex justify-end gap-2.5 border-t border-slate-100 bg-white">
+                  <div class="subject-modal-footer-mobile-safe sticky bottom-0 -mx-4 sm:-mx-5 px-4 sm:px-5 py-3 sm:py-4 flex justify-end gap-2.5 sm:gap-3 border-t border-slate-100 bg-white">
                     <button
                       type="button"
                       @click="closeModal"
@@ -737,10 +738,10 @@
       >
         <div
           v-if="showDeleteModal"
-          class="subject-modal-overlay-mobile-safe fixed inset-0 z-[60] bg-slate-900/40 backdrop-blur-sm overflow-y-auto"
+          class="subject-modal-overlay-mobile-safe subject-delete-overlay-mobile-safe fixed inset-0 z-[10000] bg-slate-900/45 backdrop-blur-sm overflow-y-auto"
           @click.self="closeDeleteConfirm"
         >
-          <div class="subject-modal-wrapper-mobile-safe min-h-full flex items-center justify-center p-3 sm:p-4">
+          <div class="subject-modal-wrapper-mobile-safe min-h-full flex items-end sm:items-center justify-center p-2.5 sm:p-4">
             <Transition
               appear
               enter-active-class="transition duration-200 ease-out"
@@ -752,7 +753,7 @@
             >
               <div
                 v-if="showDeleteModal"
-                class="subject-modal-panel-mobile-safe bg-white rounded-xl shadow-xl w-full max-w-md overflow-hidden border border-slate-100"
+                class="subject-modal-panel-mobile-safe bg-white rounded-t-2xl sm:rounded-2xl shadow-2xl w-full max-w-md overflow-hidden border border-slate-100"
               >
                 <div class="px-4 py-3 border-b border-slate-100 flex justify-between items-start gap-2 bg-slate-50">
                   <div class="min-w-0">
@@ -823,7 +824,8 @@
             </Transition>
           </div>
         </div>
-      </Transition>
+        </Transition>
+      </Teleport>
     </div>
   </div>
 </template>
@@ -1287,8 +1289,8 @@ const confirmDeleteSubject = async () => {
 .subject-modal-panel-mobile-safe input::placeholder,
 .subject-modal-panel-mobile-safe textarea::placeholder {
   font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif !important;
-  font-size: 12px !important;
-  line-height: 1.9 !important;
+  font-size: 14px !important;
+  line-height: 1.7 !important;
   font-weight: 500;
   -webkit-font-smoothing: antialiased;
   text-rendering: geometricPrecision;
@@ -1298,26 +1300,28 @@ const confirmDeleteSubject = async () => {
 .subjects-page-mobile-safe select,
 .subject-modal-panel-mobile-safe input,
 .subject-modal-panel-mobile-safe select {
-  min-height: 2.65rem !important;
-  height: 2.65rem !important;
-  padding-top: 0.58rem !important;
-  padding-bottom: 0.58rem !important;
+  min-height: 2.68rem !important;
+  height: 2.68rem !important;
+  padding-top: 0.56rem !important;
+  padding-bottom: 0.56rem !important;
   overflow: visible !important;
 }
 
 .subjects-page-mobile-safe textarea,
 .subject-modal-panel-mobile-safe textarea {
-  min-height: 4.75rem !important;
-  padding-top: 0.6rem !important;
-  padding-bottom: 0.6rem !important;
+  min-height: 5.25rem !important;
+  padding-top: 0.65rem !important;
+  padding-bottom: 0.65rem !important;
+  line-height: 1.7 !important;
 }
 
 .form-label {
   display: block;
-  font-size: 0.62rem;
+  font-size: 14px;
   font-weight: 800;
   color: #64748b;
-  margin-bottom: 0.2rem;
+  margin-bottom: 0.35rem;
+  line-height: 1.45;
   white-space: normal;
   overflow: visible;
   text-overflow: clip;
@@ -1326,14 +1330,14 @@ const confirmDeleteSubject = async () => {
 .form-input {
   width: 100%;
   border: 1px solid #e2e8f0;
-  border-radius: 0.5rem;
-  padding: 0.58rem 0.55rem;
-  font-size: 12px;
-  line-height: 1.9;
+  border-radius: 0.6rem;
+  padding: 0.56rem 0.7rem;
+  font-size: 14px;
+  line-height: 1.7;
   color: #334155;
   background: #ffffff;
   outline: none;
-  min-height: 2.65rem;
+  min-height: 2.68rem;
   height: auto;
   transition: all 0.2s ease;
 }
@@ -1356,14 +1360,15 @@ const confirmDeleteSubject = async () => {
 }
 
 .search-input {
-  padding-left: 2.15rem !important;
+  padding-left: 2.25rem !important;
   padding-right: 0.75rem !important;
+  min-height: 2.68rem !important;
 }
 
 .summary-card {
   background: #ffffff;
-  padding: 0.6rem;
-  border-radius: 0.75rem;
+  padding: 0.7rem;
+  border-radius: 0.85rem;
   border: 1px solid #e2e8f0;
   box-shadow: 0 1px 2px rgb(15 23 42 / 0.04);
   display: flex;
@@ -1384,7 +1389,7 @@ const confirmDeleteSubject = async () => {
 }
 
 .summary-label {
-  font-size: 0.58rem;
+  font-size: 14px;
   font-weight: 800;
   color: #94a3b8;
   line-height: 1.45;
@@ -1394,16 +1399,16 @@ const confirmDeleteSubject = async () => {
 }
 
 .summary-value {
-  margin-top: 0.1rem;
-  font-size: 1rem;
+  margin-top: 0.15rem;
+  font-size: 1.05rem;
   font-weight: 900;
   color: #0f172a;
   line-height: 1.35;
 }
 
 .table-th {
-  padding: 0.5rem 0.6rem;
-  font-size: 0.68rem;
+  padding: 0.65rem 0.75rem;
+  font-size: 13px;
   font-weight: 900;
   color: #475569;
   border: 1px solid #e2e8f0;
@@ -1413,9 +1418,9 @@ const confirmDeleteSubject = async () => {
 }
 
 .table-td {
-  padding: 0.5rem 0.6rem;
+  padding: 0.65rem 0.75rem;
   border: 1px solid #f1f5f9;
-  font-size: 0.7rem;
+  font-size: 13px;
   vertical-align: middle;
 }
 
@@ -1433,7 +1438,7 @@ const confirmDeleteSubject = async () => {
 }
 
 
-/* Chrome mobile bottom toolbar fix + no visual input-size changes */
+/* Mobile safe layout + balanced Khmer form UI */
 @media (max-width: 640px) {
   .subjects-page-mobile-safe {
     padding-bottom: calc(2.75rem + env(safe-area-inset-bottom));
@@ -1462,17 +1467,18 @@ const confirmDeleteSubject = async () => {
     min-height: 100vh;
     min-height: 100dvh;
     align-items: flex-end;
+    padding-top: calc(0.5rem + env(safe-area-inset-top));
     padding-bottom: calc(0.5rem + env(safe-area-inset-bottom));
   }
 
   .subject-modal-panel-mobile-safe {
-    max-height: calc(100vh - 0.75rem);
-    max-height: calc(100dvh - 0.75rem);
+    max-height: calc(100vh - 1rem);
+    max-height: calc(100dvh - 1rem);
   }
 
   .subject-modal-body-mobile-safe {
-    max-height: calc(100vh - 8.5rem);
-    max-height: calc(100dvh - 8.5rem);
+    max-height: calc(100vh - 9.75rem);
+    max-height: calc(100dvh - 9.75rem);
     -webkit-overflow-scrolling: touch;
   }
 
@@ -1485,20 +1491,16 @@ const confirmDeleteSubject = async () => {
 }
 
 @media (min-width: 640px) {
-  .form-label {
-    font-size: 0.68rem;
-  }
-
   .form-input {
-    padding: 0.62rem 0.6rem;
-    font-size: 12px !important;
-    line-height: 1.9 !important;
-    min-height: 2.65rem !important;
+    padding: 0.56rem 0.7rem;
+    font-size: 14px !important;
+    line-height: 1.7 !important;
+    min-height: 2.68rem !important;
     height: auto;
   }
 
   .summary-card {
-    padding: 0.75rem;
+    padding: 0.8rem;
     gap: 0.75rem;
   }
 
@@ -1509,11 +1511,77 @@ const confirmDeleteSubject = async () => {
   }
 
   .summary-label {
-    font-size: 0.68rem;
+    font-size: 14px;
   }
 
   .summary-value {
     font-size: 1.25rem;
   }
 }
+
+.subject-modal-overlay-mobile-safe {
+  position: fixed !important;
+  inset: 0 !important;
+  width: 100vw !important;
+  height: 100vh !important;
+  height: 100dvh !important;
+  z-index: 9999 !important;
+  isolation: isolate;
+}
+
+.subject-delete-overlay-mobile-safe {
+  z-index: 10000 !important;
+}
+
+.subject-modal-panel-mobile-safe {
+  line-height: 1.45;
+}
+
+.subject-modal-panel-mobile-safe h3,
+.subject-modal-panel-mobile-safe p,
+.subject-modal-panel-mobile-safe span,
+.subject-modal-panel-mobile-safe label,
+.subject-modal-panel-mobile-safe button {
+  line-height: 1.45;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+.modal-scroll {
+  -webkit-overflow-scrolling: touch;
+}
+
+@media (max-width: 640px) {
+  .subject-modal-panel-mobile-safe {
+    border-radius: 1rem 1rem 0 0;
+  }
+}
+
+
+.currency-input-wrap {
+  position: relative;
+  width: 100%;
+}
+
+.currency-prefix {
+  position: absolute;
+  inset-block: 0;
+  left: 0;
+  width: 2.35rem;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: #94a3b8;
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif;
+  font-size: 14px;
+  font-weight: 900;
+  pointer-events: none;
+  z-index: 2;
+}
+
+.currency-input {
+  padding-left: 2.7rem !important;
+  padding-right: 0.7rem !important;
+}
+
 </style>
