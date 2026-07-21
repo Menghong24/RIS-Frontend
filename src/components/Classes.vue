@@ -23,8 +23,11 @@
           <div class="grid grid-cols-2 sm:flex sm:flex-wrap items-center gap-1.5 sm:gap-2 w-full md:w-auto">
             <button
               v-if="selectedClass"
+              type="button"
               @click="openTransferModal"
-              class="inline-flex justify-center items-center gap-1.5 bg-orange-500 text-white px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg hover:bg-orange-600 transition shadow-sm active:scale-95 text-[11px] sm:text-xs font-bold whitespace-nowrap"
+              :disabled="!isAdmin"
+              :title="!isAdmin ? 'មានតែ Admin ប៉ុណ្ណោះអាចផ្ទេរសិស្សបាន' : 'ផ្ទេរសិស្ស'"
+              class="inline-flex justify-center items-center gap-1.5 bg-orange-500 text-white px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg hover:bg-orange-600 transition shadow-sm active:scale-95 text-[11px] sm:text-xs font-bold whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-orange-500 disabled:active:scale-100"
             >
               <i class="fa-solid fa-right-left text-[10px]"></i>
               ផ្លាស់ប្ដូរ
@@ -32,7 +35,15 @@
 
             <button
               @click="selectedClass ? openEnrollModal() : openAddClassModal()"
-              class="inline-flex justify-center items-center gap-1.5 bg-blue-600 text-white px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg hover:bg-blue-700 transition shadow-sm active:scale-95 text-[11px] sm:text-xs font-bold whitespace-nowrap"
+              :disabled="!isAdmin || isClassSaving"
+              :title="
+                !isAdmin
+                  ? (selectedClass
+                      ? 'មានតែ Admin ប៉ុណ្ណោះអាចបញ្ចូលសិស្សក្នុងថ្នាក់បាន'
+                      : 'មានតែ Admin ប៉ុណ្ណោះអាចបង្កើតថ្នាក់ថ្មីបាន')
+                  : (selectedClass ? 'បញ្ចូលសិស្សក្នុងថ្នាក់' : 'បង្កើតថ្នាក់ថ្មី')
+              "
+              class="inline-flex justify-center items-center gap-1.5 bg-blue-600 text-white px-2.5 sm:px-3 py-1.5 sm:py-2 rounded-lg hover:bg-blue-700 transition shadow-sm active:scale-95 text-[11px] sm:text-xs font-bold whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600 disabled:active:scale-100"
               :class="selectedClass ? '' : 'col-span-2 sm:col-span-1'"
             >
               <i class="fa-solid fa-plus text-[10px]"></i>
@@ -75,7 +86,7 @@
         </div>
 
         <!-- Loading -->
-        <div v-if="loadingClasses" class="bg-white rounded-xl border border-slate-200 p-7 sm:p-8 text-center">
+        <div v-if="isInitialLoadingClasses" class="bg-white rounded-xl border border-slate-200 p-7 sm:p-8 text-center">
           <div class="mx-auto h-9 w-9 sm:h-10 sm:w-10 rounded-xl bg-blue-50 text-blue-600 flex items-center justify-center">
             <i class="fa-solid fa-circle-notch fa-spin text-lg sm:text-xl"></i>
           </div>
@@ -139,17 +150,27 @@
 
               <div class="flex items-center gap-1">
                 <button
-                  @click.stop="openEditClassModal(cls)"
-                  class="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition"
-                  title="កែប្រែថ្នាក់"
+                  type="button"
+                  @click.stop="isAdmin ? openEditClassModal(cls) : selectClass(cls)"
+                  :disabled="isAdmin && isClassSaving"
+                  :title="isAdmin ? 'កែប្រែថ្នាក់' : 'មើលព័ត៌មានថ្នាក់'"
+                  class="p-1.5 text-slate-500 hover:text-blue-600 hover:bg-blue-50 rounded-lg transition disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-slate-500 disabled:hover:bg-transparent"
                 >
-                  <i class="fa-solid fa-pen-to-square text-[11px] sm:text-xs"></i>
+                  <i
+                    :class="
+                      isAdmin
+                        ? 'fa-solid fa-pen-to-square text-[11px] sm:text-xs'
+                        : 'fa-solid fa-eye text-[11px] sm:text-xs'
+                    "
+                  ></i>
                 </button>
 
                 <button
+                  type="button"
                   @click.stop="openDeleteClassModal(cls)"
-                  class="p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition"
-                  title="លុបថ្នាក់"
+                  :disabled="!isAdmin || isClassDeleting"
+                  :title="!isAdmin ? 'មានតែ Admin ប៉ុណ្ណោះអាចលុបថ្នាក់បាន' : 'លុបថ្នាក់'"
+                  class="p-1.5 text-slate-500 hover:text-red-600 hover:bg-red-50 rounded-lg transition disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:text-slate-500 disabled:hover:bg-transparent"
                 >
                   <i class="fa-solid fa-trash text-[11px] sm:text-xs"></i>
                 </button>
@@ -160,7 +181,7 @@
 
         <!-- Empty Class -->
         <div
-          v-if="!loadingClasses && filteredClassesList.length === 0"
+          v-if="!isInitialLoadingClasses && filteredClassesList.length === 0"
           class="text-center py-8 sm:py-10 bg-white border border-dashed border-slate-300 rounded-xl text-slate-400"
         >
           <i class="fa-solid fa-school-circle-xmark text-xl sm:text-2xl mb-2"></i>
@@ -281,8 +302,8 @@
                     <button
                       type="button"
                       @click.stop="openViewModal(student)"
-                      class="h-7 w-7 inline-flex items-center justify-center rounded-lg bg-blue-50 text-blue-600 border border-blue-100 hover:bg-blue-100 transition"
                       title="មើល"
+                      class="h-7 w-7 inline-flex items-center justify-center rounded-lg bg-blue-50 text-blue-600 border border-blue-100 hover:bg-blue-100 transition"
                     >
                       <i class="fa-solid fa-eye text-[11px]"></i>
                     </button>
@@ -290,8 +311,9 @@
                     <button
                       type="button"
                       @click.stop="openDeleteStudentModal(student)"
-                      class="h-7 w-7 inline-flex items-center justify-center rounded-lg bg-red-50 text-red-500 border border-red-100 hover:bg-red-100 transition"
-                      title="ដកចេញ"
+                      :disabled="!isAdmin || isStudentRemoving"
+                      :title="!isAdmin ? 'មានតែ Admin ប៉ុណ្ណោះអាចដកសិស្សចេញពីថ្នាក់បាន' : 'ដកចេញ'"
+                      class="h-7 w-7 inline-flex items-center justify-center rounded-lg bg-red-50 text-red-500 border border-red-100 hover:bg-red-100 transition disabled:opacity-40 disabled:cursor-not-allowed disabled:hover:bg-red-50"
                     >
                       <i class="fa-solid fa-trash text-[11px]"></i>
                     </button>
@@ -396,7 +418,10 @@
                 v-for="student in paginatedStudents"
                 :key="student._id"
                 :student="student"
+                class="class-student-view-eye"
+                :class="{ 'non-admin-student-remove-disabled': !isAdmin }"
                 @view="openViewModal"
+                @edit="openViewModal"
                 @delete="openDeleteStudentModal"
               />
             </tbody>
@@ -461,6 +486,8 @@
         :is-editing="isEditingClass"
         :class-data="classToEdit"
         :teachers="teachersList"
+        :create-disabled="!isAdmin"
+        :save-disabled="!isAdmin"
         @close="closeClassModal"
         @save="saveClass"
       />
@@ -508,6 +535,35 @@ import { useCollection } from "../hooks/useCollection.js";
 import { useToast } from "vue-toastification";
 
 const toast = useToast();
+
+const readStoredUser = () => {
+  if (typeof localStorage === "undefined") return {};
+
+  const keys = ["user", "currentUser", "authUser", "auth"];
+
+  for (const key of keys) {
+    try {
+      const rawValue = localStorage.getItem(key);
+
+      if (!rawValue) continue;
+
+      const parsedValue = JSON.parse(rawValue);
+      return parsedValue?.user || parsedValue?.data || parsedValue;
+    } catch (error) {
+      // Ignore malformed or non-JSON values and continue to the next key.
+    }
+  }
+
+  return {
+    role: localStorage.getItem("role") || ""
+  };
+};
+
+const currentUser = ref(readStoredUser());
+
+const isAdmin = computed(() => {
+  return String(currentUser.value?.role || "").toLowerCase() === "admin";
+});
 
 const originalViewportContent = ref("");
 const viewportMetaWasCreated = ref(false);
@@ -563,7 +619,9 @@ const {
   createDoc: createClassDoc,
   updateDoc: updateClassDoc,
   deleteDoc: deleteClassDoc
-} = useCollection("classes");
+} = useCollection("classes", {
+  toast: false
+});
 
 const {
   data: students,
@@ -598,6 +656,13 @@ const isEditingClass = ref(false);
 const classToEdit = ref(null);
 const classToDelete = ref(null);
 
+const isClassSaving = ref(false);
+const isClassDeleting = ref(false);
+const isStudentRemoving = ref(false);
+
+const localClasses = ref([]);
+const localStudents = ref([]);
+
 // --- Pagination ---
 const currentPage = ref(1);
 const rowsPerPage = ref(10);
@@ -611,11 +676,212 @@ const normalizeArray = (responseData) => {
   return [];
 };
 
-const classesList = computed(() => normalizeArray(classes.value));
-const studentsList = computed(() => normalizeArray(students.value));
+watch(
+  classes,
+  (value) => {
+    localClasses.value = [...normalizeArray(value)];
+  },
+  {
+    immediate: true,
+    deep: true
+  }
+);
+
+watch(
+  students,
+  (value) => {
+    localStudents.value = [...normalizeArray(value)];
+  },
+  {
+    immediate: true,
+    deep: true
+  }
+);
+
+const classesList = computed(() => localClasses.value);
+const studentsList = computed(() => localStudents.value);
+
+const isInitialLoadingClasses = computed(() => {
+  const queryIsLoading = loadingClasses?.value ?? loadingClasses ?? false;
+  return Boolean(queryIsLoading) && localClasses.value.length === 0;
+});
+
+const isClassCreationRestricted = computed(() => {
+  return !selectedClass.value && !isAdmin.value;
+});
 
 const getId = (value) => {
   return String(value?._id || value?.id || value || "").trim();
+};
+
+const extractSavedEntity = (response, entityKey) => {
+  const root = response?.data ?? response;
+
+  const candidates = [
+    root?.data,
+    root?.result,
+    root?.item,
+    root?.[entityKey],
+    root
+  ];
+
+  return (
+    candidates.find((candidate) => {
+      return candidate && typeof candidate === "object" && !Array.isArray(candidate);
+    }) || {}
+  );
+};
+
+const mergeClassData = (baseClass = {}, changes = {}) => {
+  return {
+    ...baseClass,
+    ...changes,
+    students: Array.isArray(changes.students)
+      ? changes.students
+      : (Array.isArray(baseClass.students) ? baseClass.students : [])
+  };
+};
+
+const upsertClassLocally = (classData, fallbackId = "") => {
+  const classId = getId(classData) || String(fallbackId || "").trim();
+
+  const nextClass = {
+    ...classData,
+    ...(classId && !classData?._id && !classData?.id ? { _id: classId } : {})
+  };
+
+  const existingIndex = localClasses.value.findIndex((item) => {
+    return getId(item) === classId;
+  });
+
+  if (existingIndex >= 0) {
+    const nextList = [...localClasses.value];
+    const mergedClass = mergeClassData(nextList[existingIndex], nextClass);
+
+    nextList.splice(existingIndex, 1, mergedClass);
+    localClasses.value = nextList;
+
+    if (getId(selectedClass.value) === classId) {
+      selectedClass.value = mergedClass;
+    }
+
+    return;
+  }
+
+  localClasses.value = [nextClass, ...localClasses.value];
+};
+
+const removeClassLocally = (classId) => {
+  const normalizedId = String(classId || "").trim();
+
+  localClasses.value = localClasses.value.filter((classItem) => {
+    return getId(classItem) !== normalizedId;
+  });
+};
+
+const removeStudentFromSelectedClassLocally = (studentId) => {
+  const normalizedStudentId = String(studentId || "").trim();
+  const selectedClassId = getId(selectedClass.value);
+
+  localStudents.value = localStudents.value.map((student) => {
+    if (getId(student) !== normalizedStudentId) return student;
+
+    return {
+      ...student,
+      grade: null,
+      class: null,
+      classId: null
+    };
+  });
+
+  if (!selectedClassId) return;
+
+  const currentClass =
+    localClasses.value.find((classItem) => getId(classItem) === selectedClassId) ||
+    selectedClass.value;
+
+  const updatedClass = {
+    ...currentClass,
+    students: (currentClass?.students || []).filter((student) => {
+      return getId(student) !== normalizedStudentId;
+    })
+  };
+
+  localClasses.value = localClasses.value.map((classItem) => {
+    return getId(classItem) === selectedClassId ? updatedClass : classItem;
+  });
+
+  selectedClass.value = updatedClass;
+};
+
+let classesSyncPromise = null;
+let studentsSyncPromise = null;
+
+const syncClassesSilently = () => {
+  if (classesSyncPromise) return classesSyncPromise;
+
+  classesSyncPromise = Promise.resolve(refetchClasses())
+    .catch((error) => {
+      console.error("Class background sync failed:", error);
+    })
+    .finally(() => {
+      classesSyncPromise = null;
+    });
+
+  return classesSyncPromise;
+};
+
+const syncStudentsSilently = () => {
+  if (studentsSyncPromise) return studentsSyncPromise;
+
+  studentsSyncPromise = Promise.resolve(refetchStudents())
+    .catch((error) => {
+      console.error("Student background sync failed:", error);
+    })
+    .finally(() => {
+      studentsSyncPromise = null;
+    });
+
+  return studentsSyncPromise;
+};
+
+const activeToastIds = new Map();
+const recentToastSignatures = new Map();
+
+const showToastOnce = (type, message, actionKey) => {
+  const normalizedMessage = String(message || "").trim();
+  const signature = `${type}:${actionKey}:${normalizedMessage}`;
+  const now = Date.now();
+  const previousTime = recentToastSignatures.get(signature) || 0;
+
+  if (!normalizedMessage || now - previousTime < 1400) return;
+
+  recentToastSignatures.set(signature, now);
+
+  const previousToastId = activeToastIds.get(actionKey);
+
+  if (previousToastId !== undefined && previousToastId !== null) {
+    toast.dismiss(previousToastId);
+  }
+
+  const toastMethod = type === "error" ? toast.error : toast.success;
+  const toastId = toastMethod(normalizedMessage, {
+    timeout: 3500,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true
+  });
+
+  activeToastIds.set(actionKey, toastId);
+};
+
+const getErrorMessage = (error, fallback) => {
+  return (
+    error?.response?.data?.err ||
+    error?.response?.data?.message ||
+    error?.message ||
+    fallback
+  );
 };
 
 const getApiOrigin = () => {
@@ -716,6 +982,26 @@ const formatDate = (date) => {
 // ==========================================
 // 1. CLASS LOGIC
 // ==========================================
+watch(
+  localClasses,
+  (classItems) => {
+    const selectedClassId = getId(selectedClass.value);
+
+    if (!selectedClassId) return;
+
+    const refreshedClass = classItems.find((classItem) => {
+      return getId(classItem) === selectedClassId;
+    });
+
+    if (refreshedClass) {
+      selectedClass.value = refreshedClass;
+    }
+  },
+  {
+    deep: true
+  }
+);
+
 const filteredClassesList = computed(() => {
   if (!classSearchQuery.value.trim()) return classesList.value;
 
@@ -752,66 +1038,184 @@ const clearSelection = () => {
 };
 
 const openAddClassModal = () => {
+  if (isClassSaving.value || !isAdmin.value) return;
+
   isEditingClass.value = false;
   classToEdit.value = null;
   isClassModalOpen.value = true;
 };
 
 const openEditClassModal = (cls) => {
+  if (isClassSaving.value || !isAdmin.value) return;
+
   isEditingClass.value = true;
   classToEdit.value = cls;
   isClassModalOpen.value = true;
 };
 
 const openDeleteClassModal = (cls) => {
+  if (isClassDeleting.value || !isAdmin.value) return;
+
   classToDelete.value = cls;
   isDeleteClassModalOpen.value = true;
 };
 
-const closeClassModal = () => {
+const forceCloseClassModal = () => {
   isClassModalOpen.value = false;
+  isEditingClass.value = false;
   classToEdit.value = null;
 };
 
-const closeDeleteClassModal = () => {
+const closeClassModal = () => {
+  if (isClassSaving.value) return;
+  forceCloseClassModal();
+};
+
+const forceCloseDeleteClassModal = () => {
   isDeleteClassModalOpen.value = false;
   classToDelete.value = null;
 };
 
+const closeDeleteClassModal = () => {
+  if (isClassDeleting.value) return;
+  forceCloseDeleteClassModal();
+};
+
 const saveClass = async (classData) => {
+  if (isClassSaving.value) return;
+
+  const wasEditing = isEditingClass.value;
+  const editingId = getId(classData) || getId(classToEdit.value);
+
+  // All Class Create/Edit/Update/Delete actions are admin-only.
+  // Student enrollment, transfer, view and removal remain unchanged.
+  if (!isAdmin.value) {
+    showToastOnce(
+      "error",
+      wasEditing
+        ? "មានតែ Admin ប៉ុណ្ណោះអាចកែប្រែថ្នាក់បាន"
+        : "មានតែ Admin ប៉ុណ្ណោះអាចបង្កើតថ្នាក់ថ្មីបាន",
+      wasEditing ? "class-update-permission" : "class-create-permission"
+    );
+    return;
+  }
+
+  isClassSaving.value = true;
+
   try {
-    if (isEditingClass.value && classData._id) {
-      await updateClassDoc(classData._id, classData);
-      toast.success("បានកែប្រែថ្នាក់ដោយជោគជ័យ");
+    if (wasEditing) {
+      if (!editingId) {
+        throw new Error("Class ID is missing");
+      }
+
+      const existingClass =
+        localClasses.value.find((classItem) => getId(classItem) === editingId) ||
+        classToEdit.value ||
+        {};
+
+      const response = await updateClassDoc(editingId, classData);
+      const responseClass = extractSavedEntity(response, "class");
+
+      upsertClassLocally(
+        mergeClassData(existingClass, {
+          ...classData,
+          ...responseClass
+        }),
+        editingId
+      );
     } else {
-      await createClassDoc(classData);
-      toast.success("បានបង្កើតថ្នាក់ថ្មីដោយជោគជ័យ");
+      const response = await createClassDoc(classData);
+      const responseClass = extractSavedEntity(response, "class");
+      const temporaryId =
+        getId(responseClass) ||
+        `local-class-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
+      upsertClassLocally(
+        {
+          ...classData,
+          ...responseClass
+        },
+        temporaryId
+      );
     }
 
-    await refetchClasses();
-    closeClassModal();
+    forceCloseClassModal();
+
+    showToastOnce(
+      "success",
+      wasEditing
+        ? "បានកែប្រែថ្នាក់ដោយជោគជ័យ"
+        : "បានបង្កើតថ្នាក់ថ្មីដោយជោគជ័យ",
+      wasEditing ? "class-update" : "class-create"
+    );
+
+    void syncClassesSilently();
   } catch (error) {
     console.error("Error saving class:", error);
-    toast.error(error.response?.data?.err || "មិនអាចរក្សាទុកថ្នាក់បានទេ");
+
+    showToastOnce(
+      "error",
+      getErrorMessage(error, "មិនអាចរក្សាទុកថ្នាក់បានទេ"),
+      wasEditing ? "class-update-error" : "class-create-error"
+    );
+  } finally {
+    isClassSaving.value = false;
   }
 };
 
 const confirmDeleteClass = async () => {
-  if (!classToDelete.value?._id) return;
+  if (!classToDelete.value || isClassDeleting.value) return;
+
+  if (!isAdmin.value) {
+    showToastOnce(
+      "error",
+      "មានតែ Admin ប៉ុណ្ណោះអាចលុបថ្នាក់បាន",
+      "class-delete-permission"
+    );
+    return;
+  }
+
+  const classId = getId(classToDelete.value);
+
+  if (!classId) {
+    showToastOnce(
+      "error",
+      "Class ID is missing",
+      "class-delete-error"
+    );
+    return;
+  }
+
+  isClassDeleting.value = true;
 
   try {
-    await deleteClassDoc(classToDelete.value._id);
-    await refetchClasses();
+    await deleteClassDoc(classId);
 
-    if (selectedClass.value?._id === classToDelete.value._id) {
+    removeClassLocally(classId);
+
+    if (getId(selectedClass.value) === classId) {
       clearSelection();
     }
 
-    toast.success("បានលុបថ្នាក់ដោយជោគជ័យ");
-    closeDeleteClassModal();
+    forceCloseDeleteClassModal();
+
+    showToastOnce(
+      "success",
+      "បានលុបថ្នាក់ដោយជោគជ័យ",
+      "class-delete"
+    );
+
+    void syncClassesSilently();
   } catch (error) {
     console.error("Error deleting class:", error);
-    toast.error(error.response?.data?.err || "មិនអាចលុបថ្នាក់បានទេ");
+
+    showToastOnce(
+      "error",
+      getErrorMessage(error, "មិនអាចលុបថ្នាក់បានទេ"),
+      "class-delete-error"
+    );
+  } finally {
+    isClassDeleting.value = false;
   }
 };
 
@@ -872,6 +1276,14 @@ watch([studentSearchQuery, genderFilter, statusFilter], () => {
   currentPage.value = 1;
 });
 
+watch(isAdmin, (adminAllowed) => {
+  if (adminAllowed) return;
+
+  isEnrollModalOpen.value = false;
+  isDeleteStudentModalOpen.value = false;
+  studentToDelete.value = null;
+});
+
 const nextPage = () => {
   if (currentPage.value < totalPages.value) currentPage.value += 1;
 };
@@ -881,16 +1293,22 @@ const prevPage = () => {
 };
 
 const handleRefreshData = async () => {
-  await refetchStudents();
-  await refetchClasses();
+  await Promise.all([
+    syncStudentsSilently(),
+    syncClassesSilently()
+  ]);
 };
 
 const openEnrollModal = () => {
+  if (!isAdmin.value) return;
+
   modalMode.value = "enroll";
   isEnrollModalOpen.value = true;
 };
 
 const openTransferModal = () => {
+  if (!isAdmin.value) return;
+
   modalMode.value = "transfer";
   isEnrollModalOpen.value = true;
 };
@@ -905,6 +1323,8 @@ const openViewModal = (student) => {
 };
 
 const openDeleteStudentModal = (student) => {
+  if (!isAdmin.value || isStudentRemoving.value) return;
+
   studentToDelete.value = student;
   isDeleteStudentModalOpen.value = true;
 };
@@ -914,34 +1334,80 @@ const closeViewModal = () => {
   studentToView.value = null;
 };
 
-const closeDeleteStudentModal = () => {
+const forceCloseDeleteStudentModal = () => {
   isDeleteStudentModalOpen.value = false;
   studentToDelete.value = null;
 };
 
+const closeDeleteStudentModal = () => {
+  if (isStudentRemoving.value) return;
+  forceCloseDeleteStudentModal();
+};
+
 const confirmDeleteStudent = async () => {
-  if (!studentToDelete.value?._id || !selectedClass.value?._id) return;
+  if (!studentToDelete.value || !selectedClass.value || isStudentRemoving.value) {
+    return;
+  }
+
+  if (!isAdmin.value) {
+    showToastOnce(
+      "error",
+      "មានតែ Admin ប៉ុណ្ណោះអាចដកសិស្សចេញពីថ្នាក់បាន",
+      "class-student-remove-permission"
+    );
+    return;
+  }
+
+  const studentId = getId(studentToDelete.value);
+  const classId = getId(selectedClass.value);
+
+  if (!studentId || !classId) {
+    showToastOnce(
+      "error",
+      "Student or Class ID is missing",
+      "class-student-remove-error"
+    );
+    return;
+  }
+
+  isStudentRemoving.value = true;
 
   try {
-    await api.delete(`/classes/${selectedClass.value._id}/students/${studentToDelete.value._id}`);
+    await api.delete(`/classes/${classId}/students/${studentId}`);
 
-    toast.success("បានដកសិស្សចេញពីថ្នាក់ដោយជោគជ័យ");
+    removeStudentFromSelectedClassLocally(studentId);
 
-    await refetchStudents();
-    await refetchClasses();
-
-    if (paginatedStudents.value.length === 1 && currentPage.value > 1) {
+    if (paginatedStudents.value.length === 0 && currentPage.value > 1) {
       currentPage.value -= 1;
     }
+
+    forceCloseDeleteStudentModal();
+
+    showToastOnce(
+      "success",
+      "បានដកសិស្សចេញពីថ្នាក់ដោយជោគជ័យ",
+      "class-student-remove"
+    );
+
+    void Promise.all([
+      syncStudentsSilently(),
+      syncClassesSilently()
+    ]);
   } catch (error) {
     console.error("Error removing student:", error);
-    toast.error(error.response?.data?.err || "មិនអាចដកសិស្សចេញពីថ្នាក់បានទេ");
+
+    showToastOnce(
+      "error",
+      getErrorMessage(error, "មិនអាចដកសិស្សចេញពីថ្នាក់បានទេ"),
+      "class-student-remove-error"
+    );
   } finally {
-    closeDeleteStudentModal();
+    isStudentRemoving.value = false;
   }
 };
 
 onMounted(() => {
+  currentUser.value = readStoredUser();
   setNoZoomViewport();
 });
 
@@ -1113,4 +1579,58 @@ onBeforeUnmount(() => {
     transform: translateY(0);
   }
 }
+
+/* Toasts stay above Header, Sidebar and all teleported forms/modals. */
+:global(.Vue-Toastification__container) {
+  z-index: 12050 !important;
+  pointer-events: none;
+}
+
+:global(.Vue-Toastification__toast) {
+  pointer-events: auto;
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif !important;
+  line-height: 1.45 !important;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+:global(.Vue-Toastification__toast-body) {
+  font-family: inherit !important;
+  line-height: 1.45 !important;
+}
+
+@media (max-width: 640px) {
+  :global(.Vue-Toastification__container.top-right),
+  :global(.Vue-Toastification__container.top-center) {
+    top: calc(0.75rem + env(safe-area-inset-top)) !important;
+    left: 0.75rem !important;
+    right: 0.75rem !important;
+    width: auto !important;
+  }
+
+  :global(.Vue-Toastification__toast) {
+    margin-bottom: 0.5rem !important;
+  }
+}
+
+
+
+/* Desktop class-student table: the first action is View, not Edit. */
+.class-student-view-eye :deep(td:nth-last-child(2) button) {
+  color: #2563eb;
+}
+
+.class-student-view-eye :deep(td:nth-last-child(2) .fa-pen-to-square::before) {
+  content: "\f06e" !important;
+}
+
+/* Non-admin: keep View enabled and disable only the final Remove/Delete action in StudentCard. */
+.non-admin-student-remove-disabled :deep(td:last-child button),
+.non-admin-student-remove-disabled :deep(button[title*="ដក"]),
+.non-admin-student-remove-disabled :deep(button[title*="លុប"]) {
+  pointer-events: none !important;
+  opacity: 0.4 !important;
+  cursor: not-allowed !important;
+}
+
 </style>

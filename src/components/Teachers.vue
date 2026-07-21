@@ -97,7 +97,8 @@
 
         <button
           @click="openAddModal"
-          class="mt-3 inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-bold text-xs hover:underline"
+          :disabled="isSaving"
+          class="mt-3 inline-flex items-center gap-2 text-blue-600 hover:text-blue-700 font-bold text-xs hover:underline disabled:opacity-50 disabled:cursor-not-allowed"
         >
           <i class="fa-solid fa-plus"></i>
           ចុចទីនេះដើម្បីបញ្ចូលថ្មី
@@ -132,7 +133,7 @@
 </template>
 
 <script setup>
-import { ref, computed, onMounted, onBeforeUnmount } from "vue";
+import { ref, computed, watch, onMounted, onBeforeUnmount } from "vue";
 import { useToast } from "vue-toastification";
 
 import { useQuery } from "../hooks/useQuery";
@@ -214,6 +215,10 @@ const searchQuery = ref("");
 const isSaving = ref(false);
 const isDeleting = ref(false);
 
+// Local UI directory: create/edit/delete updates appear immediately.
+// The query ref remains the server source of truth and reconciles silently afterward.
+const localTeachers = ref([]);
+
 const normalizeArray = (value) => {
   if (Array.isArray(value)) return value;
   if (Array.isArray(value?.data)) return value.data;
@@ -222,12 +227,25 @@ const normalizeArray = (value) => {
   return [];
 };
 
+watch(
+  teachers,
+  (value) => {
+    localTeachers.value = [...normalizeArray(value)];
+  },
+  {
+    immediate: true,
+    deep: true
+  }
+);
+
 const teachersList = computed(() => {
-  return normalizeArray(teachers.value);
+  return localTeachers.value;
 });
 
+// Background reconciliation must not hide the already-updated list.
 const isLoadingTeachers = computed(() => {
-  return queryLoading?.value || queryIsLoading?.value || false;
+  const queryIsBusy = queryLoading?.value || queryIsLoading?.value || false;
+  return queryIsBusy && localTeachers.value.length === 0;
 });
 
 const filteredTeachers = computed(() => {
@@ -256,6 +274,156 @@ const filteredTeachers = computed(() => {
   });
 });
 
+const getTeacherId = (teacher) => {
+  return String(teacher?._id || teacher?.id || "").trim();
+};
+
+const payloadToPlainObject = (payload) => {
+  if (!payload) return {};
+
+  if (typeof FormData !== "undefined" && payload instanceof FormData) {
+    const result = {};
+
+    payload.forEach((value, key) => {
+      if (
+        (typeof File !== "undefined" && value instanceof File) ||
+        (typeof Blob !== "undefined" && value instanceof Blob)
+      ) {
+        return;
+      }
+
+      const nestedMatch = key.match(/^([^\[]+)\[([^\]]+)\]$/);
+
+      if (nestedMatch) {
+        const [, parentKey, childKey] = nestedMatch;
+        result[parentKey] = {
+          ...(result[parentKey] || {}),
+          [childKey]: value
+        };
+        return;
+      }
+
+      result[key] = value;
+    });
+
+    return result;
+  }
+
+  if (typeof payload === "object" && !Array.isArray(payload)) {
+    return { ...payload };
+  }
+
+  return {};
+};
+
+const extractSavedTeacher = (response) => {
+  const root = response?.data ?? response;
+  const candidates = [
+    root?.data,
+    root?.result,
+    root?.item,
+    root?.teacher,
+    root
+  ];
+
+  return (
+    candidates.find((candidate) => {
+      return candidate && typeof candidate === "object" && !Array.isArray(candidate);
+    }) || {}
+  );
+};
+
+const mergeTeacherData = (baseTeacher = {}, changes = {}) => {
+  return {
+    ...baseTeacher,
+    ...changes,
+    currentResidence: {
+      ...(baseTeacher.currentResidence || {}),
+      ...(changes.currentResidence || {})
+    }
+  };
+};
+
+const upsertTeacherLocally = (teacher, fallbackId = "") => {
+  const teacherId = getTeacherId(teacher) || String(fallbackId || "").trim();
+  const nextTeacher = {
+    ...teacher,
+    ...(teacherId && !teacher?._id && !teacher?.id ? { _id: teacherId } : {})
+  };
+
+  const existingIndex = localTeachers.value.findIndex((item) => {
+    return getTeacherId(item) === teacherId;
+  });
+
+  if (existingIndex >= 0) {
+    const nextList = [...localTeachers.value];
+    nextList.splice(existingIndex, 1, {
+      ...nextList[existingIndex],
+      ...nextTeacher
+    });
+    localTeachers.value = nextList;
+    return;
+  }
+
+  localTeachers.value = [nextTeacher, ...localTeachers.value];
+};
+
+const removeTeacherLocally = (teacherId) => {
+  const normalizedId = String(teacherId || "").trim();
+
+  localTeachers.value = localTeachers.value.filter((teacher) => {
+    return getTeacherId(teacher) !== normalizedId;
+  });
+};
+
+let silentSyncPromise = null;
+
+const syncTeachersSilently = () => {
+  if (silentSyncPromise) return silentSyncPromise;
+
+  silentSyncPromise = Promise.resolve(fetchData())
+    .catch((error) => {
+      console.error("Teacher background sync failed:", error);
+    })
+    .finally(() => {
+      silentSyncPromise = null;
+    });
+
+  return silentSyncPromise;
+};
+
+// useCollection toast is disabled above. This helper prevents duplicate
+// success/error messages from the same component action.
+const activeToastIds = new Map();
+const recentToastSignatures = new Map();
+
+const showToastOnce = (type, message, actionKey) => {
+  const normalizedMessage = String(message || "").trim();
+  const signature = `${type}:${actionKey}:${normalizedMessage}`;
+  const now = Date.now();
+  const previousTime = recentToastSignatures.get(signature) || 0;
+
+  if (now - previousTime < 1400) return;
+
+  recentToastSignatures.set(signature, now);
+
+  const previousToastId = activeToastIds.get(actionKey);
+
+  if (previousToastId !== undefined && previousToastId !== null) {
+    toast.dismiss(previousToastId);
+  }
+
+  const toastMethod = type === "error" ? toast.error : toast.success;
+  const toastId = toastMethod(normalizedMessage, {
+    timeout: 3500,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true
+  });
+
+  activeToastIds.set(actionKey, toastId);
+};
+
 const defaultTeacher = () => ({
   khmerName: "",
   englishName: "",
@@ -279,6 +447,10 @@ const defaultTeacher = () => ({
 });
 
 const openAddModal = () => {
+  if (isSaving.value) return;
+
+  // New Teacher is intentionally not admin-only. The current restriction
+  // applies only to new Student, Class, Subject and Schedule.
   isEditing.value = false;
   teacherToEdit.value = defaultTeacher();
   isFormModalOpen.value = true;
@@ -342,33 +514,62 @@ const saveTeacher = async (teacherData) => {
   if (isSaving.value) return;
 
   const wasEditing = isEditing.value;
+  const payloadObject = payloadToPlainObject(teacherData);
+  const editingSnapshot = teacherToEdit.value
+    ? JSON.parse(JSON.stringify(teacherToEdit.value))
+    : null;
 
   isSaving.value = true;
 
   try {
     if (wasEditing) {
-      const id = teacherToEdit.value?._id || teacherToEdit.value?.id;
+      const id = getTeacherId(editingSnapshot);
 
       if (!id) {
         throw new Error("Teacher ID is missing");
       }
 
-      await updateDoc(id, teacherData);
-    } else {
-      await createDoc(teacherData);
-    }
+      const response = await updateDoc(id, teacherData);
+      const responseTeacher = extractSavedTeacher(response);
+      const updatedTeacher = mergeTeacherData(
+        editingSnapshot,
+        mergeTeacherData(payloadObject, responseTeacher)
+      );
 
-    await fetchData();
+      upsertTeacherLocally(updatedTeacher, id);
+    } else {
+      const response = await createDoc(teacherData);
+      const responseTeacher = extractSavedTeacher(response);
+      const temporaryId =
+        getTeacherId(responseTeacher) ||
+        `local-teacher-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
+      const createdTeacher = mergeTeacherData(
+        defaultTeacher(),
+        mergeTeacherData(payloadObject, responseTeacher)
+      );
+
+      upsertTeacherLocally(createdTeacher, temporaryId);
+    }
 
     forceCloseFormModal();
 
-    toast.success(
+    showToastOnce(
+      "success",
       wasEditing
         ? "បានកែប្រែព័ត៌មានគ្រូដោយជោគជ័យ"
-        : "បានបញ្ចូលគ្រូថ្មីដោយជោគជ័យ"
+        : "បានបញ្ចូលគ្រូថ្មីដោយជោគជ័យ",
+      wasEditing ? "teacher-update" : "teacher-create"
     );
+
+    // Update from the API in the background without blocking or hiding the list.
+    void syncTeachersSilently();
   } catch (error) {
-    toast.error(getErrorMessage(error));
+    showToastOnce(
+      "error",
+      getErrorMessage(error),
+      wasEditing ? "teacher-update-error" : "teacher-create-error"
+    );
   } finally {
     isSaving.value = false;
   }
@@ -377,23 +578,36 @@ const saveTeacher = async (teacherData) => {
 const confirmDelete = async () => {
   if (!teacherToDelete.value || isDeleting.value) return;
 
+  const deletingSnapshot = { ...teacherToDelete.value };
+  const id = getTeacherId(deletingSnapshot);
+
+  if (!id) {
+    showToastOnce("error", "Teacher ID is missing", "teacher-delete-error");
+    return;
+  }
+
   isDeleting.value = true;
 
   try {
-    const id = teacherToDelete.value._id || teacherToDelete.value.id;
-
-    if (!id) {
-      throw new Error("Teacher ID is missing");
-    }
-
     await deleteDoc(id);
-    await fetchData();
 
+    removeTeacherLocally(id);
     forceCloseDeleteModal();
 
-    toast.success("បានលុបគ្រូដោយជោគជ័យ");
+    showToastOnce(
+      "success",
+      "បានលុបគ្រូដោយជោគជ័យ",
+      "teacher-delete"
+    );
+
+    // Reconcile silently; no page refresh and no blocking loading state.
+    void syncTeachersSilently();
   } catch (error) {
-    toast.error(getErrorMessage(error, "មិនអាចលុបគ្រូបានទេ"));
+    showToastOnce(
+      "error",
+      getErrorMessage(error, "មិនអាចលុបគ្រូបានទេ"),
+      "teacher-delete-error"
+    );
   } finally {
     isDeleting.value = false;
   }
@@ -467,4 +681,38 @@ onBeforeUnmount(() => {
     margin-bottom: calc(1.25rem + env(safe-area-inset-bottom));
   }
 }
+
+/* Toasts must stay above Header, Sidebar and body-level forms/modals. */
+:global(.Vue-Toastification__container) {
+  z-index: 12050 !important;
+  pointer-events: none;
+}
+
+:global(.Vue-Toastification__toast) {
+  pointer-events: auto;
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif !important;
+  line-height: 1.45 !important;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+:global(.Vue-Toastification__toast-body) {
+  font-family: inherit !important;
+  line-height: 1.45 !important;
+}
+
+@media (max-width: 640px) {
+  :global(.Vue-Toastification__container.top-right),
+  :global(.Vue-Toastification__container.top-center) {
+    top: calc(0.75rem + env(safe-area-inset-top)) !important;
+    left: 0.75rem !important;
+    right: 0.75rem !important;
+    width: auto !important;
+  }
+
+  :global(.Vue-Toastification__toast) {
+    margin-bottom: 0.5rem !important;
+  }
+}
+
 </style>

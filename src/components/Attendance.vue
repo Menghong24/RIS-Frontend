@@ -461,7 +461,7 @@
 
         <button
           @click="onSave"
-          :disabled="loading || attendance.length === 0 || !hasAttendanceChanges"
+          :disabled="loading || attendance.length === 0 || (mode === 'edit' && !hasAttendanceChanges)"
           class="px-4 sm:px-5 py-1.5 sm:py-2 bg-emerald-600 hover:bg-emerald-700 text-white rounded-lg text-xs sm:text-sm font-bold shadow-sm flex items-center justify-center gap-1.5 sm:gap-2 disabled:opacity-50 disabled:cursor-not-allowed transition"
         >
           <i class="fa-solid fa-floppy-disk text-[11px] sm:text-sm"></i>
@@ -823,7 +823,7 @@ const onSave = async () => {
       return;
     }
 
-    if (!hasAttendanceChanges.value) {
+    if (mode.value === "edit" && !hasAttendanceChanges.value) {
       return;
     }
 

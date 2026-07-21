@@ -21,7 +21,9 @@
 
           <button
             @click="openAddModal"
-            class="flex items-center justify-center gap-1.5 sm:gap-2 w-full sm:w-auto bg-blue-600 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-blue-700 transition shadow-sm text-[11px] sm:text-xs font-bold whitespace-nowrap"
+            :disabled="isSaving || !isAdmin"
+            :title="!isAdmin ? 'មានតែ Admin ប៉ុណ្ណោះអាចបញ្ចូលសិស្សថ្មីបាន' : 'បញ្ចូលសិស្សថ្មី'"
+            class="flex items-center justify-center gap-1.5 sm:gap-2 w-full sm:w-auto bg-blue-600 text-white px-3 sm:px-4 py-2 rounded-lg hover:bg-blue-700 transition shadow-sm text-[11px] sm:text-xs font-bold whitespace-nowrap disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600"
           >
             <i class="fa-solid fa-user-plus text-[11px] sm:text-xs"></i>
             បញ្ចូលសិស្សថ្មី
@@ -353,6 +355,21 @@ import { useCollection } from "../hooks/useCollection.js";
 
 const toast = useToast();
 
+const currentUser = computed(() => {
+  if (typeof localStorage === "undefined") return {};
+
+  try {
+    const savedUser = JSON.parse(localStorage.getItem("user") || "{}");
+    return savedUser?.user || savedUser?.data || savedUser;
+  } catch (error) {
+    return {};
+  }
+});
+
+const isAdmin = computed(() => {
+  return String(currentUser.value?.role || "").toLowerCase() === "admin";
+});
+
 // --- Modal States ---
 const isFormModalOpen = ref(false);
 const isDeleteModalOpen = ref(false);
@@ -361,12 +378,14 @@ const isEditing = ref(false);
 const studentToEdit = ref(null);
 const studentToDelete = ref(null);
 const studentToView = ref(null);
+const isSaving = ref(false);
+const isDeleting = ref(false);
 
 // --- Data Fetching ---
 const { data: students, fetchData: refetchStudents } = useQuery("students");
 const { data: classesData } = useQuery("classes");
 
-// Collection Actions
+// Collection Actions: disable composable toast so each action produces one toast only.
 const { createDoc, updateDoc, deleteDoc } = useCollection("students", {
   toast: false
 });
@@ -377,6 +396,9 @@ const statusFilter = ref("All");
 const genderFilter = ref("All");
 const classFilter = ref("All");
 
+// Local UI list: Create/Edit/Delete update this immediately after the API succeeds.
+const localStudents = ref([]);
+
 // Safely access list
 const normalizeArray = (value) => {
   if (Array.isArray(value)) return value;
@@ -386,12 +408,186 @@ const normalizeArray = (value) => {
   return [];
 };
 
+watch(
+  students,
+  (value) => {
+    localStudents.value = [...normalizeArray(value)];
+  },
+  {
+    immediate: true,
+    deep: true
+  }
+);
+
 const classesList = computed(() => normalizeArray(classesData.value));
-const studentsList = computed(() => normalizeArray(students.value));
+const studentsList = computed(() => localStudents.value);
 
 // --- Helpers ---
 const getId = (value) => {
   return String(value?._id || value?.id || value || "").trim();
+};
+
+const payloadToPlainObject = (payload) => {
+  if (!payload) return {};
+
+  if (typeof FormData !== "undefined" && payload instanceof FormData) {
+    const result = {};
+
+    payload.forEach((value, key) => {
+      if (
+        (typeof File !== "undefined" && value instanceof File) ||
+        (typeof Blob !== "undefined" && value instanceof Blob)
+      ) {
+        return;
+      }
+
+      const nestedMatch = key.match(/^([^\[]+)\[([^\]]+)\]$/);
+
+      if (nestedMatch) {
+        const [, parentKey, childKey] = nestedMatch;
+
+        result[parentKey] = {
+          ...(result[parentKey] || {}),
+          [childKey]: value
+        };
+
+        return;
+      }
+
+      result[key] = value;
+    });
+
+    return result;
+  }
+
+  if (typeof payload === "object" && !Array.isArray(payload)) {
+    return { ...payload };
+  }
+
+  return {};
+};
+
+const extractSavedStudent = (response) => {
+  const root = response?.data ?? response;
+
+  const candidates = [
+    root?.data,
+    root?.result,
+    root?.item,
+    root?.student,
+    root
+  ];
+
+  return (
+    candidates.find((candidate) => {
+      return candidate && typeof candidate === "object" && !Array.isArray(candidate);
+    }) || {}
+  );
+};
+
+const mergeStudentData = (baseStudent = {}, changes = {}) => {
+  return {
+    ...baseStudent,
+    ...changes,
+    nationality: {
+      ...(baseStudent.nationality || {}),
+      ...(changes.nationality || {})
+    },
+    family: {
+      ...(baseStudent.family || {}),
+      ...(changes.family || {})
+    },
+    placeOfBirth: {
+      ...(baseStudent.placeOfBirth || {}),
+      ...(changes.placeOfBirth || {})
+    },
+    currentResidence: {
+      ...(baseStudent.currentResidence || {}),
+      ...(changes.currentResidence || {})
+    }
+  };
+};
+
+const upsertStudentLocally = (student, fallbackId = "") => {
+  const studentId = getId(student) || String(fallbackId || "").trim();
+
+  const nextStudent = {
+    ...student,
+    ...(studentId && !student?._id && !student?.id ? { _id: studentId } : {})
+  };
+
+  const existingIndex = localStudents.value.findIndex((item) => {
+    return getId(item) === studentId;
+  });
+
+  if (existingIndex >= 0) {
+    const nextList = [...localStudents.value];
+
+    nextList.splice(
+      existingIndex,
+      1,
+      mergeStudentData(nextList[existingIndex], nextStudent)
+    );
+
+    localStudents.value = nextList;
+    return;
+  }
+
+  localStudents.value = [nextStudent, ...localStudents.value];
+};
+
+const removeStudentLocally = (studentId) => {
+  const normalizedId = String(studentId || "").trim();
+
+  localStudents.value = localStudents.value.filter((student) => {
+    return getId(student) !== normalizedId;
+  });
+};
+
+let silentSyncPromise = null;
+
+const syncStudentsSilently = () => {
+  if (silentSyncPromise) return silentSyncPromise;
+
+  silentSyncPromise = Promise.resolve(refetchStudents())
+    .catch((error) => {
+      console.error("Student background sync failed:", error);
+    })
+    .finally(() => {
+      silentSyncPromise = null;
+    });
+
+  return silentSyncPromise;
+};
+
+const activeToastIds = new Map();
+const recentToastSignatures = new Map();
+
+const showToastOnce = (type, message, actionKey) => {
+  const normalizedMessage = String(message || "").trim();
+  const signature = `${type}:${actionKey}:${normalizedMessage}`;
+  const now = Date.now();
+  const previousTime = recentToastSignatures.get(signature) || 0;
+
+  if (!normalizedMessage || now - previousTime < 1400) return;
+
+  recentToastSignatures.set(signature, now);
+
+  const previousToastId = activeToastIds.get(actionKey);
+
+  if (previousToastId !== undefined && previousToastId !== null) {
+    toast.dismiss(previousToastId);
+  }
+
+  const toastMethod = type === "error" ? toast.error : toast.success;
+  const toastId = toastMethod(normalizedMessage, {
+    timeout: 3500,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true
+  });
+
+  activeToastIds.set(actionKey, toastId);
 };
 
 const getStudentClassObject = (student) => {
@@ -536,6 +732,12 @@ const paginatedStudents = computed(() => {
   return filteredStudents.value.slice(start.value, start.value + rowsPerPage.value);
 });
 
+watch(totalPages, (pageCount) => {
+  if (currentPage.value > pageCount) {
+    currentPage.value = pageCount;
+  }
+});
+
 // Reset to page 1 when filters change
 watch([searchQuery, statusFilter, genderFilter, classFilter, rowsPerPage], () => {
   currentPage.value = 1;
@@ -556,6 +758,8 @@ const prevPage = () => {
 
 // --- Modal Handlers ---
 const openAddModal = () => {
+  if (isSaving.value || !isAdmin.value) return;
+
   isEditing.value = false;
 
   studentToEdit.value = {
@@ -615,17 +819,29 @@ const openDeleteModal = (student) => {
   isDeleteModalOpen.value = true;
 };
 
-const closeFormModal = () => {
+const forceCloseFormModal = () => {
   isFormModalOpen.value = false;
+  isEditing.value = false;
+  studentToEdit.value = null;
+};
+
+const closeFormModal = () => {
+  if (isSaving.value) return;
+  forceCloseFormModal();
 };
 
 const closeViewModal = () => {
   isViewModalOpen.value = false;
 };
 
-const closeDeleteModal = () => {
+const forceCloseDeleteModal = () => {
   isDeleteModalOpen.value = false;
   studentToDelete.value = null;
+};
+
+const closeDeleteModal = () => {
+  if (isDeleting.value) return;
+  forceCloseDeleteModal();
 };
 
 const getErrorMessage = (
@@ -642,43 +858,123 @@ const getErrorMessage = (
 
 // --- CRUD Actions ---
 const saveStudent = async (studentData) => {
+  if (isSaving.value) return;
+
+  const wasEditing = isEditing.value;
+
+  // Only creating a new Student is admin-only.
+  // Edit, Update and Delete remain available according to the requested policy.
+  if (!wasEditing && !isAdmin.value) {
+    showToastOnce(
+      "error",
+      "មានតែ Admin ប៉ុណ្ណោះអាចបញ្ចូលសិស្សថ្មីបាន",
+      "student-create-permission"
+    );
+    return;
+  }
+
+  const payloadObject = payloadToPlainObject(studentData);
+  const editingSnapshot = studentToEdit.value
+    ? JSON.parse(JSON.stringify(studentToEdit.value))
+    : null;
+
+  isSaving.value = true;
+
   try {
-    if (isEditing.value) {
-      const studentId = studentToEdit.value?._id || studentToEdit.value?.id;
+    if (wasEditing) {
+      const studentId = getId(editingSnapshot);
 
       if (!studentId) {
         throw new Error("Student ID is missing");
       }
 
-      await updateDoc(studentId, studentData);
+      const response = await updateDoc(studentId, studentData);
+      const responseStudent = extractSavedStudent(response);
+      const updatedStudent = mergeStudentData(
+        editingSnapshot,
+        mergeStudentData(payloadObject, responseStudent)
+      );
+
+      upsertStudentLocally(updatedStudent, studentId);
     } else {
-      await createDoc(studentData);
+      const response = await createDoc(studentData);
+      const responseStudent = extractSavedStudent(response);
+      const temporaryId =
+        getId(responseStudent) ||
+        `local-student-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
+      const createdStudent = mergeStudentData(
+        studentToEdit.value || {},
+        mergeStudentData(payloadObject, responseStudent)
+      );
+
+      upsertStudentLocally(createdStudent, temporaryId);
+      currentPage.value = 1;
     }
 
-    await refetchStudents();
-    closeFormModal();
+    forceCloseFormModal();
 
-    toast.success(
-      isEditing.value
+    showToastOnce(
+      "success",
+      wasEditing
         ? "បានកែប្រែសិស្សដោយជោគជ័យ"
-        : "បានបញ្ចូលសិស្សថ្មីដោយជោគជ័យ"
+        : "បានបញ្ចូលសិស្សថ្មីដោយជោគជ័យ",
+      wasEditing ? "student-update" : "student-create"
     );
+
+    // Reconcile server data in the background without blocking the updated UI.
+    void syncStudentsSilently();
   } catch (error) {
-    toast.error(getErrorMessage(error));
+    showToastOnce(
+      "error",
+      getErrorMessage(error),
+      wasEditing ? "student-update-error" : "student-create-error"
+    );
+  } finally {
+    isSaving.value = false;
   }
 };
 
 const confirmDelete = async () => {
-  if (!studentToDelete.value?._id) return;
+  if (!studentToDelete.value || isDeleting.value) return;
+
+  const deletingSnapshot = {
+    ...studentToDelete.value
+  };
+  const studentId = getId(deletingSnapshot);
+
+  if (!studentId) {
+    showToastOnce(
+      "error",
+      "Student ID is missing",
+      "student-delete-error"
+    );
+    return;
+  }
+
+  isDeleting.value = true;
 
   try {
-    await deleteDoc(studentToDelete.value._id);
-    await refetchStudents();
-    closeDeleteModal();
+    await deleteDoc(studentId);
 
-    toast.success("បានលុបសិស្សដោយជោគជ័យ");
+    removeStudentLocally(studentId);
+    forceCloseDeleteModal();
+
+    showToastOnce(
+      "success",
+      "បានលុបសិស្សដោយជោគជ័យ",
+      "student-delete"
+    );
+
+    void syncStudentsSilently();
   } catch (error) {
-    toast.error(getErrorMessage(error, "មិនអាចលុបសិស្សបានទេ"));
+    showToastOnce(
+      "error",
+      getErrorMessage(error, "មិនអាចលុបសិស្សបានទេ"),
+      "student-delete-error"
+    );
+  } finally {
+    isDeleting.value = false;
   }
 };
 </script>
@@ -734,4 +1030,38 @@ const confirmDelete = async () => {
 .font-khmer {
   font-family: "Battambang", "Siemreap", sans-serif;
 }
+
+/* Toasts stay in front of Header, Sidebar and all teleported forms/modals. */
+:global(.Vue-Toastification__container) {
+  z-index: 12050 !important;
+  pointer-events: none;
+}
+
+:global(.Vue-Toastification__toast) {
+  pointer-events: auto;
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif !important;
+  line-height: 1.45 !important;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+:global(.Vue-Toastification__toast-body) {
+  font-family: inherit !important;
+  line-height: 1.45 !important;
+}
+
+@media (max-width: 640px) {
+  :global(.Vue-Toastification__container.top-right),
+  :global(.Vue-Toastification__container.top-center) {
+    top: calc(0.75rem + env(safe-area-inset-top)) !important;
+    left: 0.75rem !important;
+    right: 0.75rem !important;
+    width: auto !important;
+  }
+
+  :global(.Vue-Toastification__toast) {
+    margin-bottom: 0.5rem !important;
+  }
+}
+
 </style>

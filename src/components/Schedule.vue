@@ -40,8 +40,9 @@
               v-if="classFilter"
               type="button"
               @click="openCreateModal"
-              :disabled="loading || isSaving || isDeleting"
-              class="inline-flex items-center justify-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-extrabold text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed"
+              :disabled="loading || isSaving || isDeleting || !isAdmin"
+              :title="!isAdmin ? 'មានតែ Admin ប៉ុណ្ណោះអាចបង្កើតកាលវិភាគថ្មីបាន' : 'បន្ថែមកាលវិភាគ'"
+              class="inline-flex items-center justify-center gap-1.5 px-3 sm:px-4 py-1.5 sm:py-2 rounded-lg text-xs sm:text-sm font-extrabold text-white bg-blue-600 hover:bg-blue-700 shadow-sm transition disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600"
             >
               <i class="fa-solid fa-plus text-[10px]"></i>
               បន្ថែមកាលវិភាគ
@@ -464,12 +465,13 @@
 
                   <button
                     type="submit"
-                    :disabled="isSaving"
-                    class="flex-1 sm:flex-none min-w-0 h-9 sm:h-auto px-3 sm:px-5 sm:py-2 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition active:scale-95 inline-flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed"
+                    :disabled="isSaving || isCreateRestricted"
+                    :title="isCreateRestricted ? 'មានតែ Admin ប៉ុណ្ណោះអាចបង្កើតកាលវិភាគថ្មីបាន' : ''"
+                    class="flex-1 sm:flex-none min-w-0 h-9 sm:h-auto px-3 sm:px-5 sm:py-2 text-sm font-bold text-white bg-blue-600 hover:bg-blue-700 rounded-lg shadow-sm transition active:scale-95 inline-flex items-center justify-center gap-2 disabled:opacity-50 disabled:cursor-not-allowed disabled:hover:bg-blue-600 disabled:active:scale-100"
                   >
                     <i v-if="isSaving" class="fa-solid fa-circle-notch fa-spin"></i>
                     <i v-else class="fa-solid fa-floppy-disk"></i>
-                    <span class="truncate">
+                    <span class="break-words leading-snug">
                       {{ isSaving ? "កំពុងរក្សាទុក..." : "រក្សាទុក" }}
                     </span>
                   </button>
@@ -592,6 +594,35 @@ import { useToast } from "vue-toastification";
 
 const toast = useToast();
 
+const readStoredUser = () => {
+  if (typeof localStorage === "undefined") return {};
+
+  const keys = ["user", "currentUser", "authUser", "auth"];
+
+  for (const key of keys) {
+    try {
+      const rawValue = localStorage.getItem(key);
+
+      if (!rawValue) continue;
+
+      const parsedValue = JSON.parse(rawValue);
+      return parsedValue?.user || parsedValue?.data || parsedValue;
+    } catch (error) {
+      // Ignore malformed values and continue checking the remaining keys.
+    }
+  }
+
+  return {
+    role: localStorage.getItem("role") || ""
+  };
+};
+
+const currentUser = ref(readStoredUser());
+
+const isAdmin = computed(() => {
+  return String(currentUser.value?.role || "").trim().toLowerCase() === "admin";
+});
+
 const originalViewportContent = ref("");
 const viewportMetaWasCreated = ref(false);
 
@@ -701,7 +732,9 @@ const restoreViewport = () => {
   );
 };
 
-const { createDoc, updateDoc, deleteDoc } = useCollection("schedules");
+const { createDoc, updateDoc, deleteDoc } = useCollection("schedules", {
+  toast: false
+});
 
 const { data: classes } = useQuery("classes");
 const { data: subjects } = useQuery("subjects");
@@ -735,6 +768,10 @@ const isSaving = ref(false);
 const showDeleteModal = ref(false);
 const scheduleToDelete = ref(null);
 const isDeleting = ref(false);
+
+const isCreateRestricted = computed(() => {
+  return !isEditing.value && !isAdmin.value;
+});
 
 const defaultForm = () => ({
   class: "",
@@ -777,6 +814,106 @@ const timeToMinutes = (time = "") => {
   if (Number.isNaN(hour) || Number.isNaN(minute)) return 0;
   return hour * 60 + minute;
 };
+
+const extractSavedSchedule = (response) => {
+  const root = response?.data ?? response;
+
+  const candidates = [
+    root?.data,
+    root?.result,
+    root?.item,
+    root?.schedule,
+    root
+  ];
+
+  return (
+    candidates.find((candidate) => {
+      return candidate && typeof candidate === "object" && !Array.isArray(candidate);
+    }) || {}
+  );
+};
+
+const upsertScheduleLocally = (schedule, fallbackId = "") => {
+  const scheduleId = getId(schedule) || String(fallbackId || "").trim();
+
+  const nextSchedule = {
+    ...schedule,
+    ...(scheduleId && !schedule?._id && !schedule?.id ? { _id: scheduleId } : {})
+  };
+
+  const existingIndex = schedules.value.findIndex((item) => {
+    return getId(item) === scheduleId;
+  });
+
+  if (existingIndex >= 0) {
+    const nextList = [...schedules.value];
+
+    nextList.splice(existingIndex, 1, {
+      ...nextList[existingIndex],
+      ...nextSchedule
+    });
+
+    schedules.value = nextList;
+    return;
+  }
+
+  schedules.value = [nextSchedule, ...schedules.value];
+};
+
+const removeScheduleLocally = (scheduleId) => {
+  const normalizedId = String(scheduleId || "").trim();
+
+  schedules.value = schedules.value.filter((schedule) => {
+    return getId(schedule) !== normalizedId;
+  });
+};
+
+const getErrorMessage = (error, fallback) => {
+  return (
+    error?.response?.data?.err ||
+    error?.response?.data?.message ||
+    error?.message ||
+    fallback
+  );
+};
+
+const activeToastIds = new Map();
+const recentToastSignatures = new Map();
+
+const showToastOnce = (type, message, actionKey) => {
+  const normalizedMessage = String(message || "").trim();
+  const signature = `${type}:${actionKey}:${normalizedMessage}`;
+  const now = Date.now();
+  const previousTime = recentToastSignatures.get(signature) || 0;
+
+  if (!normalizedMessage || now - previousTime < 1400) return;
+
+  recentToastSignatures.set(signature, now);
+
+  const previousToastId = activeToastIds.get(actionKey);
+
+  if (previousToastId !== undefined && previousToastId !== null) {
+    toast.dismiss(previousToastId);
+  }
+
+  const toastMethod =
+    type === "error"
+      ? toast.error
+      : type === "warning"
+        ? toast.warning
+        : toast.success;
+
+  const toastId = toastMethod(normalizedMessage, {
+    timeout: 3500,
+    closeOnClick: true,
+    pauseOnHover: true,
+    draggable: true
+  });
+
+  activeToastIds.set(actionKey, toastId);
+};
+
+let silentSyncPromise = null;
 
 const classesList = computed(() => {
   return [...normalizeArray(classes.value)].sort((a, b) => {
@@ -895,13 +1032,18 @@ const getSchedulesForDay = (day) => {
     });
 };
 
-const fetchSchedules = async () => {
+const fetchSchedules = async ({
+  silent = false,
+  notifyError = true
+} = {}) => {
   if (!classFilter.value) {
     schedules.value = [];
-    return;
+    return [];
   }
 
-  loading.value = true;
+  if (!silent) {
+    loading.value = true;
+  }
 
   try {
     const response = await api.get("/schedules", {
@@ -911,17 +1053,40 @@ const fetchSchedules = async () => {
       }
     });
 
-    schedules.value = normalizeArray(response.data);
+    const nextSchedules = normalizeArray(response.data);
+    schedules.value = nextSchedules;
+
+    return nextSchedules;
   } catch (error) {
     console.error(error);
-    toast.error(
-      error.response?.data?.err ||
-        error.response?.data?.message ||
-        "មិនអាចទាញយកកាលវិភាគបានទេ"
-    );
+
+    if (notifyError) {
+      showToastOnce(
+        "error",
+        getErrorMessage(error, "មិនអាចទាញយកកាលវិភាគបានទេ"),
+        "schedule-fetch-error"
+      );
+    }
+
+    return schedules.value;
   } finally {
-    loading.value = false;
+    if (!silent) {
+      loading.value = false;
+    }
   }
+};
+
+const syncSchedulesSilently = () => {
+  if (silentSyncPromise) return silentSyncPromise;
+
+  silentSyncPromise = fetchSchedules({
+    silent: true,
+    notifyError: false
+  }).finally(() => {
+    silentSyncPromise = null;
+  });
+
+  return silentSyncPromise;
 };
 
 watch(classFilter, () => {
@@ -950,6 +1115,7 @@ const goBackToClasses = () => {
 };
 
 const selectClass = (classId) => {
+  currentUser.value = readStoredUser();
   classFilter.value = classId;
 };
 
@@ -971,7 +1137,20 @@ const forceCloseModal = () => {
 
 const openCreateModal = () => {
   if (!classFilter.value) {
-    toast.warning("សូមជ្រើសរើសថ្នាក់ជាមុនសិន");
+    showToastOnce(
+      "warning",
+      "សូមជ្រើសរើសថ្នាក់ជាមុនសិន",
+      "schedule-class-required"
+    );
+    return;
+  }
+
+  if (!isAdmin.value) {
+    showToastOnce(
+      "error",
+      "មានតែ Admin ប៉ុណ្ណោះអាចបង្កើតកាលវិភាគថ្មីបាន",
+      "schedule-create-permission"
+    );
     return;
   }
 
@@ -1009,22 +1188,38 @@ const openEditModal = (item) => {
 
 const validateForm = () => {
   if (!form.value.subject) {
-    toast.warning("សូមជ្រើសរើសមុខវិជ្ជា");
+    showToastOnce(
+      "warning",
+      "សូមជ្រើសរើសមុខវិជ្ជា",
+      "schedule-subject-required"
+    );
     return false;
   }
 
   if (!form.value.day) {
-    toast.warning("សូមជ្រើសរើសថ្ងៃ");
+    showToastOnce(
+      "warning",
+      "សូមជ្រើសរើសថ្ងៃ",
+      "schedule-day-required"
+    );
     return false;
   }
 
   if (!form.value.startTime || !form.value.endTime) {
-    toast.warning("សូមបញ្ចូលម៉ោងចាប់ផ្ដើម និងម៉ោងបញ្ចប់");
+    showToastOnce(
+      "warning",
+      "សូមបញ្ចូលម៉ោងចាប់ផ្ដើម និងម៉ោងបញ្ចប់",
+      "schedule-time-required"
+    );
     return false;
   }
 
   if (timeToMinutes(form.value.endTime) <= timeToMinutes(form.value.startTime)) {
-    toast.warning("ម៉ោងបញ្ចប់ត្រូវធំជាងម៉ោងចាប់ផ្ដើម");
+    showToastOnce(
+      "warning",
+      "ម៉ោងបញ្ចប់ត្រូវធំជាងម៉ោងចាប់ផ្ដើម",
+      "schedule-time-range-invalid"
+    );
     return false;
   }
 
@@ -1046,6 +1241,21 @@ const buildPayload = () => {
 
 const handleSubmit = async () => {
   if (isSaving.value) return;
+
+  const wasEditing = isEditing.value;
+  const currentEditId = editId.value;
+
+  // Only creating a NEW Schedule is admin-only.
+  // Edit, Update and Delete remain available for non-admin users.
+  if (!wasEditing && !isAdmin.value) {
+    showToastOnce(
+      "error",
+      "មានតែ Admin ប៉ុណ្ណោះអាចបង្កើតកាលវិភាគថ្មីបាន",
+      "schedule-create-permission"
+    );
+    return;
+  }
+
   if (!validateForm()) return;
 
   isSaving.value = true;
@@ -1053,27 +1263,59 @@ const handleSubmit = async () => {
   try {
     const payload = buildPayload();
 
-    if (isEditing.value) {
-      if (!editId.value) {
+    if (wasEditing) {
+      if (!currentEditId) {
         throw new Error("Schedule ID is missing");
       }
 
-      await updateDoc(editId.value, payload);
-      toast.success("បានកែប្រែកាលវិភាគដោយជោគជ័យ");
+      const existingSchedule =
+        schedules.value.find((item) => getId(item) === getId(currentEditId)) || {};
+
+      const response = await updateDoc(currentEditId, payload);
+      const responseSchedule = extractSavedSchedule(response);
+
+      upsertScheduleLocally(
+        {
+          ...existingSchedule,
+          ...payload,
+          ...responseSchedule
+        },
+        currentEditId
+      );
     } else {
-      await createDoc(payload);
-      toast.success("បានបង្កើតកាលវិភាគដោយជោគជ័យ");
+      const response = await createDoc(payload);
+      const responseSchedule = extractSavedSchedule(response);
+      const temporaryId =
+        getId(responseSchedule) ||
+        `local-schedule-${Date.now()}-${Math.random().toString(36).slice(2, 8)}`;
+
+      upsertScheduleLocally(
+        {
+          ...payload,
+          ...responseSchedule
+        },
+        temporaryId
+      );
     }
 
-    await fetchSchedules();
     forceCloseModal();
+
+    showToastOnce(
+      "success",
+      wasEditing
+        ? "បានកែប្រែកាលវិភាគដោយជោគជ័យ"
+        : "បានបង្កើតកាលវិភាគដោយជោគជ័យ",
+      wasEditing ? "schedule-update" : "schedule-create"
+    );
+
+    void syncSchedulesSilently();
   } catch (error) {
     console.error(error);
-    toast.error(
-      error.response?.data?.err ||
-        error.response?.data?.message ||
-        error.message ||
-        "មិនអាចរក្សាទុកកាលវិភាគបានទេ"
+
+    showToastOnce(
+      "error",
+      getErrorMessage(error, "មិនអាចរក្សាទុកកាលវិភាគបានទេ"),
+      wasEditing ? "schedule-update-error" : "schedule-create-error"
     );
   } finally {
     isSaving.value = false;
@@ -1098,21 +1340,41 @@ const forceCloseDeleteModal = () => {
 };
 
 const confirmDelete = async () => {
-  if (!scheduleToDelete.value?._id || isDeleting.value) return;
+  if (!scheduleToDelete.value || isDeleting.value) return;
+
+  const scheduleId = getId(scheduleToDelete.value);
+
+  if (!scheduleId) {
+    showToastOnce(
+      "error",
+      "Schedule ID is missing",
+      "schedule-delete-error"
+    );
+    return;
+  }
 
   isDeleting.value = true;
 
   try {
-    await deleteDoc(scheduleToDelete.value._id);
-    toast.success("បានលុបកាលវិភាគដោយជោគជ័យ");
-    await fetchSchedules();
+    await deleteDoc(scheduleId);
+
+    removeScheduleLocally(scheduleId);
     forceCloseDeleteModal();
+
+    showToastOnce(
+      "success",
+      "បានលុបកាលវិភាគដោយជោគជ័យ",
+      "schedule-delete"
+    );
+
+    void syncSchedulesSilently();
   } catch (error) {
     console.error(error);
-    toast.error(
-      error.response?.data?.err ||
-        error.response?.data?.message ||
-        "មិនអាចលុបកាលវិភាគបានទេ"
+
+    showToastOnce(
+      "error",
+      getErrorMessage(error, "មិនអាចលុបកាលវិភាគបានទេ"),
+      "schedule-delete-error"
     );
   } finally {
     isDeleting.value = false;
@@ -1408,6 +1670,40 @@ onBeforeUnmount(() => {
 
 .modal-scroll {
   -webkit-overflow-scrolling: touch;
+}
+
+
+/* Toasts stay above Header, Sidebar and all teleported forms/modals. */
+:global(.Vue-Toastification__container) {
+  z-index: 12050 !important;
+  pointer-events: none;
+}
+
+:global(.Vue-Toastification__toast) {
+  pointer-events: auto;
+  font-family: "Noto Sans Khmer", "Khmer OS Battambang", "Battambang", "Khmer OS", system-ui, sans-serif !important;
+  line-height: 1.45 !important;
+  overflow-wrap: anywhere;
+  word-break: break-word;
+}
+
+:global(.Vue-Toastification__toast-body) {
+  font-family: inherit !important;
+  line-height: 1.45 !important;
+}
+
+@media (max-width: 640px) {
+  :global(.Vue-Toastification__container.top-right),
+  :global(.Vue-Toastification__container.top-center) {
+    top: calc(0.75rem + env(safe-area-inset-top)) !important;
+    left: 0.75rem !important;
+    right: 0.75rem !important;
+    width: auto !important;
+  }
+
+  :global(.Vue-Toastification__toast) {
+    margin-bottom: 0.5rem !important;
+  }
 }
 
 </style>
