@@ -387,10 +387,10 @@
             <thead>
               <tr class="bg-slate-100 text-slate-700 border-b border-slate-200">
                 <th class="table-th w-20">រូបថត</th>
+                 <th class="hidden lg:table-cell table-th">អត្តលេខ</th>
                 <th class="table-th">ឈ្មោះខ្មែរ</th>
+                   <th class="hidden lg:table-cell table-th">ឈ្មោះអង់គ្លេស</th>
                 <th class="table-th">ភេទ</th>
-                <th class="hidden lg:table-cell table-th">អត្តលេខ</th>
-                <th class="hidden lg:table-cell table-th">ឈ្មោះអង់គ្លេស</th>
                 <th class="hidden lg:table-cell table-th">ថ្ងៃខែឆ្នាំកំណើត</th>
                 <th class="hidden lg:table-cell table-th">សញ្ជាតិ</th>
                 <th class="hidden lg:table-cell table-th">លេខទូរស័ព្ទ</th>

@@ -46,8 +46,7 @@
           :class="mode === 'transfer' ? 'bg-orange-500' : 'bg-blue-600'"
         ></div>
       </div>
-
-      <!-- Student Selection -->
+    <!-- Student Selection -->
       <template v-if="!showTargetClassSelection">
         <!-- Search -->
         <div class="enroll-student-modal-search-mobile-safe p-3 border-b border-slate-100 flex flex-col sm:flex-row gap-3 items-stretch sm:items-center bg-white shrink-0">
